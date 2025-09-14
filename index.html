@@ -272,3 +272,30 @@
   </script>
 </body>
 </html>
+<script>
+  function deposit() {
+    let amount = parseInt(document.getElementById("amountInput").value);
+    if(isNaN(amount) || amount <= 0){
+      alert("သင့်ထည့်မည့် ငွေပမာဏမှန်အောင်ထည့်ပါ");
+      return;
+    }
+    balance += amount;
+    updateBalance();
+    document.getElementById("amountInput").value = "";
+  }
+
+  function withdraw() {
+    let amount = parseInt(document.getElementById("amountInput").value);
+    if(isNaN(amount) || amount <= 0){
+      alert("သင့်ထည့်မည့် ငွေပမာဏမှန်အောင်ထည့်ပါ");
+      return;
+    }
+    if(amount > balance){
+      alert("Balance မလောက်ပါ ❌");
+      return;
+    }
+    balance -= amount;
+    updateBalance();
+    document.getElementById("amountInput").value = "";
+  }
+</script>
