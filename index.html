@@ -5,28 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BigWin Game</title>
   <style>
-    body { font-family: sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f4f6f9; margin: 0; }
     .header { background: linear-gradient(90deg, #0ac15f, #00b894); padding: 12px; color: white; text-align: center; font-weight: bold; font-size: 20px; }
-    .wallet { background: #fff; padding: 10px; text-align: center; font-weight: bold; }
-    .tab-menu { display: flex; justify-content: space-around; padding: 10px; background: white; }
-    .tab { flex: 1; margin: 5px; padding: 10px; text-align: center; border-radius: 10px; background: #eee; font-weight: bold; }
-    .tab.active { background: #0ac15f; color: white; }
     .game-info { background: #0ac15f; margin: 10px; border-radius: 12px; padding: 15px; color: white; font-weight: bold; text-align: center; }
     .balls { display: flex; justify-content: center; margin: 10px 0; }
     .ball { width: 40px; height: 40px; border-radius: 50%; background: red; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin: 0 5px; }
-    .bet-options { display: flex; justify-content: space-around; margin: 10px; }
-    .bet-btn { flex: 1; margin: 5px; padding: 12px; border-radius: 10px; color: white; text-align: center; font-weight: bold; cursor: pointer; }
-    .green { background: #2ecc71; } .purple { background: #9b59b6; } .red { background: #e74c3c; }
-    .numbers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px; }
-    .num-btn { border-radius: 50%; width: 60px; height: 60px; background: #fff; border: 2px solid #ccc; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; cursor: pointer; }
-    .num-btn.active, .bet-btn.active, .amount-btn.active { border: 2px solid #0ac15f; }
-    .bet-amounts { display: flex; justify-content: space-around; margin: 15px; }
-    .amount-btn { flex: 1; margin: 5px; padding: 8px; background: #eee; border-radius: 8px; font-weight: bold; text-align: center; cursor: pointer; }
-    .actions { display: flex; justify-content: space-around; margin: 15px; }
-    .cancel-btn { flex: 1; margin: 5px; padding: 12px; background: #e74c3c; color: white; border-radius: 8px; text-align: center; font-weight: bold; cursor: pointer; }
-    .confirm-btn { flex: 1; margin: 5px; padding: 12px; background: #f39c12; color: white; border-radius: 8px; text-align: center; font-weight: bold; cursor: pointer; }
-    .wallet-actions { display: flex; justify-content: space-around; margin: 15px; }
-    .wallet-btn { flex: 1; margin: 5px; padding: 10px; background: #3498db; color: white; border-radius: 8px; text-align: center; cursor: pointer; }
     .history { margin: 15px; background: white; border-radius: 10px; padding: 10px; }
     .history-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
   </style>
@@ -35,142 +18,76 @@
 
   <div class="header">777 BigWin Game</div>
 
-  <div class="wallet">💰 Balance: <span id="balance">1000</span> Ks</div>
-
-  <div class="wallet-actions">
-    <div class="wallet-btn" onclick="deposit()">Deposit</div>
-    <div class="wallet-btn" onclick="withdraw()">Withdraw</div>
-  </div>
-
-  <div class="tab-menu">
-    <div class="tab active">Win Go 30s</div>
-    <div class="tab">Win Go 1Min</div>
-    <div class="tab">Win Go 3Min</div>
-    <div class="tab">Win Go 5Min</div>
-  </div>
-
   <div class="game-info">
     <div>Win Go 30s</div>
-    <div class="balls">
-      <div class="ball">9</div>
-      <div class="ball">2</div>
-      <div class="ball">0</div>
-      <div class="ball">8</div>
-      <div class="ball">5</div>
-    </div>
-    <div>00:25</div>
-    <div>ID: 20250912100050385</div>
+    <div class="balls" id="balls"></div>
+    <div id="timer">00:30</div>
+    <div id="roundId"></div>
   </div>
 
-  <div class="bet-options">
-    <div class="bet-btn green" onclick="selectBet(this)">Green</div>
-    <div class="bet-btn purple" onclick="selectBet(this)">Violet</div>
-    <div class="bet-btn red" onclick="selectBet(this)">Red</div>
-  </div>
+  <div class="history" id="history"></div>
 
-  <div class="numbers">
-    <div class="num-btn" onclick="selectNum(this)">0</div>
-    <div class="num-btn" onclick="selectNum(this)">1</div>
-    <div class="num-btn" onclick="selectNum(this)">2</div>
-    <div class="num-btn" onclick="selectNum(this)">3</div>
-    <div class="num-btn" onclick="selectNum(this)">4</div>
-    <div class="num-btn" onclick="selectNum(this)">5</div>
-    <div class="num-btn" onclick="selectNum(this)">6</div>
-    <div class="num-btn" onclick="selectNum(this)">7</div>
-    <div class="num-btn" onclick="selectNum(this)">8</div>
-    <div class="num-btn" onclick="selectNum(this)">9</div>
-  </div>
+<script>
+  let time = 30;
+  let round = 20250912100050385;
 
-  <div class="bet-amounts">
-    <div class="amount-btn" onclick="selectAmount(this,1)">X1</div>
-    <div class="amount-btn" onclick="selectAmount(this,5)">X5</div>
-    <div class="amount-btn" onclick="selectAmount(this,10)">X10</div>
-    <div class="amount-btn" onclick="selectAmount(this,20)">X20</div>
-    <div class="amount-btn" onclick="selectAmount(this,50)">X50</div>
-    <div class="amount-btn" onclick="selectAmount(this,100)">X100</div>
-  </div>
+  const ballsDiv = document.getElementById("balls");
+  const timerDiv = document.getElementById("timer");
+  const roundDiv = document.getElementById("roundId");
+  const historyDiv = document.getElementById("history");
 
-  <div class="actions">
-    <div class="cancel-btn" onclick="resetBet()">ဖျက်မယ်</div>
-    <div class="confirm-btn" onclick="confirmBet()">အတည်ပြုမယ်</div>
-  </div>
-
-  <div class="history" id="history">
-    <h4>📜 Bet History</h4>
-  </div>
-
-  <script>
-    let balance = 1000;
-    let currentBet = { color:null, number:null, amount:0 };
-
-    function updateBalance(){
-      document.getElementById("balance").innerText = balance;
+  function randomNumbers() {
+    let nums = [];
+    for (let i = 0; i < 5; i++) {
+      nums.push(Math.floor(Math.random() * 10));
     }
+    return nums;
+  }
 
-    function selectBet(el){
-      document.querySelectorAll(".bet-btn").forEach(b=>b.classList.remove("active"));
-      el.classList.add("active");
-      currentBet.color = el.innerText;
-    }
+  function getResult(num) {
+    return num <= 4 ? "သေး" : "အကြီး";
+  }
 
-    function selectNum(el){
-      document.querySelectorAll(".num-btn").forEach(b=>b.classList.remove("active"));
-      el.classList.add("active");
-      currentBet.number = el.innerText;
-    }
+  function newRound() {
+    let nums = randomNumbers();
+    ballsDiv.innerHTML = "";
+    nums.forEach(n => {
+      let b = document.createElement("div");
+      b.className = "ball";
+      b.innerText = n;
+      ballsDiv.appendChild(b);
+    });
 
-    function selectAmount(el,amount){
-      document.querySelectorAll(".amount-btn").forEach(b=>b.classList.remove("active"));
-      el.classList.add("active");
-      currentBet.amount = amount;
-    }
+    round++;
+    roundDiv.innerText = "ID: " + round;
 
-    function resetBet(){
-      currentBet = { color:null, number:null, amount:0 };
-      document.querySelectorAll(".active").forEach(b=>b.classList.remove("active"));
-    }
+    // Take last number as result
+    let lastNum = nums[nums.length - 1];
+    let result = getResult(lastNum);
 
-    function confirmBet(){
-      if(!currentBet.color || !currentBet.number || currentBet.amount===0){
-        alert("အမိန့်ကို ပြည့်စုံအောင်ရွေးပါ!");
-        return;
+    let item = document.createElement("div");
+    item.className = "history-item";
+    item.innerHTML = `<span>${round}</span><span>နံပါတ်: ${lastNum}</span><span>အကျိုး: ${result}</span>`;
+    historyDiv.prepend(item); // add to top
+  }
+
+  function startTimer() {
+    setInterval(() => {
+      time--;
+      if (time <= 0) {
+        time = 30;
+        newRound();
       }
-      if(balance < currentBet.amount){
-        alert("Balance မလုံလောက်ပါ");
-        return;
-      }
-      balance -= currentBet.amount;
-      updateBalance();
-      const history = document.getElementById("history");
-      const item = document.createElement("div");
-      item.className="history-item";
-      item.innerHTML = `<span>${new Date().toLocaleTimeString()}</span>
-                        <span>${currentBet.color} - ${currentBet.number}</span>
-                        <span>Bet: ${currentBet.amount} Ks</span>`;
-      history.prepend(item);
-      resetBet();
-    }
+      let mm = String(Math.floor(time / 60)).padStart(2, "0");
+      let ss = String(time % 60).padStart(2, "0");
+      timerDiv.innerText = mm + ":" + ss;
+    }, 1000);
+  }
 
-    function deposit(){
-      let amount = prompt("ဘယ်လောက် ငွေသွင်းမလဲ?");
-      if(amount){
-        balance += parseInt(amount);
-        updateBalance();
-      }
-    }
-
-    function withdraw(){
-      let amount = prompt("ဘယ်လောက် ထုတ်မလဲ?");
-      if(amount){
-        if(balance >= parseInt(amount)){
-          balance -= parseInt(amount);
-          updateBalance();
-        } else {
-          alert("Balance မလုံလောက်ပါ!");
-        }
-      }
-    }
-  </script>
+  // Start first round
+  newRound();
+  startTimer();
+</script>
 
 </body>
 </html>
