@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0, minimum-scale=0.5">
+    <title>BigWin Game - Lottery Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+        
+        .lottery-ball {
+            position: relative;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, transparent 70%),
+                        linear-gradient(145deg, #ffffff 0%, #e5e7eb 100%);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25), 
+                        inset 0 4px 8px rgba(255,255,255,0.9),
+                        inset 0 -2px 4px rgba(0,0,0,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+        
+        .lottery-ball.red { 
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, transparent 70%),
+                        linear-gradient(145deg, #ff4757 0%, #c44569 100%);
+            color: white; 
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 12px 30px rgba(255,71,87,0.4), 
+                        inset 0 4px 8px rgba(255,255,255,0.9),
+                        inset 0 -2px 4px rgba(196,69,105,0.3);
+        }
+        
+        .lottery-ball.blue { 
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, transparent 70%),
+                        linear-gradient(145deg, #3742fa 0%, #2f3542 100%);
+            color: white; 
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 12px 30px rgba(55,66,250,0.4), 
+                        inset 0 4px 8px rgba(255,255,255,0.9),
+                        inset 0 -2px 4px rgba(47,53,66,0.3);
+        }
+        
+        .lottery-ball.green { 
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, transparent 70%),
+                        linear-gradient(145deg, #2ed573 0%, #1e90ff 100%);
+            color: white; 
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 12px 30px rgba(46,213,115,0.4), 
+                        inset 0 4px 8px rgba(255,255,255,0.9),
+                        inset 0 -2px 4px rgba(30,144,255,0.3);
+        }
+        
+        .lottery-ball.purple { 
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, transparent 70%),
+                        linear-gradient(145deg, #a55eea 0%, #8854d0 100%);
+            color: white; 
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 12px 30px rgba(165,94,234,0.4), 
+                        inset 0 4px 8px rgba(255,255,255,0.9),
+                        inset 0 -2px 4px rgba(136,84,208,0.3);
+        }
+        
+        .lottery-ball.orange { 
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, transparent 70%),
+                        linear-gradient(145deg, #ff6348 0%, #ff4757 100%);
+            color: white; 
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 12px 30px rgba(255,99,72,0.4), 
+                        inset 0 4px 8px rgba(255,255,255,0.9),
+                        inset 0 -2px 4px rgba(255,71,87,0.3);
+        }
+        
+        .lottery-ball.yellow { 
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.3) 40%, transparent 70%),
+                        linear-gradient(145deg, #ffa502 0%, #ff6348 100%);
+            color: white; 
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 12px 30px rgba(255,165,2,0.4), 
+                        inset 0 4px 8px rgba(255,255,255,0.9),
+                        inset 0 -2px 4px rgba(255,99,72,0.3);
+        }
+        
+        .lottery-ball:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), 
+                        inset 0 4px 8px rgba(255,255,255,0.9),
+                        inset 0 -2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .lottery-ball:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        
+        .number-btn {
+            background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .number-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        
+        .number-btn.selected {
+            background: linear-gradient(145deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: #047857;
+            transform: scale(0.95);
+        }
+        
+        .number-btn.selected .bg-white {
+            background: white !important;
+            color: #10b981 !important;
+        }
+        
+        .multiplier-btn {
+            background: linear-gradient(145deg, #fbbf24 0%, #f59e0b 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .multiplier-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .multiplier-btn.selected {
+            background: linear-gradient(145deg, #dc2626 0%, #b91c1c 100%);
+            transform: scale(0.95);
+        }
+        
+        .big-small-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .big-small-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .big-small-btn.selected {
+            transform: scale(0.95);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 3px solid #fbbf24;
+        }
+        
+        .game-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .timer-badge {
+            background: linear-gradient(145deg, #1f2937 0%, #111827 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .dragon-icon {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+    <!-- Top Navigation -->
+    <div class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="flex items-center justify-between p-4">
+            <div class="flex items-center space-x-3">
+                <div class="text-xl dragon-icon">🐉</div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">BigWin Game</h1>
+                    <p class="text-xs text-gray-500">Lottery Platform</p>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Money Display Section -->
+        <div class="bg-gradient-to-r from-emerald-500 to-green-600 text-white py-4">
+            <div class="text-center mb-3">
+                <div class="text-2xl font-bold" id="balance-display">
+                    💰 10,000 Ks
+                </div>
+                <div class="text-sm opacity-90">လက်ကျန်ငွေ</div>
+            </div>
+            <div class="flex justify-center space-x-4 mb-2">
+                <button onclick="showDepositModal()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-2 rounded-full font-semibold transition-all">
+                    📥 ငွေသွင်း
+                </button>
+                <button onclick="showWithdrawModal()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-6 py-2 rounded-full font-semibold transition-all">
+                    📤 ငွေထုတ်
+                </button>
+            </div>
+
+            
+
+        </div>
+        
+        <!-- Game Title -->
+        <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 px-4">
+            <div class="text-center">
+                <h2 class="text-xl font-bold">🎯 Win Go 1 Minute</h2>
+                <p class="text-sm opacity-90">မိနစ်တစ်မိနစ် ထီလောင်းကစား</p>
+            </div>
+        </div>
+
+        <!-- Game Timer Display -->
+        <div class="bg-gradient-to-r from-red-500 to-red-600 text-white py-4 px-4">
+            <div class="text-center">
+                <div class="text-xs opacity-80 mb-1">ပွဲစဥ်နံပါတ် <span id="round-number">#၈၅၆</span></div>
+                <div class="text-4xl font-bold pulse-animation mb-2" id="timer-text">01:00</div>
+                <div class="text-sm opacity-90 mb-3">လက်ကျန်ချိန်</div>
+                
+                <!-- Recent Numbers -->
+                <div class="flex justify-center space-x-2 mb-3" id="recent-numbers">
+                    <div class="lottery-ball green w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                    <div class="lottery-ball red w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">6</div>
+                    <div class="lottery-ball purple w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">0</div>
+                    <div class="lottery-ball red w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">4</div>
+                    <div class="lottery-ball purple w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">5</div>
+                </div>
+                
+                <!-- Quick Color Betting -->
+                <div class="flex justify-center space-x-2">
+                    <button id="red-btn-timer" class="big-small-btn bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-bold py-2 px-3 rounded-lg text-xs shadow-lg transition-all flex items-center space-x-1" onclick="selectColor('red')">
+                        <div class="text-sm">💎</div>
+                        <div class="text-xs">အနီ</div>
+                    </button>
+                    <button id="green-btn-timer" class="big-small-btn bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-bold py-2 px-3 rounded-lg text-xs shadow-lg transition-all flex items-center space-x-1" onclick="selectColor('green')">
+                        <div class="text-sm">🍀</div>
+                        <div class="text-xs">အစိမ်း</div>
+                    </button>
+                    <button id="purple-btn-timer" class="big-small-btn bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-bold py-2 px-3 rounded-lg text-xs shadow-lg transition-all flex items-center space-x-1" onclick="selectColor('purple')">
+                        <div class="text-sm">👑</div>
+                        <div class="text-xs">ခရမ်း</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-2 space-y-4 pb-20 min-h-screen">
+
+        <!-- Big/Small Betting Section -->
+        <div class="game-card rounded-2xl p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                🎯 အကြီး/အသေး လောင်းကစား
+                <span class="ml-auto text-sm text-green-600 font-bold">x1.95 ဆုကြေး</span>
+            </h2>
+            
+            <!-- Bet Amount Selection (Hidden by default) -->
+            <div id="bet-amount-section" class="hidden bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 mb-4 border-2 border-yellow-200">
+                <div class="text-center mb-3">
+                    <div class="text-lg font-bold text-gray-800" id="selected-choice-text">အကြီး ရွေးချယ်ပြီး</div>
+                    <div class="text-sm text-gray-600">လောင်းငွေပမာဏ ရွေးချယ်ပါ</div>
+                </div>
+                
+                <!-- Bet Amount Grid -->
+                <div class="grid grid-cols-3 gap-3 mb-4">
+                    <button onclick="placeBigSmallBet(100000)" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        💎 100K
+                    </button>
+                    <button onclick="placeBigSmallBet(200000)" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        💎 200K
+                    </button>
+                    <button onclick="placeBigSmallBet(500000)" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        💎 500K
+                    </button>
+                    <button onclick="placeBigSmallBet(1000000)" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        🔥 1M
+                    </button>
+                    <button onclick="placeBigSmallBet(2000000)" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        🔥 2M
+                    </button>
+                    <button onclick="placeBigSmallBet(5000000)" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        🔥 5M
+                    </button>
+                    <button onclick="placeBigSmallBet(10000000)" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        👑 10M
+                    </button>
+                    <button onclick="placeBigSmallBet(20000000)" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        👑 20M
+                    </button>
+                    <button onclick="placeBigSmallBet(50000000)" class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-105 text-sm">
+                        👑 50M
+                    </button>
+                </div>
+                
+                <button onclick="hideBetAmountSection()" class="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-xl transition-all">
+                    ❌ ပယ်ဖျက်မည်
+                </button>
+            </div>
+            
+            <div class="flex justify-center space-x-4 mb-4">
+                <button id="big-btn" class="big-small-btn bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg transition-all transform hover:scale-105 flex-1 max-w-xs" onclick="selectBigSmall('big')">
+                    <div class="text-lg font-bold">အကြီး</div>
+                    <div class="text-sm opacity-90">(5,6,7,8,9)</div>
+                </button>
+                <button id="small-btn" class="big-small-btn bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg transition-all transform hover:scale-105 flex-1 max-w-xs" onclick="selectBigSmall('small')">
+                    <div class="text-lg font-bold">အသေး</div>
+                    <div class="text-sm opacity-90">(0,1,2,3,4)</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Color Betting Section -->
+        <div class="game-card rounded-2xl p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                🌈 အရောင်လောင်းကစား
+                <span class="ml-auto text-sm text-green-600 font-bold">x3.5-6.0 ဆုကြေး</span>
+            </h2>
+            <div class="flex justify-center space-x-3 mb-4">
+                <button id="red-btn" class="big-small-btn bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105 flex-1 max-w-xs" onclick="selectColor('red')">
+                    <div class="text-lg mb-1">💎</div>
+                    <div class="text-base font-bold">အနီ</div>
+                    <div class="text-xs opacity-90">(2,4,6,8)</div>
+                </button>
+                <button id="green-btn" class="big-small-btn bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105 flex-1 max-w-xs" onclick="selectColor('green')">
+                    <div class="text-lg mb-1">🍀</div>
+                    <div class="text-base font-bold">အစိမ်း</div>
+                    <div class="text-xs opacity-90">(1,3,7,9)</div>
+                </button>
+                <button id="purple-btn" class="big-small-btn bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105 flex-1 max-w-xs" onclick="selectColor('purple')">
+                    <div class="text-lg mb-1">👑</div>
+                    <div class="text-base font-bold">ခရမ်း</div>
+                    <div class="text-xs opacity-90">(0,5)</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Number Betting Section -->
+        <div class="game-card rounded-2xl p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                🎯 နံပါတ်လောင်းကစား
+                <span class="ml-auto text-sm text-green-600 font-bold">x9.0 ဆုကြေး</span>
+            </h2>
+            <div class="grid grid-cols-5 gap-4 mb-6 justify-items-center">
+                <button id="num-0" class="number-btn lottery-ball purple w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(0)">
+                    0
+                </button>
+                <button id="num-1" class="number-btn lottery-ball green w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(1)">
+                    1
+                </button>
+                <button id="num-2" class="number-btn lottery-ball red w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(2)">
+                    2
+                </button>
+                <button id="num-3" class="number-btn lottery-ball green w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(3)">
+                    3
+                </button>
+                <button id="num-4" class="number-btn lottery-ball red w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(4)">
+                    4
+                </button>
+                <button id="num-5" class="number-btn lottery-ball purple w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(5)">
+                    5
+                </button>
+                <button id="num-6" class="number-btn lottery-ball red w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(6)">
+                    6
+                </button>
+                <button id="num-7" class="number-btn lottery-ball green w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(7)">
+                    7
+                </button>
+                <button id="num-8" class="number-btn lottery-ball red w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(8)">
+                    8
+                </button>
+                <button id="num-9" class="number-btn lottery-ball green w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold transition-all duration-300" onclick="selectNumber(9)">
+                    9
+                </button>
+            </div>
+            
+            <!-- Betting Controls -->
+            <div class="bg-gray-50 rounded-xl p-4 mb-4">
+                <div class="text-center mb-3">
+                    <div class="text-sm text-gray-600 mb-1">ရွေးချယ်မှု:</div>
+                    <div class="text-lg font-bold" id="selection-display">
+                        <span class="text-gray-400">မရွေးရသေး</span>
+                    </div>
+                </div>
+                
+                <!-- Multiplier Selection -->
+                <div class="mb-4">
+                    <div class="text-sm font-semibold text-gray-700 mb-2 text-center">လောင်းငွေပမာဏ:</div>
+                    <div class="flex justify-center space-x-2 flex-wrap gap-2">
+                        <button class="multiplier-btn text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-all text-sm" onclick="selectMultiplier(1)">
+                            1x
+                        </button>
+                        <button class="multiplier-btn text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-all text-sm" onclick="selectMultiplier(2)">
+                            2x
+                        </button>
+                        <button class="multiplier-btn text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-all text-sm" onclick="selectMultiplier(5)">
+                            5x
+                        </button>
+                        <button class="multiplier-btn text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-all text-sm" onclick="selectMultiplier(10)">
+                            10x
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Bet Amounts -->
+                <div class="mb-4">
+                    <div class="text-sm font-semibold text-gray-700 mb-2 text-center">မြန်ဆန်လောင်း:</div>
+                    <div class="grid grid-cols-4 gap-2 mb-3">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs" onclick="quickBet(100000)">
+                            100K
+                        </button>
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs" onclick="quickBet(200000)">
+                            200K
+                        </button>
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs" onclick="quickBet(500000)">
+                            500K
+                        </button>
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs" onclick="quickBet(1000000)">
+                            1M
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 mb-3">
+                        <button class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs shadow-lg" onclick="quickBet(2000000)">
+                            🔥 2M
+                        </button>
+                        <button class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs shadow-lg" onclick="quickBet(5000000)">
+                            🔥 5M
+                        </button>
+                        <button class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs shadow-lg" onclick="quickBet(10000000)">
+                            👑 10M
+                        </button>
+                        <button class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs shadow-lg" onclick="quickBet(20000000)">
+                            👑 20M
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs shadow-lg" onclick="quickBet(50000000)">
+                            👑 50M
+                        </button>
+                        <button class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-2 px-2 rounded-lg transition-all text-xs shadow-lg" onclick="quickBet(100000000)">
+                            👑 100M
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bet Amount Display -->
+                <div class="text-center mb-4">
+                    <div class="text-sm text-gray-600">စုစုပေါင်းလောင်းငွေ:</div>
+                    <div class="text-2xl font-bold text-green-600" id="bet-amount">0 ကျပ်</div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex space-x-3">
+                    <button onclick="confirmBet()" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105">
+                        ✅ လောင်းမည်
+                    </button>
+                    <button onclick="cancelBet()" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105">
+                        ❌ ပယ်ဖျက်
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest Winning Numbers -->
+        <div class="game-card rounded-2xl p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                🏆 နောက်ဆုံးထွက်သောနံပါတ်များ
+                <span class="ml-auto text-sm text-gray-500">#အကြိမ် ၁၂၄၇</span>
+            </h2>
+            <div class="flex justify-center items-center space-x-6 mb-4">
+                <div class="lottery-ball green w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold">7</div>
+                <div class="text-3xl text-red-600">🔴</div>
+                <div class="flex flex-col items-center">
+                    <div class="text-xl font-bold text-red-600">အကြီး</div>
+                    <div class="text-sm text-gray-600">(5-9)</div>
+                    <div class="text-sm text-green-600 font-bold">🍀 အစိမ်းရောင်</div>
+                </div>
+            </div>
+            <div class="text-center text-sm text-gray-600">
+                💰 စုစုပေါင်းဆုကြေး: <span class="font-bold text-green-600">၁၂၅,၄၃၀,၀၀၀ ကျပ်</span>
+            </div>
+        </div>
+
+        <!-- Numbers Statistics Table -->
+        <div class="game-card rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                📊 နံပါတ်များ ထွက်ခဲ့သည့်အကြိမ်ရေ
+                <button onclick="toggleStatsView()" class="ml-auto text-sm bg-blue-500 text-white px-3 py-1 rounded-full hover:bg-blue-600 transition-all">
+                    <span id="stats-toggle-text">📈 အသေးစိတ်</span>
+                </button>
+            </h3>
+            
+            <!-- Numbers Frequency Table -->
+            <div id="numbers-frequency" class="mb-6">
+                <div class="grid grid-cols-5 gap-2 mb-4">
+                    <div class="text-center font-bold text-gray-600 text-sm">နံပါတ်</div>
+                    <div class="text-center font-bold text-gray-600 text-sm">အကြိမ်ရေ</div>
+                    <div class="text-center font-bold text-gray-600 text-sm">ရာခိုင်နှုန်း</div>
+                    <div class="text-center font-bold text-gray-600 text-sm">အရောင်</div>
+                    <div class="text-center font-bold text-gray-600 text-sm">အမျိုးအစား</div>
+                </div>
+                
+                <div id="frequency-rows">
+                    <!-- Number 0 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball purple w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">0</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-0">12</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-0">9.6%</div>
+                        <div class="text-center text-purple-600 font-bold text-sm">👑 ခရမ်း</div>
+                        <div class="text-center text-blue-600 font-bold text-sm">🔵 အသေး</div>
+                    </div>
+                    
+                    <!-- Number 1 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball green w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">1</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-1">15</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-1">12.0%</div>
+                        <div class="text-center text-green-600 font-bold text-sm">🍀 အစိမ်း</div>
+                        <div class="text-center text-blue-600 font-bold text-sm">🔵 အသေး</div>
+                    </div>
+                    
+                    <!-- Number 2 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball red w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">2</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-2">11</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-2">8.8%</div>
+                        <div class="text-center text-red-600 font-bold text-sm">💎 အနီ</div>
+                        <div class="text-center text-blue-600 font-bold text-sm">🔵 အသေး</div>
+                    </div>
+                    
+                    <!-- Number 3 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball green w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">3</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-3">13</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-3">10.4%</div>
+                        <div class="text-center text-green-600 font-bold text-sm">🍀 အစိမ်း</div>
+                        <div class="text-center text-blue-600 font-bold text-sm">🔵 အသေး</div>
+                    </div>
+                    
+                    <!-- Number 4 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball red w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">4</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-4">9</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-4">7.2%</div>
+                        <div class="text-center text-red-600 font-bold text-sm">💎 အနီ</div>
+                        <div class="text-center text-blue-600 font-bold text-sm">🔵 အသေး</div>
+                    </div>
+                    
+                    <!-- Number 5 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball purple w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">5</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-5">14</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-5">11.2%</div>
+                        <div class="text-center text-purple-600 font-bold text-sm">👑 ခရမ်း</div>
+                        <div class="text-center text-red-600 font-bold text-sm">🔴 အကြီး</div>
+                    </div>
+                    
+                    <!-- Number 6 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball red w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">6</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-6">16</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-6">12.8%</div>
+                        <div class="text-center text-red-600 font-bold text-sm">💎 အနီ</div>
+                        <div class="text-center text-red-600 font-bold text-sm">🔴 အကြီး</div>
+                    </div>
+                    
+                    <!-- Number 7 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball green w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">7</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-7">18</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-7">14.4%</div>
+                        <div class="text-center text-green-600 font-bold text-sm">🍀 အစိမ်း</div>
+                        <div class="text-center text-red-600 font-bold text-sm">🔴 အကြီး</div>
+                    </div>
+                    
+                    <!-- Number 8 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball red w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">8</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-8">10</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-8">8.0%</div>
+                        <div class="text-center text-red-600 font-bold text-sm">💎 အနီ</div>
+                        <div class="text-center text-red-600 font-bold text-sm">🔴 အကြီး</div>
+                    </div>
+                    
+                    <!-- Number 9 -->
+                    <div class="grid grid-cols-5 gap-2 py-3 border-b border-gray-100 hover:bg-gray-50">
+                        <div class="text-center">
+                            <div class="lottery-ball green w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mx-auto">9</div>
+                        </div>
+                        <div class="text-center font-bold text-gray-800" id="count-9">7</div>
+                        <div class="text-center text-sm text-gray-600" id="percent-9">5.6%</div>
+                        <div class="text-center text-green-600 font-bold text-sm">🍀 အစိမ်း</div>
+                        <div class="text-center text-red-600 font-bold text-sm">🔴 အကြီး</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent History -->
+            <div id="recent-history" class="hidden">
+                <h4 class="font-bold text-gray-700 mb-3">📋 နောက်ဆုံး ၂၀ ကြိမ်</h4>
+                <div class="grid grid-cols-10 gap-1" id="history-grid">
+                    <!-- Recent 20 results will be populated here -->
+                </div>
+                
+                <!-- Summary Stats -->
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div class="bg-red-50 p-3 rounded-lg">
+                        <div class="text-red-600 font-bold text-sm">🔴 အကြီး</div>
+                        <div class="text-xl font-bold text-red-700" id="big-count">12/20</div>
+                        <div class="text-xs text-red-600">60%</div>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <div class="text-blue-600 font-bold text-sm">🔵 အသေး</div>
+                        <div class="text-xl font-bold text-blue-700" id="small-count">8/20</div>
+                        <div class="text-xs text-blue-600">40%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+        let selectedChoice = null; // 'big', 'small', 'green', or 'purple'
+        let selectedMultiplier = 1;
+        let baseBet = 100000; // 100K kyats base bet
+        let timerInterval;
+        let countdownTimer = 60; // 1 minute timer
+        let roundNumber = 856;
+        
+        // Game results and sequence for 1min game
+        let gameResults = [];
+        let gameNumberSequence = [3, 6, 0, 4, 5, 1, 7, 9, 2, 8];
+
+        // Initialize timer
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                countdownTimer--;
+                updateTimerDisplay();
+                
+                // Check if game finished
+                if (countdownTimer <= 0) {
+                    // Reset timer to 1 minute
+                    countdownTimer = 60;
+                    
+                    // Simulate new draw
+                    simulateNewDraw();
+                    roundNumber++;
+                    document.getElementById('round-number').textContent = `#${roundNumber}`;
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(countdownTimer / 60);
+            const seconds = countdownTimer % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timer-text').textContent = display;
+        }
+
+        function setTimer(seconds) {
+            countdownTimer = seconds;
+            updateTimerDisplay();
+            
+            // Visual feedback for timer selection
+            document.querySelectorAll('.timer-badge').forEach(badge => {
+                badge.classList.remove('bg-red-600');
+                badge.classList.add('bg-gray-800');
+            });
+            event.target.classList.remove('bg-gray-800');
+            event.target.classList.add('bg-red-600');
+        }
+
+        function selectBigSmall(choice) {
+            // Check if already selected a different big/small choice
+            if (selectedChoice === 'big' && choice === 'small') {
+                alert('❌ အကြီးလောင်းထားပြီးဖြစ်သောကြောင့် အသေးလောင်းလို့မရပါ! ပယ်ဖျက်ပြီး အသစ်လောင်းပါ။');
+                return;
+            }
+            if (selectedChoice === 'small' && choice === 'big') {
+                alert('❌ အသေးလောင်းထားပြီးဖြစ်သောကြောင့် အကြီးလောင်းလို့မရပါ! ပယ်ဖျက်ပြီး အသစ်လောင်းပါ။');
+                return;
+            }
+            
+            // Remove previous selection
+            document.querySelectorAll('.big-small-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection to clicked button
+            if (choice === 'big') {
+                document.getElementById('big-btn').classList.add('selected');
+                selectedChoice = 'big';
+                document.getElementById('selected-choice-text').textContent = 'အကြီး ရွေးချယ်ပြီး';
+            } else {
+                document.getElementById('small-btn').classList.add('selected');
+                selectedChoice = 'small';
+                document.getElementById('selected-choice-text').textContent = 'အသေး ရွေးချယ်ပြီး';
+            }
+            
+            // Show bet amount selection section
+            document.getElementById('bet-amount-section').classList.remove('hidden');
+            
+            // Scroll to bet amount section smoothly
+            document.getElementById('bet-amount-section').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+            
+            updateSelectionDisplay();
+            updateBetAmount();
+        }
+
+        function selectColor(color) {
+            // Remove previous selection
+            document.querySelectorAll('.big-small-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection to clicked button
+            if (color === 'red') {
+                document.getElementById('red-btn').classList.add('selected');
+                document.getElementById('red-btn-timer').classList.add('selected');
+                selectedChoice = 'red';
+            } else if (color === 'green') {
+                document.getElementById('green-btn').classList.add('selected');
+                document.getElementById('green-btn-timer').classList.add('selected');
+                selectedChoice = 'green';
+            } else if (color === 'purple') {
+                document.getElementById('purple-btn').classList.add('selected');
+                document.getElementById('purple-btn-timer').classList.add('selected');
+                selectedChoice = 'purple';
+            }
+            
+            updateSelectionDisplay();
+            updateBetAmount();
+        }
+
+        function selectNumber(number) {
+            // Remove previous number selection
+            document.querySelectorAll('.number-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Remove other selections
+            document.querySelectorAll('.big-small-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection to clicked number
+            document.getElementById(`num-${number}`).classList.add('selected');
+            selectedChoice = `number-${number}`;
+            
+            updateSelectionDisplay();
+            updateBetAmount();
+        }
+
+        function selectMultiplier(multiplier) {
+            // Remove previous selection
+            document.querySelectorAll('.multiplier-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection to clicked button
+            event.target.classList.add('selected');
+            selectedMultiplier = multiplier;
+            updateBetAmount();
+        }
+
+        function updateSelectionDisplay() {
+            const container = document.getElementById('selection-display');
+            if (!selectedChoice) {
+                container.innerHTML = '<span class="text-gray-400">မရွေးရသေး</span>';
+            } else if (selectedChoice === 'big') {
+                container.innerHTML = '<span class="text-red-600 font-bold">🔴 အကြီး (5, 6, 7, 8, 9)</span>';
+            } else if (selectedChoice === 'small') {
+                container.innerHTML = '<span class="text-blue-600 font-bold">🔵 အသေး (0, 1, 2, 3, 4)</span>';
+            } else if (selectedChoice === 'red') {
+                container.innerHTML = '<span class="text-red-600 font-bold">💎 အနီရောင် (2, 4, 6, 8)</span>';
+            } else if (selectedChoice === 'green') {
+                container.innerHTML = '<span class="text-green-600 font-bold">🍀 အစိမ်းရောင် (1, 3, 7, 9)</span>';
+            } else if (selectedChoice === 'purple') {
+                container.innerHTML = '<span class="text-purple-600 font-bold">👑 ခရမ်းရောင် (0, 5)</span>';
+            } else if (selectedChoice.startsWith('number-')) {
+                const number = selectedChoice.split('-')[1];
+                let numberColor = '';
+                let numberIcon = '';
+                
+                // Determine color and icon based on number
+                if ([2, 4, 6, 8].includes(parseInt(number))) {
+                    numberColor = 'text-red-600';
+                    numberIcon = '💎';
+                } else if ([1, 3, 7, 9].includes(parseInt(number))) {
+                    numberColor = 'text-green-600';
+                    numberIcon = '🍀';
+                } else if ([0, 5].includes(parseInt(number))) {
+                    numberColor = 'text-purple-600';
+                    numberIcon = '👑';
+                }
+                
+                container.innerHTML = `<span class="${numberColor} font-bold">${numberIcon} နံပါတ် ${number}</span>`;
+            }
+        }
+
+        function updateBetAmount() {
+            const totalBet = selectedChoice ? baseBet * selectedMultiplier : 0;
+            document.getElementById('bet-amount').textContent = `${totalBet.toLocaleString()} ကျပ်`;
+        }
+
+        function confirmBet() {
+            if (!selectedChoice) {
+                alert('အကြီး၊ အသေး၊ အနီရောင်၊ အစိမ်းရောင် သို့မဟုတ် ခရမ်းရောင် ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            const totalBet = baseBet * selectedMultiplier;
+            
+            // Check if user has enough balance
+            const currentBalance = getCurrentBalance();
+            if (currentBalance === 0) {
+                alert('❌ လက်ကျန်ငွေ ၀ ကျပ်ဖြစ်နေပါသည်! ငွေသွင်းပါ။');
+                return;
+            }
+            
+            if (totalBet > currentBalance) {
+                alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ! ငွေသွင်းပါ။');
+                return;
+            }
+            
+            // Deduct bet amount from balance
+            const newBalance = currentBalance - totalBet;
+            updateBalance(newBalance);
+            
+            let choiceText;
+            if (selectedChoice === 'big') choiceText = 'အကြီး';
+            else if (selectedChoice === 'small') choiceText = 'အသေး';
+            else if (selectedChoice === 'red') choiceText = 'အနီရောင်';
+            else if (selectedChoice === 'green') choiceText = 'အစိမ်းရောင်';
+            else if (selectedChoice === 'purple') choiceText = 'ခရမ်းရောင်';
+            else if (selectedChoice.startsWith('number-')) {
+                const number = selectedChoice.split('-')[1];
+                choiceText = `နံပါတ် ${number}`;
+            }
+            
+            // Show success message and clear selections for next bet
+            showSuccessMessage(totalBet, choiceText);
+            
+            // Clear selections after betting to allow new bets
+            setTimeout(() => {
+                clearSelections();
+            }, 1000);
+        }
+
+        function showBetAmountModal(choice) {
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // Create modal container
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 24px;
+                text-align: center;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+                transform: scale(0.5);
+                transition: transform 0.5s ease;
+                max-width: 380px;
+                margin: 16px;
+                width: 90%;
+            `;
+            
+            const choiceText = choice === 'big' ? 'အကြီး' : 'အသေး';
+            const choiceIcon = choice === 'big' ? '🔴' : '🔵';
+            
+            modal.innerHTML = `
+                <div style="font-size: 60px; margin-bottom: 16px;">${choiceIcon}</div>
+                <div style="font-size: 24px; font-weight: bold; color: #374151; margin-bottom: 16px;">
+                    ${choiceText} ရွေးချယ်ပြီး
+                </div>
+                <div style="font-size: 16px; color: #6b7280; margin-bottom: 24px;">
+                    လောင်းငွေပမာဏ ရွေးချယ်ပါ
+                </div>
+                
+                <!-- Bet Amount Grid -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <button onclick="placeBetWithAmount('${choice}', 100000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        💎 100K
+                    </button>
+                    <button onclick="placeBetWithAmount('${choice}', 200000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        💎 200K
+                    </button>
+                    <button onclick="placeBetWithAmount('${choice}', 500000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        💎 500K
+                    </button>
+                    <button onclick="placeBetWithAmount('${choice}', 1000000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        🔥 1M
+                    </button>
+                    <button onclick="placeBetWithAmount('${choice}', 2000000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        🔥 2M
+                    </button>
+                    <button onclick="placeBetWithAmount('${choice}', 5000000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        🔥 5M
+                    </button>
+                    <button onclick="placeBetWithAmount('${choice}', 10000000)" style="background: linear-gradient(145deg, #ef4444, #dc2626); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        👑 10M
+                    </button>
+                    <button onclick="placeBetWithAmount('${choice}', 20000000)" style="background: linear-gradient(145deg, #ef4444, #dc2626); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        👑 20M
+                    </button>
+                    <button onclick="placeBetWithAmount('${choice}', 50000000)" style="background: linear-gradient(145deg, #f59e0b, #d97706); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                        👑 50M
+                    </button>
+                </div>
+                
+                <button onclick="closeBetModal()" style="background: linear-gradient(145deg, #6b7280, #4b5563); color: white; font-weight: bold; padding: 12px 24px; border-radius: 12px; border: none; font-size: 16px; cursor: pointer; width: 100%;">
+                    ❌ ပယ်ဖျက်မည်
+                </button>
+            `;
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Store reference for closing
+            window.currentBetModal = overlay;
+            
+            // Force reflow and animate in
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            setTimeout(() => {
+                modal.style.transform = 'scale(1)';
+            }, 50);
+        }
+
+        function placeBetWithAmount(choice, amount) {
+            // Check if user has enough balance
+            const currentBalance = getCurrentBalance();
+            if (currentBalance === 0) {
+                alert('❌ လက်ကျန်ငွေ ၀ ကျပ်ဖြစ်နေပါသည်! ငွေသွင်းပါ။');
+                closeBetModal();
+                return;
+            }
+            
+            if (amount > currentBalance) {
+                alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ! ငွေသွင်းပါ။');
+                closeBetModal();
+                return;
+            }
+            
+            // Deduct bet amount from balance
+            const newBalance = currentBalance - amount;
+            updateBalance(newBalance);
+            
+            // Close the modal first
+            closeBetModal();
+            
+            // Set the bet amount
+            baseBet = amount;
+            selectedMultiplier = 1;
+            
+            // Show success message
+            const choiceText = choice === 'big' ? 'အကြီး' : 'အသေး';
+            showSuccessMessage(amount, choiceText);
+            
+            // Clear selections after betting to allow new bets
+            setTimeout(() => {
+                clearSelections();
+            }, 1000);
+        }
+
+        function closeBetModal() {
+            if (window.currentBetModal) {
+                window.currentBetModal.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(window.currentBetModal)) {
+                        document.body.removeChild(window.currentBetModal);
+                    }
+                    window.currentBetModal = null;
+                }, 300);
+            }
+        }
+
+        function showSuccessMessage(betAmount, choice) {
+            // Create large overlay success message
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // Create success icon container
+            const successIcon = document.createElement('div');
+            successIcon.style.cssText = `
+                background: white;
+                border-radius: 24px;
+                padding: 32px;
+                text-align: center;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+                transform: scale(0.5);
+                transition: transform 0.5s ease;
+                max-width: 320px;
+                margin: 16px;
+            `;
+            
+            successIcon.innerHTML = `
+                <div style="font-size: 80px; margin-bottom: 16px; animation: bounce 1s infinite;">
+                    <div style="position: relative; display: inline-block;">
+                        <div style="color: #10b981;">✅</div>
+                        <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 24px; animation: pulse 2s infinite;">✨</div>
+                        <div style="position: absolute; top: -4px; left: 25%; transform: translateX(-50%); font-size: 20px; animation: pulse 2s infinite; animation-delay: 0.2s;">💫</div>
+                        <div style="position: absolute; top: -12px; right: 25%; transform: translateX(50%); font-size: 20px; animation: pulse 2s infinite; animation-delay: 0.4s;">⭐</div>
+                    </div>
+                </div>
+                <div style="font-size: 28px; font-weight: bold; color: #10b981; margin-bottom: 12px;">🎉 လောင်းကစားအောင်မြင်ပါသည်! 🎉</div>
+                <div style="font-size: 18px; color: #374151; margin-bottom: 8px;">လောင်းငွေ: ${betAmount.toLocaleString()} ကျပ်</div>
+                <div style="font-size: 18px; color: #374151; margin-bottom: 16px;">ရွေးချယ်မှု: ${choice}</div>
+                <div style="font-size: 14px; color: #6b7280;">ရလဒ်ကို စောင့်ဆိုင်းပါ...</div>
+            `;
+            
+            overlay.appendChild(successIcon);
+            document.body.appendChild(overlay);
+            
+            // Force reflow and animate in
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            setTimeout(() => {
+                successIcon.style.transform = 'scale(1)';
+            }, 50);
+            
+            // Click to close
+            overlay.addEventListener('click', () => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(overlay)) {
+                        document.body.removeChild(overlay);
+                    }
+                }, 300);
+            });
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (document.body.contains(overlay)) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.body.contains(overlay)) {
+                            document.body.removeChild(overlay);
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+
+        function cancelBet() {
+            // Clear all selections
+            selectedChoice = null;
+            selectedMultiplier = 1;
+            
+            // Reset UI
+            document.querySelectorAll('.big-small-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelectorAll('.multiplier-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            updateSelectionDisplay();
+            updateBetAmount();
+            
+            alert('❌ လောင်းငွေပယ်ဖျက်ပြီး');
+        }
+
+        function simulateNewDraw() {
+            // Get next number from the predefined sequence
+            const sequenceIndex = gameResults.length % gameNumberSequence.length;
+            const winningNumber = gameNumberSequence[sequenceIndex];
+            
+            // Store the result
+            gameResults.push(winningNumber);
+            
+            const isBig = winningNumber >= 5;
+            const isRed = [2, 4, 6, 8].includes(winningNumber);
+            const isGreen = [1, 3, 7, 9].includes(winningNumber);
+            const isPurple = [0, 5].includes(winningNumber);
+            
+            // Determine ball color based on number
+            let ballColor;
+            if (isRed) ballColor = 'red';
+            else if (isGreen) ballColor = 'green';
+            else if (isPurple) ballColor = 'purple';
+            else ballColor = isBig ? 'red' : 'blue';
+            
+            const resultText = isBig ? 'အကြီး' : 'အသေး';
+            
+            // Update the latest winning number display
+            const ballsContainer = document.querySelector('.game-card .flex.justify-center.items-center.space-x-6');
+            ballsContainer.innerHTML = `
+                <div class="lottery-ball ${ballColor} w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold">${winningNumber}</div>
+                <div class="text-3xl ${isBig ? 'text-red-600' : 'text-blue-600'}">${isBig ? '🔴' : '🔵'}</div>
+                <div class="flex flex-col items-center">
+                    <div class="text-xl font-bold ${isBig ? 'text-red-600' : 'text-blue-600'}">${resultText}</div>
+                    <div class="text-sm text-gray-600">${isBig ? '(5-9)' : '(0-4)'}</div>
+                    ${isRed ? '<div class="text-sm text-red-600 font-bold">💎 အနီရောင်</div>' : ''}
+                    ${isGreen ? '<div class="text-sm text-green-600 font-bold">🍀 အစိမ်းရောင်</div>' : ''}
+                    ${isPurple ? '<div class="text-sm text-purple-600 font-bold">👑 ခရမ်းရောင်</div>' : ''}
+                </div>
+            `;
+            
+            // Update recent numbers in timer bar
+            updateRecentNumbers(winningNumber, ballColor);
+            
+            // Update statistics
+            updateNumberFrequency(winningNumber);
+            
+            // Check win/lose
+            if (selectedChoice) {
+                let isWin = false;
+                let winMultiplier = 1.95; // Default payout
+                
+                if (selectedChoice === 'big' && isBig) isWin = true;
+                else if (selectedChoice === 'small' && !isBig) isWin = true;
+                else if (selectedChoice === 'red' && isRed) {
+                    isWin = true;
+                    winMultiplier = 3.5;
+                }
+                else if (selectedChoice === 'green' && isGreen) {
+                    isWin = true;
+                    winMultiplier = 3.5;
+                }
+                else if (selectedChoice === 'purple' && isPurple) {
+                    isWin = true;
+                    winMultiplier = 6.0;
+                }
+                else if (selectedChoice.startsWith('number-')) {
+                    const selectedNumber = parseInt(selectedChoice.split('-')[1]);
+                    if (selectedNumber === winningNumber) {
+                        isWin = true;
+                        winMultiplier = 9.0;
+                    }
+                }
+                
+                if (isWin) {
+                    const winAmount = baseBet * selectedMultiplier * winMultiplier;
+                    
+                    // Add winnings to balance
+                    const currentBalance = getCurrentBalance();
+                    const newBalance = currentBalance + winAmount;
+                    updateBalance(newBalance);
+                    
+                    showWinLoseIcon('win', winAmount, winningNumber, resultText);
+                } else {
+                    const lostAmount = baseBet * selectedMultiplier;
+                    showWinLoseIcon('lose', lostAmount, winningNumber, resultText);
+                }
+            } else {
+                // Just show the result without win/lose
+                setTimeout(() => {
+                    alert(`🎊 Win Go 1min အသစ်ထွက်ပြီး! နံပါတ်: ${winningNumber} (${resultText})`);
+                }, 500);
+            }
+        }
+
+        function updateRecentNumbers(newNumber, ballColor) {
+            const recentContainer = document.getElementById('recent-numbers');
+            
+            // Create new number element with lottery ball styling
+            const newNumberElement = `<div class="lottery-ball ${ballColor} w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">${newNumber}</div>`;
+            
+            // Get current numbers and add new one at the beginning
+            const currentNumbers = recentContainer.children;
+            const numbersArray = Array.from(currentNumbers).map(el => el.outerHTML);
+            
+            // Keep only the last 4 numbers and add the new one at the beginning
+            numbersArray.unshift(newNumberElement);
+            if (numbersArray.length > 5) {
+                numbersArray.pop();
+            }
+            
+            // Update the container
+            recentContainer.innerHTML = numbersArray.join('');
+        }
+
+        function showWinLoseIcon(result, amount, winningNumber, resultText) {
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50';
+            overlay.style.zIndex = '9999';
+            
+            // Create icon container
+            const iconContainer = document.createElement('div');
+            iconContainer.className = 'bg-white rounded-3xl p-12 text-center shadow-2xl transform scale-0 transition-all duration-700 max-w-sm mx-4';
+            
+            if (result === 'win') {
+                iconContainer.innerHTML = `
+                    <div class="text-9xl mb-6 relative animate-bounce">
+                        <div class="relative inline-block">
+                            <div class="text-green-500">🎉</div>
+                            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 text-3xl animate-pulse">✨</div>
+                            <div class="absolute -top-2 left-1/4 transform -translate-x-1/2 text-2xl animate-pulse" style="animation-delay: 0.2s">💫</div>
+                            <div class="absolute -top-6 right-1/4 transform translate-x-1/2 text-2xl animate-pulse" style="animation-delay: 0.4s">⭐</div>
+                            <div class="absolute -top-3 right-1/2 transform translate-x-1/2 text-xl animate-pulse" style="animation-delay: 0.6s">✨</div>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-green-600 mb-4">🏆 သင်အနိုင်ရရှိပါသည် 🏆</div>
+                    <div class="text-xl text-gray-700 mb-2">နံပါတ်: ${winningNumber} (${resultText})</div>
+                    <div class="text-2xl font-bold text-green-600 mb-2">+ ${amount.toLocaleString()} ကျပ်</div>
+                    <div class="text-lg text-gray-600 mt-2">ကံကောင်းပါတယ်! 🍀</div>
+                `;
+            } else {
+                iconContainer.innerHTML = `
+                    <div class="text-9xl mb-6">
+                        <div class="relative inline-block">
+                            <div class="text-red-500">💔</div>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl">😢</div>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-red-600 mb-4">😞 သင်ကျရှုံးပါသည် 😞</div>
+                    <div class="text-xl text-gray-700 mb-2">နံပါတ်: ${winningNumber} (${resultText})</div>
+                    <div class="text-2xl font-bold text-red-600 mb-2">- ${amount.toLocaleString()} ကျပ်</div>
+                    <div class="text-lg text-gray-500 mt-2">နောက်တစ်ကြိမ် ကံကောင်းပါစေ! 🙏</div>
+                `;
+            }
+            
+            overlay.appendChild(iconContainer);
+            document.body.appendChild(overlay);
+            
+            // Animate in
+            setTimeout(() => {
+                iconContainer.classList.remove('scale-0');
+                iconContainer.classList.add('scale-100');
+            }, 200);
+            
+            // Click to close
+            overlay.addEventListener('click', () => {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    if (document.body.contains(overlay)) {
+                        document.body.removeChild(overlay);
+                    }
+                }, 300);
+            });
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                if (document.body.contains(overlay)) {
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => {
+                        if (document.body.contains(overlay)) {
+                            document.body.removeChild(overlay);
+                        }
+                    }, 300);
+                }
+            }, 4000);
+        }
+
+        function showDepositModal() {
+            const amount = prompt('ငွေသွင်းမည့်ပမာဏ (Ks):');
+            if (amount && !isNaN(amount) && parseInt(amount) > 0) {
+                const currentBalance = getCurrentBalance();
+                const newBalance = currentBalance + parseInt(amount);
+                updateBalance(newBalance);
+                alert(`✅ ${parseInt(amount).toLocaleString()} Ks ငွေသွင်းပြီးပါပြီ!`);
+            }
+        }
+
+        function showWithdrawModal() {
+            const currentBalance = getCurrentBalance();
+            const amount = prompt(`ငွေထုတ်မည့်ပမာဏ (Ks):\nလက်ကျန်ငွေ: ${currentBalance.toLocaleString()} Ks`);
+            if (amount && !isNaN(amount) && parseInt(amount) > 0) {
+                if (parseInt(amount) <= currentBalance) {
+                    const newBalance = currentBalance - parseInt(amount);
+                    updateBalance(newBalance);
+                    alert(`✅ ${parseInt(amount).toLocaleString()} Ks ငွေထုတ်ပြီးပါပြီ!`);
+                } else {
+                    alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ!');
+                }
+            }
+        }
+
+        function getCurrentBalance() {
+            const balanceText = document.getElementById('balance-display').textContent;
+            const balanceNumber = balanceText.replace(/[^\d]/g, '');
+            return parseInt(balanceNumber) || 10000;
+        }
+
+        function updateBalance(newBalance) {
+            document.getElementById('balance-display').textContent = `💰 ${newBalance.toLocaleString()} Ks`;
+        }
+
+
+
+        function placeBigSmallBet(amount) {
+            // Check if user has enough balance
+            const currentBalance = getCurrentBalance();
+            if (currentBalance === 0) {
+                alert('❌ လက်ကျန်ငွေ ၀ ကျပ်ဖြစ်နေပါသည်! ငွေသွင်းပါ။');
+                return;
+            }
+            
+            if (amount > currentBalance) {
+                alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ! ငွေသွင်းပါ။');
+                return;
+            }
+            
+            // Deduct bet amount from balance
+            const newBalance = currentBalance - amount;
+            updateBalance(newBalance);
+            
+            // Hide bet amount section
+            document.getElementById('bet-amount-section').classList.add('hidden');
+            
+            // Set the bet amount
+            baseBet = amount;
+            selectedMultiplier = 1;
+            
+            // Show success message
+            const choiceText = selectedChoice === 'big' ? 'အကြီး' : 'အသေး';
+            showSuccessMessage(amount, choiceText);
+            
+            // Clear selections after betting to allow new bets
+            setTimeout(() => {
+                clearSelections();
+            }, 1000);
+        }
+
+        function hideBetAmountSection() {
+            document.getElementById('bet-amount-section').classList.add('hidden');
+            clearSelections();
+        }
+
+        function clearSelections() {
+            selectedChoice = null;
+            selectedMultiplier = 1;
+            
+            // Reset UI
+            document.querySelectorAll('.big-small-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelectorAll('.multiplier-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Hide bet amount section
+            document.getElementById('bet-amount-section').classList.add('hidden');
+            
+            updateSelectionDisplay();
+            updateBetAmount();
+        }
+
+        function quickBet(amount) {
+            if (!selectedChoice) {
+                alert('ပထမဦးစွာ အကြီး၊ အသေး၊ အရောင် သို့မဟုတ် နံပါတ် ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            // Check if user has enough balance
+            const currentBalance = getCurrentBalance();
+            if (currentBalance === 0) {
+                alert('❌ လက်ကျန်ငွေ ၀ ကျပ်ဖြစ်နေပါသည်! ငွေသွင်းပါ။');
+                return;
+            }
+            
+            if (amount > currentBalance) {
+                alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ! ငွေသွင်းပါ။');
+                return;
+            }
+            
+            // Deduct bet amount from balance
+            const newBalance = currentBalance - amount;
+            updateBalance(newBalance);
+            
+            // Set the bet amount directly
+            baseBet = amount;
+            selectedMultiplier = 1; // Reset multiplier to 1 since we're setting direct amount
+            
+            // Update multiplier buttons to show none selected
+            document.querySelectorAll('.multiplier-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Update bet amount display
+            updateBetAmount();
+            
+            // Show quick bet confirmation
+            let choiceText;
+            if (selectedChoice === 'big') choiceText = 'အကြီး';
+            else if (selectedChoice === 'small') choiceText = 'အသေး';
+            else if (selectedChoice === 'red') choiceText = 'အနီရောင်';
+            else if (selectedChoice === 'green') choiceText = 'အစိမ်းရောင်';
+            else if (selectedChoice === 'purple') choiceText = 'ခရမ်းရောင်';
+            else if (selectedChoice.startsWith('number-')) {
+                const number = selectedChoice.split('-')[1];
+                choiceText = `နံပါတ် ${number}`;
+            }
+            
+            // Auto-confirm the bet and clear selections for next bet
+            showSuccessMessage(amount, choiceText);
+            
+            // Clear selections after betting to allow new bets
+            setTimeout(() => {
+                clearSelections();
+            }, 1000);
+        }
+
+        // Statistics tracking
+        let numberFrequency = {
+            0: 12, 1: 15, 2: 11, 3: 13, 4: 9,
+            5: 14, 6: 16, 7: 18, 8: 10, 9: 7
+        };
+        
+        let recentHistory = [7, 2, 8, 1, 9, 3, 6, 0, 5, 4, 7, 1, 8, 2, 9, 6, 3, 0, 5, 4];
+        let totalGames = 125;
+
+        function toggleStatsView() {
+            const frequencyDiv = document.getElementById('numbers-frequency');
+            const historyDiv = document.getElementById('recent-history');
+            const toggleText = document.getElementById('stats-toggle-text');
+            
+            if (frequencyDiv.classList.contains('hidden')) {
+                frequencyDiv.classList.remove('hidden');
+                historyDiv.classList.add('hidden');
+                toggleText.textContent = '📈 အသေးစိတ်';
+            } else {
+                frequencyDiv.classList.add('hidden');
+                historyDiv.classList.remove('hidden');
+                toggleText.textContent = '📊 အကြိမ်ရေ';
+                updateRecentHistoryDisplay();
+            }
+        }
+
+        function updateNumberFrequency(number) {
+            numberFrequency[number]++;
+            totalGames++;
+            
+            // Update the frequency display
+            document.getElementById(`count-${number}`).textContent = numberFrequency[number];
+            const percentage = ((numberFrequency[number] / totalGames) * 100).toFixed(1);
+            document.getElementById(`percent-${number}`).textContent = `${percentage}%`;
+            
+            // Add to recent history
+            recentHistory.unshift(number);
+            if (recentHistory.length > 20) {
+                recentHistory.pop();
+            }
+            
+            // Update recent history display if visible
+            if (!document.getElementById('recent-history').classList.contains('hidden')) {
+                updateRecentHistoryDisplay();
+            }
+        }
+
+        function updateRecentHistoryDisplay() {
+            const historyGrid = document.getElementById('history-grid');
+            historyGrid.innerHTML = '';
+            
+            let bigCount = 0;
+            let smallCount = 0;
+            
+            recentHistory.forEach((number, index) => {
+                const isBig = number >= 5;
+                const isRed = [2, 4, 6, 8].includes(number);
+                const isGreen = [1, 3, 7, 9].includes(number);
+                const isPurple = [0, 5].includes(number);
+                
+                let ballColor;
+                if (isRed) ballColor = 'red';
+                else if (isGreen) ballColor = 'green';
+                else if (isPurple) ballColor = 'purple';
+                else ballColor = isBig ? 'red' : 'blue';
+                
+                if (isBig) bigCount++;
+                else smallCount++;
+                
+                const ballElement = document.createElement('div');
+                ballElement.className = `lottery-ball ${ballColor} w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold`;
+                ballElement.textContent = number;
+                ballElement.title = `အကြိမ် ${20 - index}: ${number} (${isBig ? 'အကြီး' : 'အသေး'})`;
+                
+                historyGrid.appendChild(ballElement);
+            });
+            
+            // Update summary stats
+            document.getElementById('big-count').textContent = `${bigCount}/20`;
+            document.getElementById('small-count').textContent = `${smallCount}/20`;
+            
+            // Update percentages
+            const bigPercent = ((bigCount / 20) * 100).toFixed(0);
+            const smallPercent = ((smallCount / 20) * 100).toFixed(0);
+            
+            document.querySelector('#big-count').parentElement.querySelector('.text-xs').textContent = `${bigPercent}%`;
+            document.querySelector('#small-count').parentElement.querySelector('.text-xs').textContent = `${smallPercent}%`;
+        }
+
+        // Initialize the game
+        startTimer();
+        updateBetAmount();
+        
+        // Auto-select first multiplier
+        document.querySelector('.multiplier-btn').classList.add('selected');
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef200051b78943',t:'MTc1Nzg0NDk0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
