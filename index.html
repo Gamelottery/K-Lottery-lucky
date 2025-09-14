@@ -6,9 +6,9 @@
   <style>
     body { font-family: sans-serif; text-align: center; background: #f4f4f4; }
     .hidden { display: none; }
-    .auth-box, .admin-box { max-width: 350px; margin: 50px auto; padding: 20px; background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
-    .auth-box input, .admin-box input { width: 100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
-    .auth-box button, .admin-box button { width: 100%; padding:10px; margin:5px 0; border:none; border-radius:6px; background:#27ae60; color:#fff; font-size:16px; cursor:pointer; }
+    .auth-box, .admin-box, .deposit-box, .withdraw-box { max-width: 350px; margin: 20px auto; padding: 20px; background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+    .auth-box input, .admin-box input, .deposit-box input, .withdraw-box input, select { width: 100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
+    .auth-box button, .admin-box button, .deposit-box button, .withdraw-box button { width: 100%; padding:10px; margin:5px 0; border:none; border-radius:6px; background:#27ae60; color:#fff; font-size:16px; cursor:pointer; }
     table { width: 95%; margin: 10px auto; border-collapse: collapse; }
     th, td { border: 1px solid #ccc; padding: 6px; font-size: 14px; }
     th { background: #333; color: #fff; }
@@ -64,6 +64,26 @@
     <div id="timer">30</div>
     <div id="balance">💰 Balance: 0</div>
 
+    <!-- ငွေသွင်း / ငွေထုတ် -->
+    <div class="deposit-box">
+      <h3>💵 ငွေသွင်း</h3>
+      <p>WavePay: 09766999230 (Daw Nwet Nwet Win)</p>
+      <p>KPay: 09766999230 (Daw Nwet Nwet Win)</p>
+      <input type="number" id="depositAmount" placeholder="ပမာဏ ထည့်ပါ">
+      <button onclick="deposit()">ငွေသွင်းမယ်</button>
+    </div>
+
+    <div class="withdraw-box">
+      <h3>💸 ငွေထုတ်</h3>
+      <input type="number" id="withdrawAmount" placeholder="ထုတ်မည့်ပမာဏ">
+      <select id="withdrawMethod">
+        <option value="WavePay">WavePay</option>
+        <option value="KPay">KPay</option>
+      </select>
+      <input type="text" id="withdrawAccount" placeholder="နံပါတ်ထည့်ပါ">
+      <button onclick="withdraw()">ငွေထုတ်မယ်</button>
+    </div>
+
     <!-- ဂဏန်း icon -->
     <div class="numbers" id="numberBtns">
       <div class="num purple" onclick="placeBet('number',0)">0</div>
@@ -118,7 +138,6 @@
     function login(){
       let u=document.getElementById("username").value.trim();
       let p=document.getElementById("password").value;
-      // Admin check
       if(u==="admin" && p==="admin"){ 
         currentUser={username:"admin",isAdmin:true}; 
         localStorage.setItem("currentUser",JSON.stringify(currentUser));
@@ -161,7 +180,28 @@
       document.getElementById("authSection").classList.remove("hidden");
     }
 
-    // Admin Panel - render users
+    // Deposit
+    function deposit(){
+      let amount=parseInt(document.getElementById("depositAmount").value);
+      if(amount>0){
+        balance+=amount;
+        updateBalance();
+        alert("✔️ ငွေသွင်းပြီးပါပြီ: "+amount+" ကျပ်");
+      }
+    }
+    // Withdraw
+    function withdraw(){
+      let amount=parseInt(document.getElementById("withdrawAmount").value);
+      let method=document.getElementById("withdrawMethod").value;
+      let acc=document.getElementById("withdrawAccount").value.trim();
+      if(amount<=0||!acc){alert("❌ အချက်အလက်မပြည့်စုံ");return;}
+      if(amount>balance){alert("❌ Balance မလောက်ပါ");return;}
+      balance-=amount;
+      updateBalance();
+      alert("✔️ "+method+" မှ "+acc+" သို့ "+amount+" ကျပ် ထုတ်ပြီးပါပြီ");
+    }
+
+    // Admin Panel
     function renderUserList(){
       let tbody=document.getElementById("userList"); tbody.innerHTML="";
       Object.keys(users).forEach(u=>{
