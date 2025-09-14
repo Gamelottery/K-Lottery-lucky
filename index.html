@@ -5,156 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BigWin Game</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 0;
-    }
-    .header {
-      background: linear-gradient(90deg, #0ac15f, #00b894);
-      padding: 12px;
-      color: white;
-      text-align: center;
-      font-weight: bold;
-      font-size: 20px;
-    }
-    .tab-menu {
-      display: flex;
-      justify-content: space-around;
-      padding: 10px;
-      background: white;
-    }
-    .tab {
-      flex: 1;
-      margin: 5px;
-      padding: 10px;
-      text-align: center;
-      border-radius: 10px;
-      background: #eee;
-      font-weight: bold;
-    }
-    .tab.active {
-      background: #0ac15f;
-      color: white;
-    }
-    .game-info {
-      background: #0ac15f;
-      margin: 10px;
-      border-radius: 12px;
-      padding: 15px;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-    }
-    .balls {
-      display: flex;
-      justify-content: center;
-      margin: 10px 0;
-    }
-    .ball {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: red;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      margin: 0 5px;
-    }
-    .bet-options {
-      display: flex;
-      justify-content: space-around;
-      margin: 10px;
-    }
-    .bet-btn {
-      flex: 1;
-      margin: 5px;
-      padding: 12px;
-      border-radius: 10px;
-      color: white;
-      text-align: center;
-      font-weight: bold;
-    }
-    .green { background: #2ecc71; }
-    .purple { background: #9b59b6; }
-    .red { background: #e74c3c; }
-    .numbers {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin: 15px;
-    }
-    .num-btn {
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      background: #fff;
-      border: 2px solid #ccc;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      font-size: 20px;
-    }
-    .bet-amounts {
-      display: flex;
-      justify-content: space-around;
-      margin: 15px;
-    }
-    .amount-btn {
-      flex: 1;
-      margin: 5px;
-      padding: 8px;
-      background: #eee;
-      border-radius: 8px;
-      font-weight: bold;
-      text-align: center;
-    }
-    .actions {
-      display: flex;
-      justify-content: space-around;
-      margin: 15px;
-    }
-    .cancel-btn {
-      flex: 1;
-      margin: 5px;
-      padding: 12px;
-      background: #e74c3c;
-      color: white;
-      border-radius: 8px;
-      text-align: center;
-      font-weight: bold;
-    }
-    .confirm-btn {
-      flex: 1;
-      margin: 5px;
-      padding: 12px;
-      background: #f39c12;
-      color: white;
-      border-radius: 8px;
-      text-align: center;
-      font-weight: bold;
-    }
-    .history {
-      margin: 15px;
-      background: white;
-      border-radius: 10px;
-      padding: 10px;
-    }
-    .history-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid #eee;
-    }
+    body { font-family: sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+    .header { background: linear-gradient(90deg, #0ac15f, #00b894); padding: 12px; color: white; text-align: center; font-weight: bold; font-size: 20px; }
+    .wallet { background: #fff; padding: 10px; text-align: center; font-weight: bold; }
+    .tab-menu { display: flex; justify-content: space-around; padding: 10px; background: white; }
+    .tab { flex: 1; margin: 5px; padding: 10px; text-align: center; border-radius: 10px; background: #eee; font-weight: bold; }
+    .tab.active { background: #0ac15f; color: white; }
+    .game-info { background: #0ac15f; margin: 10px; border-radius: 12px; padding: 15px; color: white; font-weight: bold; text-align: center; }
+    .balls { display: flex; justify-content: center; margin: 10px 0; }
+    .ball { width: 40px; height: 40px; border-radius: 50%; background: red; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin: 0 5px; }
+    .bet-options { display: flex; justify-content: space-around; margin: 10px; }
+    .bet-btn { flex: 1; margin: 5px; padding: 12px; border-radius: 10px; color: white; text-align: center; font-weight: bold; cursor: pointer; }
+    .green { background: #2ecc71; } .purple { background: #9b59b6; } .red { background: #e74c3c; }
+    .numbers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px; }
+    .num-btn { border-radius: 50%; width: 60px; height: 60px; background: #fff; border: 2px solid #ccc; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; cursor: pointer; }
+    .num-btn.active, .bet-btn.active, .amount-btn.active { border: 2px solid #0ac15f; }
+    .bet-amounts { display: flex; justify-content: space-around; margin: 15px; }
+    .amount-btn { flex: 1; margin: 5px; padding: 8px; background: #eee; border-radius: 8px; font-weight: bold; text-align: center; cursor: pointer; }
+    .actions { display: flex; justify-content: space-around; margin: 15px; }
+    .cancel-btn { flex: 1; margin: 5px; padding: 12px; background: #e74c3c; color: white; border-radius: 8px; text-align: center; font-weight: bold; cursor: pointer; }
+    .confirm-btn { flex: 1; margin: 5px; padding: 12px; background: #f39c12; color: white; border-radius: 8px; text-align: center; font-weight: bold; cursor: pointer; }
+    .wallet-actions { display: flex; justify-content: space-around; margin: 15px; }
+    .wallet-btn { flex: 1; margin: 5px; padding: 10px; background: #3498db; color: white; border-radius: 8px; text-align: center; cursor: pointer; }
+    .history { margin: 15px; background: white; border-radius: 10px; padding: 10px; }
+    .history-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
   </style>
 </head>
 <body>
 
   <div class="header">777 BigWin Game</div>
+
+  <div class="wallet">💰 Balance: <span id="balance">1000</span> Ks</div>
+
+  <div class="wallet-actions">
+    <div class="wallet-btn" onclick="deposit()">Deposit</div>
+    <div class="wallet-btn" onclick="withdraw()">Withdraw</div>
+  </div>
 
   <div class="tab-menu">
     <div class="tab active">Win Go 30s</div>
@@ -177,55 +63,114 @@
   </div>
 
   <div class="bet-options">
-    <div class="bet-btn green">အမိန့်ရောင်</div>
-    <div class="bet-btn purple">အရူမ့်ရောင်</div>
-    <div class="bet-btn red">အနီရောင်</div>
+    <div class="bet-btn green" onclick="selectBet(this)">Green</div>
+    <div class="bet-btn purple" onclick="selectBet(this)">Violet</div>
+    <div class="bet-btn red" onclick="selectBet(this)">Red</div>
   </div>
 
   <div class="numbers">
-    <div class="num-btn">0</div>
-    <div class="num-btn">1</div>
-    <div class="num-btn">2</div>
-    <div class="num-btn">3</div>
-    <div class="num-btn">4</div>
-    <div class="num-btn">5</div>
-    <div class="num-btn">6</div>
-    <div class="num-btn">7</div>
-    <div class="num-btn">8</div>
-    <div class="num-btn">9</div>
+    <div class="num-btn" onclick="selectNum(this)">0</div>
+    <div class="num-btn" onclick="selectNum(this)">1</div>
+    <div class="num-btn" onclick="selectNum(this)">2</div>
+    <div class="num-btn" onclick="selectNum(this)">3</div>
+    <div class="num-btn" onclick="selectNum(this)">4</div>
+    <div class="num-btn" onclick="selectNum(this)">5</div>
+    <div class="num-btn" onclick="selectNum(this)">6</div>
+    <div class="num-btn" onclick="selectNum(this)">7</div>
+    <div class="num-btn" onclick="selectNum(this)">8</div>
+    <div class="num-btn" onclick="selectNum(this)">9</div>
   </div>
 
   <div class="bet-amounts">
-    <div class="amount-btn">X1</div>
-    <div class="amount-btn">X5</div>
-    <div class="amount-btn">X10</div>
-    <div class="amount-btn">X20</div>
-    <div class="amount-btn">X50</div>
-    <div class="amount-btn">X100</div>
+    <div class="amount-btn" onclick="selectAmount(this,1)">X1</div>
+    <div class="amount-btn" onclick="selectAmount(this,5)">X5</div>
+    <div class="amount-btn" onclick="selectAmount(this,10)">X10</div>
+    <div class="amount-btn" onclick="selectAmount(this,20)">X20</div>
+    <div class="amount-btn" onclick="selectAmount(this,50)">X50</div>
+    <div class="amount-btn" onclick="selectAmount(this,100)">X100</div>
   </div>
 
   <div class="actions">
-    <div class="cancel-btn">ဖျက်မယ်</div>
-    <div class="confirm-btn">အတည်ပြုမယ်</div>
+    <div class="cancel-btn" onclick="resetBet()">ဖျက်မယ်</div>
+    <div class="confirm-btn" onclick="confirmBet()">အတည်ပြုမယ်</div>
   </div>
 
-  <div class="history">
-    <div class="history-item">
-      <span>20250912100050384</span>
-      <span>နံပါတ်: 9</span>
-      <span>အကျိုး: အကြီး</span>
-    </div>
-    <div class="history-item">
-      <span>20250912100050383</span>
-      <span>နံပါတ်: 2</span>
-      <span>အကျိုး: သေး</span>
-    </div>
-    <div class="history-item">
-      <span>20250912100050382</span>
-      <span>နံပါတ်: 0</span>
-      <span>အကျိုး: သေး</span>
-    </div>
+  <div class="history" id="history">
+    <h4>📜 Bet History</h4>
   </div>
+
+  <script>
+    let balance = 1000;
+    let currentBet = { color:null, number:null, amount:0 };
+
+    function updateBalance(){
+      document.getElementById("balance").innerText = balance;
+    }
+
+    function selectBet(el){
+      document.querySelectorAll(".bet-btn").forEach(b=>b.classList.remove("active"));
+      el.classList.add("active");
+      currentBet.color = el.innerText;
+    }
+
+    function selectNum(el){
+      document.querySelectorAll(".num-btn").forEach(b=>b.classList.remove("active"));
+      el.classList.add("active");
+      currentBet.number = el.innerText;
+    }
+
+    function selectAmount(el,amount){
+      document.querySelectorAll(".amount-btn").forEach(b=>b.classList.remove("active"));
+      el.classList.add("active");
+      currentBet.amount = amount;
+    }
+
+    function resetBet(){
+      currentBet = { color:null, number:null, amount:0 };
+      document.querySelectorAll(".active").forEach(b=>b.classList.remove("active"));
+    }
+
+    function confirmBet(){
+      if(!currentBet.color || !currentBet.number || currentBet.amount===0){
+        alert("အမိန့်ကို ပြည့်စုံအောင်ရွေးပါ!");
+        return;
+      }
+      if(balance < currentBet.amount){
+        alert("Balance မလုံလောက်ပါ");
+        return;
+      }
+      balance -= currentBet.amount;
+      updateBalance();
+      const history = document.getElementById("history");
+      const item = document.createElement("div");
+      item.className="history-item";
+      item.innerHTML = `<span>${new Date().toLocaleTimeString()}</span>
+                        <span>${currentBet.color} - ${currentBet.number}</span>
+                        <span>Bet: ${currentBet.amount} Ks</span>`;
+      history.prepend(item);
+      resetBet();
+    }
+
+    function deposit(){
+      let amount = prompt("ဘယ်လောက် ငွေသွင်းမလဲ?");
+      if(amount){
+        balance += parseInt(amount);
+        updateBalance();
+      }
+    }
+
+    function withdraw(){
+      let amount = prompt("ဘယ်လောက် ထုတ်မလဲ?");
+      if(amount){
+        if(balance >= parseInt(amount)){
+          balance -= parseInt(amount);
+          updateBalance();
+        } else {
+          alert("Balance မလုံလောက်ပါ!");
+        }
+      }
+    }
+  </script>
 
 </body>
 </html>
