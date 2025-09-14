@@ -2,196 +2,118 @@
 <html lang="my">
 <head>
   <meta charset="UTF-8">
-  <title>Win Go Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Betting + Wallet System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: sans-serif; text-align: center; background: #f4f4f4; }
-    .numbers { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; margin: 20px 0; }
-    .num { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #fff; cursor: pointer; }
+    body { font-family: sans-serif; background: #f5f5f5; padding: 20px; }
+    .icon-box { display: flex; gap: 15px; flex-wrap: wrap; }
+    .icon-item {
+      width: 70px; height: 70px; border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 28px; color: white; cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+    .green { background: #27ae60; }
     .red { background: #e74c3c; }
-    .green { background: #2ecc71; }
-    .purple { background: #9b59b6; }
-    .bet-buttons button, .mode-buttons button { margin: 5px; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; }
-    .small { background: #3498db; color: #fff; }
-    .big { background: #f39c12; color: #fff; }
-    .mode-buttons button { background: #27ae60; color: #fff; }
-    #result { margin-top: 20px; font-size: 18px; }
-    #timer { font-size: 22px; margin-top: 10px; }
-    #balance { font-size: 20px; font-weight: bold; margin-top: 15px; }
-    table { width: 90%; margin: 20px auto; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 8px; font-size: 14px; }
-    th { background: #333; color: #fff; }
+    .blue { background: #3498db; }
+    .orange { background: #e67e22; }
+
+    /* Modal */
+    .modal {
+      display: none; position: fixed; z-index: 999; left: 0; top: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+      justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: white; padding: 20px; border-radius: 10px; width: 300px;
+    }
+    .modal-content h2 { margin-top: 0; }
+    .modal-content input {
+      width: 100%; padding: 10px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc;
+    }
+    .modal-content button {
+      width: 100%; padding: 10px; margin-top: 10px;
+      border: none; border-radius: 6px; background: #27ae60; color: white; font-size: 16px;
+    }
+    .balance-box {
+      margin: 20px 0; padding: 10px; background: #fff; border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
+  <h2>Betting Game + Wallet</h2>
 
-  <h2>Win Go Game</h2>
-
-  <!-- Mode Selector -->
-  <div class="mode-buttons">
-    <button onclick="setMode(30)">30s</button>
-    <button onclick="setMode(60)">1min</button>
-    <button onclick="setMode(180)">3min</button>
-    <button onclick="setMode(300)">5min</button>
+  <!-- Balance -->
+  <div class="balance-box">
+    လက်ကျန်ငွေ: <span id="balance">0</span> Ks
   </div>
 
-  <h3>ရွေးထားသော Mode: <span id="mode">30s</span></h3>
-  <div id="timer">30</div>
-  <div id="balance">💰 Balance: 1000</div>
-
-  <!-- ဂဏန်း icon -->
-  <div class="numbers" id="numberBtns">
-    <div class="num purple" onclick="placeBet('number',0)">0</div>
-    <div class="num green" onclick="placeBet('number',1)">1</div>
-    <div class="num red" onclick="placeBet('number',2)">2</div>
-    <div class="num green" onclick="placeBet('number',3)">3</div>
-    <div class="num red" onclick="placeBet('number',4)">4</div>
-    <div class="num green" onclick="placeBet('number',5)">5</div>
-    <div class="num red" onclick="placeBet('number',6)">6</div>
-    <div class="num green" onclick="placeBet('number',7)">7</div>
-    <div class="num red" onclick="placeBet('number',8)">8</div>
-    <div class="num green" onclick="placeBet('number',9)">9</div>
+  <!-- Icons -->
+  <div class="icon-box">
+    <div class="icon-item green" onclick="openModal('deposit')"><i class="fa-solid fa-arrow-down"></i></div>
+    <div class="icon-item red" onclick="openModal('withdraw')"><i class="fa-solid fa-arrow-up"></i></div>
+    <div class="icon-item blue" onclick="bet('small')"><i class="fa-solid fa-dice-one"></i></div>
+    <div class="icon-item orange" onclick="bet('big')"><i class="fa-solid fa-dice-six"></i></div>
   </div>
 
-  <!-- အကြီး/အသေး -->
-  <div class="bet-buttons">
-    <button class="small" onclick="placeBet('small')">အသေး (0–4)</button>
-    <button class="big" onclick="placeBet('big')">အကြီး (5–9)</button>
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2 id="modal-title"></h2>
+      <input type="number" id="amount" placeholder="ငွေပမာဏ ထည့်ပါ">
+      <button onclick="confirmAction()">အတည်ပြုမယ်</button>
+    </div>
   </div>
-
-  <!-- Bet Amount -->
-  <div style="margin:15px;">
-    <label>လောင်းမည့် Amount: </label>
-    <input type="number" id="betAmount" value="100" min="10" step="10">
-  </div>
-
-  <div id="result"></div>
-
-  <!-- History Table -->
-  <h3>📜 Bet History</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>အချိန်</th>
-        <th>လောင်းသည့်အမျိုးအစား</th>
-        <th>Amount</th>
-        <th>ထွက်လာသည့်ဂဏန်း</th>
-        <th>အနိုင်/အရှုံး</th>
-      </tr>
-    </thead>
-    <tbody id="history"></tbody>
-  </table>
 
   <script>
-    let currentMode = 30;
-    let timeLeft = currentMode;
-    let bet = null;
-    let balance = 1000;
+    let balance = localStorage.getItem("balance") ? parseInt(localStorage.getItem("balance")) : 0;
+    document.getElementById("balance").innerText = balance;
 
-    // LocalStorage Load
-    let historyData = JSON.parse(localStorage.getItem("historyData")) || [];
-    renderHistory();
+    let currentAction = "";
 
-    function setMode(seconds) {
-      currentMode = seconds;
-      timeLeft = seconds;
-      document.getElementById("mode").innerText = 
-        seconds === 30 ? "30s" : 
-        seconds === 60 ? "1min" : 
-        seconds === 180 ? "3min" : "5min";
-      document.getElementById("timer").innerText = timeLeft;
-      document.getElementById("result").innerText = "";
-      bet = null;
+    function openModal(action) {
+      currentAction = action;
+      document.getElementById("modal-title").innerText = action === "deposit" ? "ငွေသွင်းမယ်" : "ငွေထုတ်မယ်";
+      document.getElementById("modal").style.display = "flex";
     }
 
-    function placeBet(type, number=null) {
-      let amount = parseInt(document.getElementById("betAmount").value);
-      if (amount > balance) {
-        document.getElementById("result").innerText = "❌ Balance မလောက်ပါ";
-        return;
+    function confirmAction() {
+      const amount = parseInt(document.getElementById("amount").value);
+      if (!amount || amount <= 0) return alert("မှန်ကန်တဲ့ ငွေပမာဏထည့်ပါ");
+
+      if (currentAction === "deposit") {
+        balance += amount;
+      } else if (currentAction === "withdraw") {
+        if (amount > balance) return alert("လက်ကျန်မလုံလောက်ပါ");
+        balance -= amount;
       }
-      bet = (type === 'number') ? { type:'number', value:number, amount:amount }
-                                : { type:type, amount:amount };
-      document.getElementById("result").innerText = 
-        "Bet placed: " + (type==='number' ? "ဂဏန်း " + number : (type==='small' ? "အသေး" : "အကြီး")) 
-        + " → " + amount + " ကျပ်";
+      localStorage.setItem("balance", balance);
+      document.getElementById("balance").innerText = balance;
+
+      document.getElementById("amount").value = "";
+      document.getElementById("modal").style.display = "none";
     }
 
-    function updateBalance() {
-      document.getElementById("balance").innerText = "💰 Balance: " + balance;
-    }
-
-    function addHistory(betType, amount, randomNum, resultText) {
-      let now = new Date().toLocaleTimeString();
-      let newRecord = { time: now, betType, amount, randomNum, resultText };
-      historyData.unshift(newRecord); // add to beginning
-      if (historyData.length > 50) historyData.pop(); // keep max 50 records
-      localStorage.setItem("historyData", JSON.stringify(historyData));
-      renderHistory();
-    }
-
-    function renderHistory() {
-      let tbody = document.getElementById("history");
-      tbody.innerHTML = "";
-      historyData.forEach(item => {
-        let row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.time}</td>
-          <td>${item.betType}</td>
-          <td>${item.amount}</td>
-          <td>${item.randomNum}</td>
-          <td>${item.resultText}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function countdown() {
-      document.getElementById("timer").innerText = timeLeft;
-      if (timeLeft <= 0) {
-        let randomNum = Math.floor(Math.random() * 10);
-        let outcome = randomNum <= 4 ? 'small' : 'big';
-        let msg = "ထွက်လာသည့်ဂဏန်း: " + randomNum + " → ";
-        let historyResult = "";
-
-        if(!bet){
-          msg += "❌ Bet မလုပ်ထားပါ";
-        } else {
-          balance -= bet.amount;
-          if(bet.type === 'number'){
-            if(bet.value === randomNum){
-              let win = bet.amount * 10;
-              balance += win;
-              msg += "✔️ Win (တိကျ) +" + win;
-              historyResult = "Win +" + win;
-            } else {
-              msg += "❌ Lose -" + bet.amount;
-              historyResult = "Lose -" + bet.amount;
-            }
-          } else if(bet.type === outcome){
-            let win = bet.amount * 2;
-            balance += win;
-            msg += "✔️ Win +" + win;
-            historyResult = "Win +" + win;
-          } else {
-            msg += "❌ Lose -" + bet.amount;
-            historyResult = "Lose -" + bet.amount;
-          }
-
-          addHistory(
-            bet.type==='number' ? "ဂဏန်း " + bet.value : (bet.type==='small' ? "အသေး" : "အကြီး"),
-            bet.amount, randomNum, historyResult
-          );
-        }
-
-        document.getElementById("result").innerText = msg;
-        updateBalance();
-        timeLeft = currentMode;
-        bet = null;
+    function bet(type) {
+      if (balance < 100) {
+        return alert("အနည်းဆုံး 100Ks လိုအပ်ပါသည်");
       }
-      timeLeft--;
-    }
+      balance -= 100; // Bet 100Ks
+      const number = Math.floor(Math.random() * 10); // 0 - 9
+      let result = (number < 5 ? "small" : "big");
 
-    setInterval(countdown, 1000);
+      if (type === result) {
+        balance += 200; // Win double
+        alert("အောင်မြင်လိုက်ပါပြီ! ဂဏန်း " + number + " (" + result + ")");
+      } else {
+        alert("ရှုံးလိုက်ပါပြီ! ဂဏန်း " + number + " (" + result + ")");
+      }
+
+      localStorage.setItem("balance", balance);
+      document.getElementById("balance").innerText = balance;
+    }
   </script>
 </body>
 </html>
