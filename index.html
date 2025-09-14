@@ -3,147 +3,181 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi Timer Game + Bet</title>
+  <title>BigWin Multi Game</title>
   <style>
-    body { font-family: sans-serif; background: #f4f6f9; margin: 0; }
-    .header { background: linear-gradient(90deg,#0ac15f,#00b894); padding: 12px; color: white; text-align: center; font-weight: bold; font-size: 20px; }
-    .tab-menu { display: flex; justify-content: space-around; background: white; }
-    .tab { flex:1; padding: 10px; text-align:center; cursor: pointer; font-weight:bold; }
-    .tab.active { background: #0ac15f; color:white; border-radius:10px; }
-    .game-box { display:none; margin:10px; padding:15px; border-radius:10px; background:#0ac15f; color:white; text-align:center; font-weight:bold; }
-    .ball { width:60px; height:60px; border-radius:50%; background:red; display:flex; justify-content:center; align-items:center; font-size:24px; margin:10px auto; }
-    .history { margin: 15px; background: white; border-radius: 10px; padding: 10px; }
-    .history-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
-    .bet-panel { background:#fff; margin:15px; padding:10px; border-radius:10px; color:#333; }
-    .bet-btns { display:flex; justify-content: space-around; margin:10px 0; }
-    .bet-btn { flex:1; margin:5px; padding:10px; text-align:center; border-radius:8px; cursor:pointer; font-weight:bold; background:#eee; }
-    .bet-btn.active { background:#0ac15f; color:white; }
-    .amount-btns { display:flex; justify-content: space-around; margin:10px 0; }
-    .amount-btn { flex:1; margin:5px; padding:10px; background:#eee; border-radius:8px; cursor:pointer; font-weight:bold; text-align:center; }
-    .amount-btn.active { background:#f39c12; color:white; }
-    .actions { display:flex; justify-content: space-around; margin:10px 0; }
-    .cancel { flex:1; margin:5px; padding:10px; background:#e74c3c; color:white; border-radius:8px; cursor:pointer; text-align:center; font-weight:bold; }
-    .confirm { flex:1; margin:5px; padding:10px; background:#27ae60; color:white; border-radius:8px; cursor:pointer; text-align:center; font-weight:bold; }
+    body {
+      font-family: sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      background: linear-gradient(90deg, #0ac15f, #00b894);
+      padding: 12px;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .game-box {
+      background: white;
+      margin: 15px;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .game-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .timer {
+      font-size: 24px;
+      font-weight: bold;
+      color: #e67e22;
+      margin: 8px 0;
+    }
+    .ball {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #3498db;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 10px auto;
+    }
+    .bet-options {
+      display: flex;
+      justify-content: space-around;
+      margin: 10px 0;
+    }
+    .bet-btn {
+      flex: 1;
+      margin: 5px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+    }
+    .green { background: #27ae60; }
+    .red { background: #c0392b; }
+    .history {
+      margin-top: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 8px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      padding: 4px 0;
+    }
   </style>
 </head>
 <body>
+  <div class="header">777 BigWin Multi Game</div>
 
-  <div class="header">BigWin Multi Timer</div>
-
-  <div class="tab-menu">
-    <div class="tab active" onclick="showTab('t30')">30s</div>
-    <div class="tab" onclick="showTab('t60')">1Min</div>
-    <div class="tab" onclick="showTab('t180')">3Min</div>
-    <div class="tab" onclick="showTab('t300')">5Min</div>
-  </div>
-
-  <!-- Game Panels -->
-  <div class="game-box" id="t30">
-    <div>30s Timer</div>
-    <div class="ball" id="ball30">?</div>
-    <div id="timer30">00:30</div>
-    <div class="bet-panel">
-      <div>Bet Options</div>
-      <div class="bet-btns">
-        <div class="bet-btn" onclick="selectBet('t30','သေး')">အသေး (0-4)</div>
-        <div class="bet-btn" onclick="selectBet('t30','အကြီး')">အကြီး (5-9)</div>
-      </div>
-      <div class="amount-btns">
-        <div class="amount-btn" onclick="selectAmount('t30',1)">X1</div>
-        <div class="amount-btn" onclick="selectAmount('t30',5)">X5</div>
-        <div class="amount-btn" onclick="selectAmount('t30',10)">X10</div>
-      </div>
-      <div class="actions">
-        <div class="cancel" onclick="cancelBet('t30')">ဖျက်မယ်</div>
-        <div class="confirm" onclick="confirmBet('t30')">အတည်ပြုမယ်</div>
-      </div>
-      <div id="betInfo_t30">မလောင်းရသေးပါ</div>
+  <!-- 30s Game -->
+  <div class="game-box" id="g30">
+    <div class="game-title">Win Go 30s</div>
+    <div class="timer" id="timer30">30</div>
+    <div class="ball" id="ball30">-</div>
+    <div class="bet-options">
+      <div class="bet-btn green" onclick="placeBet('g30','ကြီး')">ကြီး (5-9)</div>
+      <div class="bet-btn red" onclick="placeBet('g30','သေး')">သေး (0-4)</div>
     </div>
     <div class="history" id="history30"></div>
   </div>
 
-  <!-- နောက်ထပ် 1min / 3min / 5min game-box တွေကို အတူတူပုံစံနဲ့ ထပ်ရေးရမယ် -->
+  <!-- 1min Game -->
+  <div class="game-box" id="g60">
+    <div class="game-title">Win Go 1Min</div>
+    <div class="timer" id="timer60">60</div>
+    <div class="ball" id="ball60">-</div>
+    <div class="bet-options">
+      <div class="bet-btn green" onclick="placeBet('g60','ကြီး')">ကြီး (5-9)</div>
+      <div class="bet-btn red" onclick="placeBet('g60','သေး')">သေး (0-4)</div>
+    </div>
+    <div class="history" id="history60"></div>
+  </div>
 
-<script>
-  function showTab(id){
-    document.querySelectorAll(".game-box").forEach(el=>el.style.display="none");
-    document.querySelectorAll(".tab").forEach(el=>el.classList.remove("active"));
-    document.getElementById(id).style.display="block";
-    event.target.classList.add("active");
-  }
+  <!-- 3min Game -->
+  <div class="game-box" id="g180">
+    <div class="game-title">Win Go 3Min</div>
+    <div class="timer" id="timer180">180</div>
+    <div class="ball" id="ball180">-</div>
+    <div class="bet-options">
+      <div class="bet-btn green" onclick="placeBet('g180','ကြီး')">ကြီး (5-9)</div>
+      <div class="bet-btn red" onclick="placeBet('g180','သေး')">သေး (0-4)</div>
+    </div>
+    <div class="history" id="history180"></div>
+  </div>
 
-  // Default show
-  document.getElementById("t30").style.display="block";
+  <!-- 5min Game -->
+  <div class="game-box" id="g300">
+    <div class="game-title">Win Go 5Min</div>
+    <div class="timer" id="timer300">300</div>
+    <div class="ball" id="ball300">-</div>
+    <div class="bet-options">
+      <div class="bet-btn green" onclick="placeBet('g300','ကြီး')">ကြီး (5-9)</div>
+      <div class="bet-btn red" onclick="placeBet('g300','သေး')">သေး (0-4)</div>
+    </div>
+    <div class="history" id="history300"></div>
+  </div>
 
-  let bets = {}; // { tabId: {choice, amount, confirmed} }
+  <script>
+    // Bets storage
+    let bets = {
+      g30: [], g60: [], g180: [], g300: []
+    };
 
-  function selectBet(tab, choice){
-    bets[tab] = bets[tab] || {};
-    bets[tab].choice = choice;
-    document.querySelectorAll(`#${tab} .bet-btn`).forEach(b=>b.classList.remove("active"));
-    event.target.classList.add("active");
-  }
+    function startGame(timerId, ballId, historyId, key, duration) {
+      let timeLeft = duration;
+      setInterval(() => {
+        document.getElementById(timerId).innerText = timeLeft;
+        timeLeft--;
+        if (timeLeft < 0) {
+          let num = Math.floor(Math.random() * 10); // 0-9 random
+          document.getElementById(ballId).innerText = num;
 
-  function selectAmount(tab, amt){
-    bets[tab] = bets[tab] || {};
-    bets[tab].amount = amt;
-    document.querySelectorAll(`#${tab} .amount-btn`).forEach(b=>b.classList.remove("active"));
-    event.target.classList.add("active");
-  }
+          let result = (num <= 4) ? "သေး" : "ကြီး";
 
-  function confirmBet(tab){
-    if(!bets[tab]?.choice || !bets[tab]?.amount){
-      alert("Choice နဲ့ Amount ရွေးပါ");
-      return;
-    }
-    bets[tab].confirmed = true;
-    document.getElementById("betInfo_"+tab).innerText = 
-      `လောင်းထားသည့်: ${bets[tab].choice} ×${bets[tab].amount}`;
-  }
+          // Show history
+          let hist = document.getElementById(historyId);
+          let div = document.createElement("div");
+          div.className = "history-item";
+          div.innerHTML = `<span>${new Date().toLocaleTimeString()}</span>
+                           <span>နံပါတ်: ${num}</span>
+                           <span>${result}</span>`;
+          hist.prepend(div);
 
-  function cancelBet(tab){
-    bets[tab] = {};
-    document.getElementById("betInfo_"+tab).innerText = "မလောင်းရသေးပါ";
-    document.querySelectorAll(`#${tab} .bet-btn`).forEach(b=>b.classList.remove("active"));
-    document.querySelectorAll(`#${tab} .amount-btn`).forEach(b=>b.classList.remove("active"));
-  }
-
-  function startGame(timerId, ballId, historyId, tabId, seconds){
-    let time = seconds;
-    function tick(){
-      time--;
-      if(time <= 0){
-        time = seconds;
-        let num = Math.floor(Math.random()*10);
-        document.getElementById(ballId).innerText = num;
-        let result = num<=4 ? "အသေး" : "အကြီး";
-
-        let win = "";
-        if(bets[tabId]?.confirmed){
-          win = (bets[tabId].choice===result) ? "✅ Win" : "❌ Lose";
+          // Reset bets
+          bets[key] = [];
+          timeLeft = duration;
         }
-
-        let item = document.createElement("div");
-        item.className="history-item";
-        item.innerHTML=`<span>${new Date().toLocaleTimeString()}</span><span>နံပါတ်: ${num}</span><span>${result} ${win}</span>`;
-        document.getElementById(historyId).prepend(item);
-
-        // Reset bet for next round
-        bets[tabId] = {};
-        document.getElementById("betInfo_"+tabId).innerText = "မလောင်းရသေးပါ";
-        document.querySelectorAll(`#${tabId} .bet-btn`).forEach(b=>b.classList.remove("active"));
-        document.querySelectorAll(`#${tabId} .amount-btn`).forEach(b=>b.classList.remove("active"));
-      }
-      let mm = String(Math.floor(time/60)).padStart(2,"0");
-      let ss = String(time%60).padStart(2,"0");
-      document.getElementById(timerId).innerText=`${mm}:${ss}`;
+      }, 1000);
     }
-    setInterval(tick,1000);
-  }
 
-  // Start 30s game
-  startGame("timer30","ball30","history30","t30",30);
-</script>
+    function placeBet(gameKey, choice) {
+      bets[gameKey].push(choice);
+      alert(gameKey + " ကို " + choice + " နဲ့ လောင်းထားပြီးပါပြီ!");
+    }
 
+    // Start all games
+    startGame("timer30","ball30","history30","g30",30);
+    startGame("timer60","ball60","history60","g60",60);
+    startGame("timer180","ball180","history180","g180",180);
+    startGame("timer300","ball300","history300","g300",300);
+  </script>
 </body>
 </html>
