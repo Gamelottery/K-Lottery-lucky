@@ -1324,12 +1324,370 @@
         }
 
         function showDepositModal() {
-            const amount = prompt('ငွေသွင်းမည့်ပမာဏ (Ks):');
-            if (amount && !isNaN(amount) && parseInt(amount) > 0) {
-                const currentBalance = getCurrentBalance();
-                const newBalance = currentBalance + parseInt(amount);
-                updateBalance(newBalance);
-                alert(`✅ ${parseInt(amount).toLocaleString()} Ks ငွေသွင်းပြီးပါပြီ!`);
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                overflow-y: auto;
+                padding: 20px;
+            `;
+            
+            // Create modal container
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 24px;
+                text-align: center;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+                transform: scale(0.5);
+                transition: transform 0.5s ease;
+                max-width: 420px;
+                width: 90%;
+                max-height: 90vh;
+                overflow-y: auto;
+            `;
+            
+            modal.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 16px;">💰</div>
+                <div style="font-size: 24px; font-weight: bold; color: #374151; margin-bottom: 20px;">
+                    ငွေသွင်းရန်
+                </div>
+                
+                <!-- Payment Method Selection -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 12px;">
+                        ငွေပေးချေမှုနည်းလမ်း ရွေးချယ်ပါ
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;">
+                        <button id="wave-pay-btn" onclick="selectPaymentMethod('wave')" style="flex: 1; background: linear-gradient(145deg, #ff6b35, #f7931e); color: white; font-weight: bold; padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span style="font-size: 20px;">📱</span>
+                            <span>Wave Pay</span>
+                        </button>
+                        <button id="kbz-pay-btn" onclick="selectPaymentMethod('kbz')" style="flex: 1; background: linear-gradient(145deg, #1e40af, #1e3a8a); color: white; font-weight: bold; padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span style="font-size: 20px;">💳</span>
+                            <span>KBZ Pay</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Amount Selection -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 12px;">
+                        ငွေပမာဏ ရွေးချယ်ပါ
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
+                        <button onclick="selectDepositAmount(5000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            5,000
+                        </button>
+                        <button onclick="selectDepositAmount(10000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            10,000
+                        </button>
+                        <button onclick="selectDepositAmount(20000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            20,000
+                        </button>
+                        <button onclick="selectDepositAmount(50000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            50,000
+                        </button>
+                        <button onclick="selectDepositAmount(100000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            100,000
+                        </button>
+                        <button onclick="selectDepositAmount(500000)" style="background: linear-gradient(145deg, #ef4444, #dc2626); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            500,000
+                        </button>
+                    </div>
+                    
+                    <!-- Custom Amount Input -->
+                    <div style="margin-bottom: 16px;">
+                        <input type="number" id="custom-amount" placeholder="သို့မဟုတ် ကိုယ်တိုင်ရိုက်ထည့်ပါ" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; text-align: center;" oninput="updateDepositAmount(this.value)">
+                    </div>
+                    
+                    <div style="font-size: 18px; font-weight: bold; color: #10b981; margin-bottom: 16px;">
+                        ငွေပမာဏ: <span id="selected-deposit-amount">0</span> ကျပ်
+                    </div>
+                </div>
+                
+                <!-- Payment Details Form -->
+                <div id="payment-details" style="display: none; margin-bottom: 20px;">
+                    <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                        <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">
+                            ငွေလွှဲရမည့် အကောင့်
+                        </div>
+                        <div id="payment-account-info" style="font-size: 16px; font-weight: bold; color: #1f2937;">
+                            <!-- Account info will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Phone Number Input -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; text-align: left;">
+                            သင့်ဖုန်းနံပါတ် *
+                        </label>
+                        <input type="tel" id="sender-phone" placeholder="09xxxxxxxxx" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;" required>
+                    </div>
+                    
+                    <!-- Receipt Upload -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; text-align: left;">
+                            ငွေလွှဲပြေစာ ပုံ *
+                        </label>
+                        <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('receipt-upload').click()">
+                            <input type="file" id="receipt-upload" accept="image/*" style="display: none;" onchange="handleReceiptUpload(this)">
+                            <div id="upload-area">
+                                <div style="font-size: 32px; margin-bottom: 8px;">📷</div>
+                                <div style="font-size: 14px; color: #6b7280;">ပုံရွေးချယ်ရန် နှိပ်ပါ</div>
+                                <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">JPG, PNG ဖိုင်များသာ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button onclick="submitDepositRequest()" style="width: 100%; background: linear-gradient(145deg, #10b981, #059669); color: white; font-weight: bold; padding: 14px; border-radius: 12px; border: none; font-size: 16px; cursor: pointer; margin-bottom: 12px;">
+                        ✅ ငွေသွင်းတောင်းဆိုမည်
+                    </button>
+                </div>
+                
+                <button onclick="closeDepositModal()" style="width: 100%; background: linear-gradient(145deg, #6b7280, #4b5563); color: white; font-weight: bold; padding: 12px; border-radius: 12px; border: none; font-size: 16px; cursor: pointer;">
+                    ❌ ပိတ်မည်
+                </button>
+            `;
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Store reference for closing
+            window.currentDepositModal = overlay;
+            
+            // Force reflow and animate in
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            setTimeout(() => {
+                modal.style.transform = 'scale(1)';
+            }, 50);
+        }
+
+        let selectedPaymentMethod = null;
+        let selectedDepositAmountValue = 0;
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Reset button styles
+            document.getElementById('wave-pay-btn').style.opacity = '0.6';
+            document.getElementById('kbz-pay-btn').style.opacity = '0.6';
+            
+            // Highlight selected method
+            if (method === 'wave') {
+                document.getElementById('wave-pay-btn').style.opacity = '1';
+                document.getElementById('wave-pay-btn').style.transform = 'scale(1.05)';
+                document.getElementById('kbz-pay-btn').style.transform = 'scale(1)';
+                
+                // Show Wave Pay account info
+                document.getElementById('payment-account-info').innerHTML = `
+                    <div style="color: #ff6b35;">📱 Wave Pay</div>
+                    <div style="font-size: 18px; margin: 8px 0;">09-123-456-789</div>
+                    <div style="font-size: 14px; color: #6b7280;">အမည်: BigWin Game</div>
+                `;
+            } else if (method === 'kbz') {
+                document.getElementById('kbz-pay-btn').style.opacity = '1';
+                document.getElementById('kbz-pay-btn').style.transform = 'scale(1.05)';
+                document.getElementById('wave-pay-btn').style.transform = 'scale(1)';
+                
+                // Show KBZ Pay account info
+                document.getElementById('payment-account-info').innerHTML = `
+                    <div style="color: #1e40af;">💳 KBZ Pay</div>
+                    <div style="font-size: 18px; margin: 8px 0;">09-987-654-321</div>
+                    <div style="font-size: 14px; color: #6b7280;">အမည်: BigWin Game</div>
+                `;
+            }
+            
+            // Show payment details form
+            document.getElementById('payment-details').style.display = 'block';
+        }
+
+        function selectDepositAmount(amount) {
+            selectedDepositAmountValue = amount;
+            document.getElementById('selected-deposit-amount').textContent = amount.toLocaleString();
+            document.getElementById('custom-amount').value = amount;
+            
+            // Visual feedback for amount selection
+            document.querySelectorAll('#payment-details button').forEach(btn => {
+                if (btn.textContent.includes(amount.toLocaleString())) {
+                    btn.style.transform = 'scale(0.95)';
+                    btn.style.opacity = '0.8';
+                    setTimeout(() => {
+                        btn.style.transform = 'scale(1)';
+                        btn.style.opacity = '1';
+                    }, 200);
+                }
+            });
+        }
+
+        function updateDepositAmount(value) {
+            selectedDepositAmountValue = parseInt(value) || 0;
+            document.getElementById('selected-deposit-amount').textContent = selectedDepositAmountValue.toLocaleString();
+        }
+
+        function handleReceiptUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                const uploadArea = document.getElementById('upload-area');
+                uploadArea.innerHTML = `
+                    <div style="font-size: 24px; margin-bottom: 8px;">✅</div>
+                    <div style="font-size: 14px; color: #10b981; font-weight: 600;">${file.name}</div>
+                    <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">ပုံရွေးချယ်ပြီး</div>
+                `;
+                uploadArea.parentElement.style.borderColor = '#10b981';
+                uploadArea.parentElement.style.backgroundColor = '#f0fdf4';
+            }
+        }
+
+        function submitDepositRequest() {
+            // Validate form
+            if (!selectedPaymentMethod) {
+                alert('❌ ငွေပေးချေမှုနည်းလမ်း ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            if (selectedDepositAmountValue <= 0) {
+                alert('❌ ငွေပမာဏ ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            const senderPhone = document.getElementById('sender-phone').value;
+            if (!senderPhone || senderPhone.length < 10) {
+                alert('❌ ဖုန်းနံပါတ် မှန်ကန်စွာ ရိုက်ထည့်ပါ!');
+                return;
+            }
+            
+            const receiptFile = document.getElementById('receipt-upload').files[0];
+            if (!receiptFile) {
+                alert('❌ ငွေလွှဲပြေစာ ပုံ ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            // Close modal
+            closeDepositModal();
+            
+            // Show success message
+            showDepositSuccessMessage(selectedDepositAmountValue, selectedPaymentMethod, senderPhone);
+        }
+
+        function showDepositSuccessMessage(amount, method, phone) {
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // Create success container
+            const successContainer = document.createElement('div');
+            successContainer.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 32px;
+                text-align: center;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+                transform: scale(0.5);
+                transition: transform 0.5s ease;
+                max-width: 380px;
+                margin: 16px;
+            `;
+            
+            const methodText = method === 'wave' ? 'Wave Pay' : 'KBZ Pay';
+            const methodIcon = method === 'wave' ? '📱' : '💳';
+            
+            successContainer.innerHTML = `
+                <div style="font-size: 64px; margin-bottom: 16px;">
+                    <div style="position: relative; display: inline-block;">
+                        <div style="color: #10b981;">✅</div>
+                        <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 20px; animation: pulse 2s infinite;">✨</div>
+                    </div>
+                </div>
+                <div style="font-size: 24px; font-weight: bold; color: #10b981; margin-bottom: 16px;">
+                    🎉 တောင်းဆိုမှု အောင်မြင်ပါသည် 🎉
+                </div>
+                <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: left;">
+                    <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">တောင်းဆိုမှု အသေးစိတ်:</div>
+                    <div style="font-size: 16px; color: #374151; margin-bottom: 4px;">💰 ငွေပမာဏ: <strong>${amount.toLocaleString()} ကျပ်</strong></div>
+                    <div style="font-size: 16px; color: #374151; margin-bottom: 4px;">${methodIcon} နည်းလမ်း: <strong>${methodText}</strong></div>
+                    <div style="font-size: 16px; color: #374151;">📱 ဖုန်း: <strong>${phone}</strong></div>
+                </div>
+                <div style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">
+                    ⏰ အတည်ပြုချိန်: ၅-၁၀ မိနစ်အတွင်း<br>
+                    📞 ပြဿနာရှိပါက: 09-111-222-333
+                </div>
+                <div style="font-size: 16px; color: #10b981; font-weight: 600;">
+                    🙏 ကျေးဇူးတင်ပါသည်!
+                </div>
+            `;
+            
+            overlay.appendChild(successContainer);
+            document.body.appendChild(overlay);
+            
+            // Force reflow and animate in
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            setTimeout(() => {
+                successContainer.style.transform = 'scale(1)';
+            }, 50);
+            
+            // Click to close
+            overlay.addEventListener('click', () => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(overlay)) {
+                        document.body.removeChild(overlay);
+                    }
+                }, 300);
+            });
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (document.body.contains(overlay)) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.body.contains(overlay)) {
+                            document.body.removeChild(overlay);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+
+        function closeDepositModal() {
+            if (window.currentDepositModal) {
+                window.currentDepositModal.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(window.currentDepositModal)) {
+                        document.body.removeChild(window.currentDepositModal);
+                    }
+                    window.currentDepositModal = null;
+                }, 300);
             }
         }
 
@@ -1574,7 +1932,4 @@
         updateBetAmount();
         
         // Auto-select first multiplier
-        document.querySelector('.multiplier-btn').classList.add('selected');
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef46c0720ea1b0',t:'MTc1Nzg0NjUzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+        document.<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef809f82798954',t:'MTc1Nzg0ODkwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
