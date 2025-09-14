@@ -3,201 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BigWin Game</title>
+  <title>BigWin Style Icons</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
-    .header { background: linear-gradient(90deg, #0ac15f, #00b894); padding: 12px; color: white; text-align: center; font-weight: bold; font-size: 20px; }
-    .game-box { background: white; margin: 15px; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .title { font-weight: bold; margin-bottom: 8px; }
-    .ball { width: 50px; height: 50px; border-radius: 50%; background: #e74c3c; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; margin: 10px auto; }
-    .timer { font-size: 16px; font-weight: bold; color: #333; text-align: center; }
-    .bet-section { margin: 10px 0; text-align: center; }
-    .bet-btn { margin: 5px; padding: 8px 14px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; }
-    .big { background: #27ae60; }
-    .small { background: #3498db; }
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .icon-box {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .icon-item {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
     .red { background: #e74c3c; }
-    .green { background: #2ecc71; }
-    .purple { background: #9b59b6; }
-    .num-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ccc; margin: 3px; display: inline-flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; }
-    .history { background: #fafafa; margin-top: 10px; padding: 10px; border-radius: 8px; max-height: 150px; overflow-y: auto; }
-    .history-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #eee; font-size: 14px; }
-    .balance { margin: 10px; padding: 10px; background: #fff; border-radius: 8px; text-align: center; font-weight: bold; }
+    .green { background: #27ae60; }
+    .purple { background: #8e44ad; }
+    .blue { background: #3498db; }
+    .orange { background: #e67e22; }
   </style>
 </head>
 <body>
-
-  <div class="header">777 BigWin Game</div>
-  <div class="balance">ငွေလက်ကျန်: <span id="balance">1000</span> ကျပ်</div>
-
-  <!-- 30s Game -->
-  <div class="game-box">
-    <div class="title">Win Go 30s</div>
-    <div id="ball30" class="ball">-</div>
-    <div class="timer">ကျန်ချိန်: <span id="timer30">30</span> s</div>
-    <div class="bet-section">
-      <button class="bet-btn big" onclick="placeBet('g30','ကြီး')">ကြီး</button>
-      <button class="bet-btn small" onclick="placeBet('g30','သေး')">သေး</button>
-      <button class="bet-btn red" onclick="placeBet('g30','နီ')">နီ</button>
-      <button class="bet-btn green" onclick="placeBet('g30','စိမ်း')">စိမ်း</button>
-      <button class="bet-btn purple" onclick="placeBet('g30','မန်ကျည်း')">မန်ကျည်း</button>
-      <div>
-        <!-- Number bets -->
-        <div>
-          <span class="num-btn" onclick="placeBet('g30','0')">0</span>
-          <span class="num-btn" onclick="placeBet('g30','1')">1</span>
-          <span class="num-btn" onclick="placeBet('g30','2')">2</span>
-          <span class="num-btn" onclick="placeBet('g30','3')">3</span>
-          <span class="num-btn" onclick="placeBet('g30','4')">4</span>
-          <span class="num-btn" onclick="placeBet('g30','5')">5</span>
-          <span class="num-btn" onclick="placeBet('g30','6')">6</span>
-          <span class="num-btn" onclick="placeBet('g30','7')">7</span>
-          <span class="num-btn" onclick="placeBet('g30','8')">8</span>
-          <span class="num-btn" onclick="placeBet('g30','9')">9</span>
-        </div>
-      </div>
-    </div>
-    <div class="history" id="history30"></div>
+  <h2>BigWin Game Style Icons</h2>
+  <div class="icon-box">
+    <div class="icon-item green"><i class="fa-solid fa-clock"></i></div>
+    <div class="icon-item red"><i class="fa-solid fa-bolt"></i></div>
+    <div class="icon-item purple"><i class="fa-solid fa-dice"></i></div>
+    <div class="icon-item blue"><i class="fa-solid fa-coins"></i></div>
+    <div class="icon-item orange"><i class="fa-solid fa-gamepad"></i></div>
   </div>
-
-  <!-- 1min Game -->
-  <div class="game-box">
-    <div class="title">Win Go 1min</div>
-    <div id="ball60" class="ball">-</div>
-    <div class="timer">ကျန်ချိန်: <span id="timer60">60</span> s</div>
-    <div class="bet-section">
-      <button class="bet-btn big" onclick="placeBet('g60','ကြီး')">ကြီး</button>
-      <button class="bet-btn small" onclick="placeBet('g60','သေး')">သေး</button>
-      <button class="bet-btn red" onclick="placeBet('g60','နီ')">နီ</button>
-      <button class="bet-btn green" onclick="placeBet('g60','စိမ်း')">စိမ်း</button>
-      <button class="bet-btn purple" onclick="placeBet('g60','မန်ကျည်း')">မန်ကျည်း</button>
-      <div>
-        <span class="num-btn" onclick="placeBet('g60','0')">0</span>
-        <span class="num-btn" onclick="placeBet('g60','1')">1</span>
-        <span class="num-btn" onclick="placeBet('g60','2')">2</span>
-        <span class="num-btn" onclick="placeBet('g60','3')">3</span>
-        <span class="num-btn" onclick="placeBet('g60','4')">4</span>
-        <span class="num-btn" onclick="placeBet('g60','5')">5</span>
-        <span class="num-btn" onclick="placeBet('g60','6')">6</span>
-        <span class="num-btn" onclick="placeBet('g60','7')">7</span>
-        <span class="num-btn" onclick="placeBet('g60','8')">8</span>
-        <span class="num-btn" onclick="placeBet('g60','9')">9</span>
-      </div>
-    </div>
-    <div class="history" id="history60"></div>
-  </div>
-
-  <!-- 3min Game -->
-  <div class="game-box">
-    <div class="title">Win Go 3min</div>
-    <div id="ball180" class="ball">-</div>
-    <div class="timer">ကျန်ချိန်: <span id="timer180">180</span> s</div>
-    <div class="bet-section">
-      <button class="bet-btn big" onclick="placeBet('g180','ကြီး')">ကြီး</button>
-      <button class="bet-btn small" onclick="placeBet('g180','သေး')">သေး</button>
-      <button class="bet-btn red" onclick="placeBet('g180','နီ')">နီ</button>
-      <button class="bet-btn green" onclick="placeBet('g180','စိမ်း')">စိမ်း</button>
-      <button class="bet-btn purple" onclick="placeBet('g180','မန်ကျည်း')">မန်ကျည်း</button>
-      <div>
-        <span class="num-btn" onclick="placeBet('g180','0')">0</span>
-        <span class="num-btn" onclick="placeBet('g180','1')">1</span>
-        <span class="num-btn" onclick="placeBet('g180','2')">2</span>
-        <span class="num-btn" onclick="placeBet('g180','3')">3</span>
-        <span class="num-btn" onclick="placeBet('g180','4')">4</span>
-        <span class="num-btn" onclick="placeBet('g180','5')">5</span>
-        <span class="num-btn" onclick="placeBet('g180','6')">6</span>
-        <span class="num-btn" onclick="placeBet('g180','7')">7</span>
-        <span class="num-btn" onclick="placeBet('g180','8')">8</span>
-        <span class="num-btn" onclick="placeBet('g180','9')">9</span>
-      </div>
-    </div>
-    <div class="history" id="history180"></div>
-  </div>
-
-  <!-- 5min Game -->
-  <div class="game-box">
-    <div class="title">Win Go 5min</div>
-    <div id="ball300" class="ball">-</div>
-    <div class="timer">ကျန်ချိန်: <span id="timer300">300</span> s</div>
-    <div class="bet-section">
-      <button class="bet-btn big" onclick="placeBet('g300','ကြီး')">ကြီး</button>
-      <button class="bet-btn small" onclick="placeBet('g300','သေး')">သေး</button>
-      <button class="bet-btn red" onclick="placeBet('g300','နီ')">နီ</button>
-      <button class="bet-btn green" onclick="placeBet('g300','စိမ်း')">စိမ်း</button>
-      <button class="bet-btn purple" onclick="placeBet('g300','မန်ကျည်း')">မန်ကျည်း</button>
-      <div>
-        <span class="num-btn" onclick="placeBet('g300','0')">0</span>
-        <span class="num-btn" onclick="placeBet('g300','1')">1</span>
-        <span class="num-btn" onclick="placeBet('g300','2')">2</span>
-        <span class="num-btn" onclick="placeBet('g300','3')">3</span>
-        <span class="num-btn" onclick="placeBet('g300','4')">4</span>
-        <span class="num-btn" onclick="placeBet('g300','5')">5</span>
-        <span class="num-btn" onclick="placeBet('g300','6')">6</span>
-        <span class="num-btn" onclick="placeBet('g300','7')">7</span>
-        <span class="num-btn" onclick="placeBet('g300','8')">8</span>
-        <span class="num-btn" onclick="placeBet('g300','9')">9</span>
-      </div>
-    </div>
-    <div class="history" id="history300"></div>
-  </div>
-
-  <script>
-    let balance = 1000;
-    let betAmount = 100;
-    let bets = { g30: [], g60: [], g180: [], g300: [] };
-
-    let payoutRate = { "ကြီး": 1.95, "သေး": 2.0, "နံပါတ်": 9.0, "နီ": 3.0, "စိမ်း": 3.0, "မန်ကျည်း": 3.0 };
-
-    function getColor(num){
-      if([1,3,7,9].includes(num)) return "နီ";
-      if([2,4,6,8].includes(num)) return "စိမ်း";
-      return "မန်ကျည်း";
-    }
-
-    function updateBalance(){ document.getElementById("balance").innerText = balance; }
-
-    function placeBet(gameKey, choice){
-      if(balance < betAmount){ alert("ငွေမလုံလောက်ပါ!"); return; }
-      balance -= betAmount; updateBalance();
-      bets[gameKey].push({choice: choice, amount: betAmount});
-      alert(gameKey + " မှာ " + choice + " နဲ့ " + betAmount + " ကျပ် လောင်းပြီးပါပြီ!");
-    }
-
-    function startGame(timerId, ballId, historyId, key, duration){
-      let timeLeft = duration;
-      setInterval(()=>{
-        document.getElementById(timerId).innerText = timeLeft;
-        timeLeft--;
-        if(timeLeft < 0){
-          let num = Math.floor(Math.random()*10);
-          document.getElementById(ballId).innerText = num;
-          let result = (num <= 4)? "သေး":"ကြီး";
-          let color = getColor(num);
-
-          // Check bets
-          bets[key].forEach(b=>{
-            if(b.choice === result){ balance += b.amount * payoutRate[result]; }
-            if(b.choice === num.toString()){ balance += b.amount * payoutRate["နံပါတ်"]; }
-            if(b.choice === color){ balance += b.amount * payoutRate[color]; }
-          });
-          updateBalance();
-
-          // Show history
-          let hist = document.getElementById(historyId);
-          let div = document.createElement("div");
-          div.className = "history-item";
-          div.innerHTML = `<span>${new Date().toLocaleTimeString()}</span><span>နံပါတ်: ${num}</span><span>${result} / ${color}</span>`;
-          hist.prepend(div);
-
-          bets[key] = [];
-          timeLeft = duration;
-        }
-      },1000);
-    }
-
-    startGame("timer30","ball30","history30","g30",30);
-    startGame("timer60","ball60","history60","g60",60);
-    startGame("timer180","ball180","history180","g180",180);
-    startGame("timer300","ball300","history300","g300",300);
-  </script>
 </body>
 </html>
