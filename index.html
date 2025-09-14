@@ -100,7 +100,7 @@
 
   <div id="result"></div>
 
-  <!-- History Table -->
+  <!-- Bet History Table -->
   <h3>📜 Bet History</h3>
   <table>
     <thead>
@@ -113,6 +113,20 @@
       </tr>
     </thead>
     <tbody id="history"></tbody>
+  </table>
+
+  <!-- Transaction History Table -->
+  <h3>💵 Transaction History</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>အချိန်</th>
+        <th>လုပ်ဆောင်ချက်</th>
+        <th>ပမာဏ</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody id="transactionHistory"></tbody>
   </table>
 
   <!-- Modal -->
@@ -130,9 +144,12 @@
     let bet = null;
     let balance = parseInt(localStorage.getItem("balance")) || 1000;
 
-    // LocalStorage Load
+    // Load LocalStorage Data
     let historyData = JSON.parse(localStorage.getItem("historyData")) || [];
+    let transactionData = JSON.parse(localStorage.getItem("transactionData")) || [];
+
     renderHistory();
+    renderTransaction();
     updateBalance();
 
     function setMode(seconds) {
@@ -185,6 +202,30 @@
           <td>${item.amount}</td>
           <td>${item.randomNum}</td>
           <td>${item.resultText}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function addTransaction(action, amount) {
+      let now = new Date().toLocaleTimeString();
+      let newRecord = { time: now, action, amount, balance };
+      transactionData.unshift(newRecord);
+      if (transactionData.length > 50) transactionData.pop();
+      localStorage.setItem("transactionData", JSON.stringify(transactionData));
+      renderTransaction();
+    }
+
+    function renderTransaction() {
+      let tbody = document.getElementById("transactionHistory");
+      tbody.innerHTML = "";
+      transactionData.forEach(item => {
+        let row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.time}</td>
+          <td>${item.action}</td>
+          <td>${item.amount}</td>
+          <td>${item.balance}</td>
         `;
         tbody.appendChild(row);
       });
@@ -253,9 +294,11 @@
 
       if (currentWalletAction === "deposit") {
         balance += amount;
+        addTransaction("ငွေသွင်း", amount);
       } else if (currentWalletAction === "withdraw") {
         if (amount > balance) { alert("လက်ကျန်မလုံလောက်ပါ"); return; }
         balance -= amount;
+        addTransaction("ငွေထုတ်", amount);
       }
       updateBalance();
       document.getElementById("walletAmount").value = "";
@@ -272,30 +315,3 @@
   </script>
 </body>
 </html>
-<script>
-  function deposit() {
-    let amount = parseInt(document.getElementById("amountInput").value);
-    if(isNaN(amount) || amount <= 0){
-      alert("သင့်ထည့်မည့် ငွေပမာဏမှန်အောင်ထည့်ပါ");
-      return;
-    }
-    balance += amount;
-    updateBalance();
-    document.getElementById("amountInput").value = "";
-  }
-
-  function withdraw() {
-    let amount = parseInt(document.getElementById("amountInput").value);
-    if(isNaN(amount) || amount <= 0){
-      alert("သင့်ထည့်မည့် ငွေပမာဏမှန်အောင်ထည့်ပါ");
-      return;
-    }
-    if(amount > balance){
-      alert("Balance မလောက်ပါ ❌");
-      return;
-    }
-    balance -= amount;
-    updateBalance();
-    document.getElementById("amountInput").value = "";
-  }
-</script>
