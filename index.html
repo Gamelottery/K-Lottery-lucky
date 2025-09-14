@@ -5,6 +5,13 @@
   <title>Win Go Game</title>
   <style>
     body { font-family: sans-serif; text-align: center; background: #f4f4f4; }
+    .hidden { display: none; }
+    .auth-box, .admin-box { max-width: 350px; margin: 50px auto; padding: 20px; background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+    .auth-box input, .admin-box input { width: 100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
+    .auth-box button, .admin-box button { width: 100%; padding:10px; margin:5px 0; border:none; border-radius:6px; background:#27ae60; color:#fff; font-size:16px; cursor:pointer; }
+    table { width: 95%; margin: 10px auto; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 6px; font-size: 14px; }
+    th { background: #333; color: #fff; }
     .numbers { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; margin: 20px 0; }
     .num { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #fff; cursor: pointer; }
     .red { background: #e74c3c; }
@@ -14,275 +21,218 @@
     .small { background: #3498db; color: #fff; }
     .big { background: #f39c12; color: #fff; }
     .mode-buttons button { background: #27ae60; color: #fff; }
-    #result { margin-top: 20px; font-size: 18px; }
-    #timer { font-size: 22px; margin-top: 10px; }
-    #balance { font-size: 20px; font-weight: bold; margin-top: 15px; }
-
-    /* Deposit/Withdraw UI */
-    .wallet-section { margin: 15px auto; width: 90%; text-align: left; }
-    .wallet-box { border: 1px solid #ccc; background:#fff; padding: 10px; border-radius: 8px; margin: 10px 0; }
-    .wallet-box input, .wallet-box select {
-      width: 100%; padding: 8px; margin: 5px 0; border:1px solid #ccc; border-radius: 6px;
-    }
-    .wallet-box button {
-      width: 100%; padding: 10px; border: none; border-radius: 6px;
-      background: #27ae60; color: #fff; font-size: 16px; margin-top: 5px;
-    }
-
-    table { width: 90%; margin: 20px auto; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 8px; font-size: 14px; }
-    th { background: #333; color: #fff; }
   </style>
 </head>
 <body>
 
-  <h2>Win Go Game</h2>
-
-  <!-- Mode Selector -->
-  <div class="mode-buttons">
-    <button onclick="setMode(30)">30s</button>
-    <button onclick="setMode(60)">1min</button>
-    <button onclick="setMode(180)">3min</button>
-    <button onclick="setMode(300)">5min</button>
+  <!-- 🔑 Auth Section -->
+  <div id="authSection" class="auth-box">
+    <h2>Login / Register</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
   </div>
 
-  <h3>ရွေးထားသော Mode: <span id="mode">30s</span></h3>
-  <div id="timer">30</div>
-  <div id="balance">💰 Balance: 1000</div>
-
-  <!-- ဂဏန်း icon -->
-  <div class="numbers" id="numberBtns">
-    <div class="num purple" onclick="placeBet('number',0)">0</div>
-    <div class="num green" onclick="placeBet('number',1)">1</div>
-    <div class="num red" onclick="placeBet('number',2)">2</div>
-    <div class="num green" onclick="placeBet('number',3)">3</div>
-    <div class="num red" onclick="placeBet('number',4)">4</div>
-    <div class="num green" onclick="placeBet('number',5)">5</div>
-    <div class="num red" onclick="placeBet('number',6)">6</div>
-    <div class="num green" onclick="placeBet('number',7)">7</div>
-    <div class="num red" onclick="placeBet('number',8)">8</div>
-    <div class="num green" onclick="placeBet('number',9)">9</div>
+  <!-- 🛠 Admin Panel -->
+  <div id="adminSection" class="admin-box hidden">
+    <h2>👑 Admin Panel</h2>
+    <button onclick="logout()">Logout</button>
+    <h3>User List</h3>
+    <table>
+      <thead>
+        <tr><th>Username</th><th>ID</th><th>Balance</th><th>History</th><th>Action</th></tr>
+      </thead>
+      <tbody id="userList"></tbody>
+    </table>
   </div>
 
-  <!-- အကြီး/အသေး -->
-  <div class="bet-buttons">
-    <button class="small" onclick="placeBet('small')">အသေး (0–4)</button>
-    <button class="big" onclick="placeBet('big')">အကြီး (5–9)</button>
-  </div>
+  <!-- 🎮 Game Section -->
+  <div id="gameSection" class="hidden">
+    <h2>Win Go Game</h2>
+    <div>👤 User: <span id="currentUser"></span> | 🆔 <span id="userId"></span> | <button onclick="logout()">Logout</button></div>
 
-  <!-- Bet Amount -->
-  <div style="margin:15px;">
-    <label>လောင်းမည့် Amount: </label>
-    <input type="number" id="betAmount" value="100" min="10" step="10">
-  </div>
-
-  <div id="result"></div>
-
-  <!-- History Table -->
-  <h3>📜 Bet History</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>အချိန်</th>
-        <th>လောင်းသည့်အမျိုးအစား</th>
-        <th>Amount</th>
-        <th>ထွက်လာသည့်ဂဏန်း</th>
-        <th>အနိုင်/အရှုံး</th>
-      </tr>
-    </thead>
-    <tbody id="history"></tbody>
-  </table>
-
-  <!-- Deposit / Withdraw Section -->
-  <div class="wallet-section">
-    <h3>💵 ငွေသွင်း</h3>
-    <div class="wallet-box">
-      <p>Wave Pay: <b>09766999230</b> (Daw Nwet Nwet Win)</p>
-      <p>K Pay: <b>09766999230</b> (Daw Nwet Nwet Win)</p>
-      <input type="number" id="depositAmount" placeholder="ငွေသွင်းမည့် ပမာဏ">
-      <button onclick="requestDeposit()">📤 တင်သွင်းမယ်</button>
+    <!-- Mode Selector -->
+    <div class="mode-buttons">
+      <button onclick="setMode(30)">30s</button>
+      <button onclick="setMode(60)">1min</button>
+      <button onclick="setMode(180)">3min</button>
+      <button onclick="setMode(300)">5min</button>
     </div>
 
-    <h3>💵 ငွေထုတ်</h3>
-    <div class="wallet-box">
-      <input type="number" id="withdrawAmount" placeholder="ထုတ်မည့် ပမာဏ">
-      <select id="withdrawType">
-        <option value="WavePay">Wave Pay</option>
-        <option value="KPay">K Pay</option>
-      </select>
-      <input type="text" id="withdrawNumber" placeholder="ဖုန်းနံပါတ်">
-      <button onclick="requestWithdraw()">📥 ထုတ်မယ်</button>
-    </div>
-  </div>
+    <h3>ရွေးထားသော Mode: <span id="mode">30s</span></h3>
+    <div id="timer">30</div>
+    <div id="balance">💰 Balance: 0</div>
 
-  <!-- Transaction History -->
-  <h3>💵 Transaction History</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>အချိန်</th>
-        <th>လုပ်ဆောင်ချက်</th>
-        <th>ပမာဏ</th>
-        <th>Balance</th>
-      </tr>
-    </thead>
-    <tbody id="transactionHistory"></tbody>
-  </table>
+    <!-- ဂဏန်း icon -->
+    <div class="numbers" id="numberBtns">
+      <div class="num purple" onclick="placeBet('number',0)">0</div>
+      <div class="num green" onclick="placeBet('number',1)">1</div>
+      <div class="num red" onclick="placeBet('number',2)">2</div>
+      <div class="num green" onclick="placeBet('number',3)">3</div>
+      <div class="num red" onclick="placeBet('number',4)">4</div>
+      <div class="num green" onclick="placeBet('number',5)">5</div>
+      <div class="num red" onclick="placeBet('number',6)">6</div>
+      <div class="num green" onclick="placeBet('number',7)">7</div>
+      <div class="num red" onclick="placeBet('number',8)">8</div>
+      <div class="num green" onclick="placeBet('number',9)">9</div>
+    </div>
+
+    <!-- အကြီး/အသေး -->
+    <div class="bet-buttons">
+      <button class="small" onclick="placeBet('small')">အသေး (0–4)</button>
+      <button class="big" onclick="placeBet('big')">အကြီး (5–9)</button>
+    </div>
+
+    <!-- Bet Amount -->
+    <div style="margin:15px;">
+      <label>လောင်းမည့် Amount: </label>
+      <input type="number" id="betAmount" value="100" min="10" step="10">
+    </div>
+
+    <div id="result"></div>
+
+    <!-- History Table -->
+    <h3>📜 Bet History</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>အချိန်</th>
+          <th>လောင်းသည့်အမျိုးအစား</th>
+          <th>Amount</th>
+          <th>ထွက်လာသည့်ဂဏန်း</th>
+          <th>အနိုင်/အရှုံး</th>
+        </tr>
+      </thead>
+      <tbody id="history"></tbody>
+    </table>
+  </div>
 
   <script>
-    let currentMode = 30;
-    let timeLeft = currentMode;
-    let bet = null;
-    let balance = parseInt(localStorage.getItem("balance")) || 1000;
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+    let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
+    let balance = 0, bet=null, currentMode=30, timeLeft=currentMode;
+    let historyData=[];
 
-    let historyData = JSON.parse(localStorage.getItem("historyData")) || [];
-    let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
-
-    renderHistory();
-    renderTransactions();
-    updateBalance();
-
-    function setMode(seconds) {
-      currentMode = seconds;
-      timeLeft = seconds;
-      document.getElementById("mode").innerText = 
-        seconds === 30 ? "30s" : 
-        seconds === 60 ? "1min" : 
-        seconds === 180 ? "3min" : "5min";
-      document.getElementById("timer").innerText = timeLeft;
-      document.getElementById("result").innerText = "";
-      bet = null;
-    }
-
-    function placeBet(type, number=null) {
-      let amount = parseInt(document.getElementById("betAmount").value);
-      if (amount > balance) {
-        document.getElementById("result").innerText = "❌ Balance မလောက်ပါ";
-        return;
+    function saveUsers(){ localStorage.setItem("users", JSON.stringify(users)); }
+    function login(){
+      let u=document.getElementById("username").value.trim();
+      let p=document.getElementById("password").value;
+      // Admin check
+      if(u==="admin" && p==="admin"){ 
+        currentUser={username:"admin",isAdmin:true}; 
+        localStorage.setItem("currentUser",JSON.stringify(currentUser));
+        loadAdmin(); return;
       }
-      bet = (type === 'number') ? { type:'number', value:number, amount:amount }
-                                : { type:type, amount:amount };
-      document.getElementById("result").innerText = 
-        "Bet placed: " + (type==='number' ? "ဂဏန်း " + number : (type==='small' ? "အသေး" : "အကြီး")) 
-        + " → " + amount + " ကျပ်";
+      if(!users[u]||users[u].password!==p){alert("❌ Username/Password မှား");return;}
+      currentUser={username:u}; localStorage.setItem("currentUser",JSON.stringify(currentUser));
+      loadUser(); 
+    }
+    function register(){
+      let u=document.getElementById("username").value.trim();
+      let p=document.getElementById("password").value;
+      if(!u||!p){alert("❌ အချက်အလက်များထည့်ပါ");return;}
+      if(users[u]){alert("❌ အကောင့်ရှိပြီးသား");return;}
+      let id="U"+Date.now();
+      users[u]={password:p,id:id,balance:2000,history:[]};
+      saveUsers();
+      alert("✔️ Register Success, 2000 ကျပ်ရပါပြီ");
+    }
+    function loadUser(){
+      let u=currentUser.username; let data=users[u];
+      balance=data.balance; historyData=data.history;
+      document.getElementById("currentUser").innerText=u;
+      document.getElementById("userId").innerText=data.id;
+      updateBalance(); renderHistory();
+      document.getElementById("authSection").classList.add("hidden");
+      document.getElementById("gameSection").classList.remove("hidden");
+      document.getElementById("adminSection").classList.add("hidden");
+    }
+    function loadAdmin(){
+      document.getElementById("authSection").classList.add("hidden");
+      document.getElementById("gameSection").classList.add("hidden");
+      document.getElementById("adminSection").classList.remove("hidden");
+      renderUserList();
+    }
+    function logout(){
+      currentUser=null; localStorage.removeItem("currentUser");
+      document.getElementById("gameSection").classList.add("hidden");
+      document.getElementById("adminSection").classList.add("hidden");
+      document.getElementById("authSection").classList.remove("hidden");
     }
 
-    function updateBalance() {
-      document.getElementById("balance").innerText = "💰 Balance: " + balance;
-      localStorage.setItem("balance", balance);
+    // Admin Panel - render users
+    function renderUserList(){
+      let tbody=document.getElementById("userList"); tbody.innerHTML="";
+      Object.keys(users).forEach(u=>{
+        let user=users[u];
+        let row=document.createElement("tr");
+        row.innerHTML=`<td>${u}</td><td>${user.id}</td><td>${user.balance}</td><td>${user.history.length}</td>
+          <td><button onclick="editBalance('${u}')">Edit Balance</button></td>`;
+        tbody.appendChild(row);
+      });
+    }
+    function editBalance(u){
+      let newBal=prompt("Enter new balance for "+u, users[u].balance);
+      if(newBal!==null){
+        users[u].balance=parseInt(newBal);
+        saveUsers(); renderUserList();
+      }
     }
 
-    function addHistory(betType, amount, randomNum, resultText) {
-      let now = new Date().toLocaleTimeString();
-      let newRecord = { time: now, betType, amount, randomNum, resultText };
-      historyData.unshift(newRecord); 
-      if (historyData.length > 50) historyData.pop();
-      localStorage.setItem("historyData", JSON.stringify(historyData));
+    function updateBalance(){
+      document.getElementById("balance").innerText="💰 Balance: "+balance;
+      let u=currentUser.username; users[u].balance=balance; saveUsers();
+    }
+    function addHistory(betType, amount, randomNum, resultText){
+      let now=new Date().toLocaleTimeString();
+      let record={time:now,betType,amount,randomNum,resultText};
+      historyData.unshift(record);
+      if(historyData.length>50)historyData.pop();
+      let u=currentUser.username; users[u].history=historyData; saveUsers();
       renderHistory();
     }
-
-    function renderHistory() {
-      let tbody = document.getElementById("history");
-      tbody.innerHTML = "";
-      historyData.forEach(item => {
-        let row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.time}</td>
-          <td>${item.betType}</td>
-          <td>${item.amount}</td>
-          <td>${item.randomNum}</td>
-          <td>${item.resultText}</td>
-        `;
+    function renderHistory(){
+      let tbody=document.getElementById("history"); tbody.innerHTML="";
+      historyData.forEach(item=>{
+        let row=document.createElement("tr");
+        row.innerHTML=`<td>${item.time}</td><td>${item.betType}</td><td>${item.amount}</td><td>${item.randomNum}</td><td>${item.resultText}</td>`;
         tbody.appendChild(row);
       });
     }
 
-    function countdown() {
-      document.getElementById("timer").innerText = timeLeft;
-      if (timeLeft <= 0) {
-        let randomNum = Math.floor(Math.random() * 10);
-        let outcome = randomNum <= 4 ? 'small' : 'big';
-        let msg = "ထွက်လာသည့်ဂဏန်း: " + randomNum + " → ";
-        let historyResult = "";
+    function setMode(s){currentMode=s; timeLeft=s; document.getElementById("mode").innerText=s===30?"30s":s===60?"1min":s===180?"3min":"5min"; document.getElementById("timer").innerText=timeLeft; bet=null; document.getElementById("result").innerText="";}
 
-        if(!bet){
-          msg += "❌ Bet မလုပ်ထားပါ";
-        } else {
-          balance -= bet.amount;
-          if(bet.type === 'number'){
-            if(bet.value === randomNum){
-              let win = bet.amount * 10;
-              balance += win;
-              msg += "✔️ Win (တိကျ) +" + win;
-              historyResult = "Win +" + win;
-            } else {
-              msg += "❌ Lose -" + bet.amount;
-              historyResult = "Lose -" + bet.amount;
-            }
-          } else if(bet.type === outcome){
-            let win = bet.amount * 2;
-            balance += win;
-            msg += "✔️ Win +" + win;
-            historyResult = "Win +" + win;
-          } else {
-            msg += "❌ Lose -" + bet.amount;
-            historyResult = "Lose -" + bet.amount;
-          }
+    function placeBet(type,number=null){
+      let amount=parseInt(document.getElementById("betAmount").value);
+      if(amount>balance){document.getElementById("result").innerText="❌ Balance မလောက်ပါ";return;}
+      bet=(type==='number')?{type:'number',value:number,amount}: {type:type,amount};
+      document.getElementById("result").innerText="✔️ Bet: "+(type==='number'?"ဂဏန်း "+number:(type==='small'?"အသေး":"အကြီး"))+" → "+amount+" ကျပ်";
+    }
 
-          addHistory(
-            bet.type==='number' ? "ဂဏန်း " + bet.value : (bet.type==='small' ? "အသေး" : "အကြီး"),
-            bet.amount, randomNum, historyResult
-          );
+    function countdown(){
+      if(!currentUser||currentUser.isAdmin)return;
+      document.getElementById("timer").innerText=timeLeft;
+      if(timeLeft<=0){
+        let randomNum=Math.floor(Math.random()*10); let outcome=randomNum<=4?'small':'big';
+        let msg="ထွက်လာသည့်ဂဏန်း: "+randomNum+" → "; let historyResult="";
+        if(!bet){msg+="❌ Bet မလုပ်ထားပါ";} else {
+          balance-=bet.amount;
+          if(bet.type==='number'){
+            if(bet.value===randomNum){let win=bet.amount*10; balance+=win; msg+="✔️ Win +" + win; historyResult="Win +" + win;}
+            else{msg+="❌ Lose -" + bet.amount; historyResult="Lose -" + bet.amount;}
+          } else if(bet.type===outcome){
+            let win=bet.amount*2; balance+=win; msg+="✔️ Win +" + win; historyResult="Win +" + win;
+          } else {msg+="❌ Lose -" + bet.amount; historyResult="Lose -" + bet.amount;}
+          addHistory(bet.type==='number'?"ဂဏန်း "+bet.value:(bet.type==='small'?"အသေး":"အကြီး"), bet.amount, randomNum, historyResult);
         }
-
-        document.getElementById("result").innerText = msg;
-        updateBalance();
-        timeLeft = currentMode;
-        bet = null;
+        document.getElementById("result").innerText=msg; updateBalance(); timeLeft=currentMode; bet=null;
       }
       timeLeft--;
     }
+    setInterval(countdown,1000);
 
-    setInterval(countdown, 1000);
-
-    // ===== Transaction Functions =====
-    function requestDeposit() {
-      let amt = parseInt(document.getElementById("depositAmount").value);
-      if (!amt || amt <= 0) { alert("မှန်ကန်တဲ့ ငွေပမာဏထည့်ပါ"); return; }
-      let now = new Date().toLocaleTimeString();
-      transactions.unshift({time: now, type: "Deposit Request", amount: amt, balance: balance});
-      localStorage.setItem("transactions", JSON.stringify(transactions));
-      renderTransactions();
-      alert("WavePay/KPay နံပါတ်သို့ ငွေသွင်းပြီး Admin အတည်ပြုမည်");
-      document.getElementById("depositAmount").value = "";
-    }
-
-    function requestWithdraw() {
-      let amt = parseInt(document.getElementById("withdrawAmount").value);
-      let type = document.getElementById("withdrawType").value;
-      let number = document.getElementById("withdrawNumber").value.trim();
-      if (!amt || amt <= 0) { alert("မှန်ကန်တဲ့ ပမာဏထည့်ပါ"); return; }
-      if (amt > balance) { alert("လက်ကျန်မလုံလောက်ပါ"); return; }
-      if (number === "") { alert("ဖုန်းနံပါတ်ထည့်ပါ"); return; }
-
-      let now = new Date().toLocaleTimeString();
-      transactions.unshift({time: now, type: "Withdraw Request ("+type+"-"+number+")", amount: amt, balance: balance - amt});
-      localStorage.setItem("transactions", JSON.stringify(transactions));
-      renderTransactions();
-      alert("Admin အတည်ပြုပြီး ငွေထုတ်ပေးမည်");
-      document.getElementById("withdrawAmount").value = "";
-      document.getElementById("withdrawNumber").value = "";
-    }
-
-    function renderTransactions() {
-      let tbody = document.getElementById("transactionHistory");
-      tbody.innerHTML = "";
-      transactions.forEach(item => {
-        let row = document.createElement("tr");
-        row.innerHTML = `<td>${item.time}</td><td>${item.type}</td><td>${item.amount}</td><td>${item.balance}</td>`;
-        tbody.appendChild(row);
-      });
-    }
+    if(currentUser){ if(currentUser.isAdmin)loadAdmin(); else loadUser(); }
   </script>
 </body>
 </html>
