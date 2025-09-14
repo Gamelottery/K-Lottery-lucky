@@ -1,346 +1,97 @@
-<!DOCTYPE html>
-<html lang="my">
-<head>
-  <meta charset="UTF-8">
-  <title>Win Go Game</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; background: #f4f4f4; margin:0; }
-    .numbers { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; margin: 20px 0; }
-    .num { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #fff; cursor: pointer; }
-    .red { background: #e74c3c; }
-    .green { background: #2ecc71; }
-    .purple { background: #9b59b6; }
-    .bet-buttons button, .mode-buttons button { margin: 5px; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; }
-    .small { background: #3498db; color: #fff; }
-    .big { background: #f39c12; color: #fff; }
-    .mode-buttons button { background: #27ae60; color: #fff; }
-    #result { margin-top: 20px; font-size: 18px; }
-    #timer { font-size: 22px; margin-top: 10px; }
-    #balance { font-size: 20px; font-weight: bold; margin-top: 15px; }
+<!-- ငွေသွင်း / ငွေထုတ် Buttons -->
+<div style="margin:15px;">
+  <button onclick="showDeposit()">ငွေသွင်း</button>
+  <button onclick="showWithdraw()">ငွေထုတ်</button>
+</div>
 
-    /* Wallet Buttons */
-    .wallet-buttons button { 
-      margin: 5px; padding: 10px 15px; border: none; border-radius: 8px; 
-      font-size: 15px; color: #fff; cursor: pointer;
-    }
-    .deposit { background: #27ae60; }
-    .withdraw { background: #e74c3c; }
+<!-- Deposit Form -->
+<div id="depositForm" style="display:none; margin:10px; padding:10px; border:1px solid #ccc;">
+  <h3>💵 ငွေသွင်း</h3>
+  <p>Wave Pay: 09766999230 (Daw Nwet Nwet Win)</p>
+  <p>K Pay: 09766999230 (Daw Nwet Nwet Win)</p>
+  <label>ငွေသွင်းမည့် ပမာဏ:</label>
+  <input type="number" id="depositAmount" min="100" step="100">
+  <button onclick="requestDeposit()">📤 တင်သွင်းမယ်</button>
+</div>
 
-    table { width: 95%; margin: 20px auto; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 8px; font-size: 14px; text-align:center; }
-    th { background: #333; color: #fff; }
+<!-- Withdraw Form -->
+<div id="withdrawForm" style="display:none; margin:10px; padding:10px; border:1px solid #ccc;">
+  <h3>💵 ငွေထုတ်</h3>
+  <label>ထုတ်မည့် ပမာဏ:</label>
+  <input type="number" id="withdrawAmount" min="100" step="100"><br><br>
+  <label>Account Type:</label>
+  <select id="withdrawType">
+    <option value="WavePay">Wave Pay</option>
+    <option value="KPay">K Pay</option>
+  </select><br><br>
+  <label>Account Number:</label>
+  <input type="text" id="withdrawNumber" placeholder="ဖုန်းနံပါတ်"><br><br>
+  <button onclick="requestWithdraw()">📥 ထုတ်မယ်</button>
+</div>
 
-    /* Modal */
-    .modal {
-      display: none; position: fixed; z-index: 999; left: 0; top: 0;
-      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-      justify-content: center; align-items: center;
-    }
-    .modal-content {
-      background: #fff; padding: 20px; border-radius: 10px; width: 280px;
-    }
-    .modal-content h3 { margin-top: 0; }
-    .modal-content input {
-      width: 100%; padding: 10px; margin: 10px 0;
-      border: 1px solid #ccc; border-radius: 6px;
-    }
-    .modal-content button {
-      width: 100%; padding: 10px; border: none; border-radius: 6px;
-      background: #27ae60; color: #fff; font-size: 16px;
-    }
+<!-- Transaction History -->
+<h3>💵 Transaction History</h3>
+<table>
+  <thead>
+    <tr>
+      <th>အချိန်</th>
+      <th>လုပ်ဆောင်ချက်</th>
+      <th>ပမာဏ</th>
+      <th>Balance</th>
+    </tr>
+  </thead>
+  <tbody id="transactionHistory"></tbody>
+</table>
 
-    /* Admin Section */
-    #adminPanel { display:none; padding:20px; }
-    .admin-login { margin:20px; }
-    .logout-btn { background:#e74c3c; color:#fff; padding:8px 15px; border:none; border-radius:6px; cursor:pointer; }
-  </style>
-</head>
-<body>
+<script>
+let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
 
-  <h2>Win Go Game</h2>
+function showDeposit() {
+  document.getElementById("depositForm").style.display = "block";
+  document.getElementById("withdrawForm").style.display = "none";
+}
 
-  <!-- Mode Selector -->
-  <div id="userPanel">
-    <div class="mode-buttons">
-      <button onclick="setMode(30)">30s</button>
-      <button onclick="setMode(60)">1min</button>
-      <button onclick="setMode(180)">3min</button>
-      <button onclick="setMode(300)">5min</button>
-    </div>
+function showWithdraw() {
+  document.getElementById("depositForm").style.display = "none";
+  document.getElementById("withdrawForm").style.display = "block";
+}
 
-    <h3>ရွေးထားသော Mode: <span id="mode">30s</span></h3>
-    <div id="timer">30</div>
-    <div id="balance">💰 Balance: 1000</div>
+function requestDeposit() {
+  let amt = parseInt(document.getElementById("depositAmount").value);
+  if(isNaN(amt) || amt <= 0) return alert("ပမာဏထည့်ပါ");
+  let now = new Date().toLocaleTimeString();
+  transactions.unshift({time:now, type:"Deposit Request", amount:amt, balance:balance});
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+  renderTransactions();
+  alert("Wave/KPay နံပါတ်ကို ငွေသွင်းပြီး Admin အတည်ပြုပါမည်။");
+  document.getElementById("depositAmount").value="";
+}
 
-    <!-- Wallet Actions -->
-    <div class="wallet-buttons">
-      <button class="deposit" onclick="openModal('deposit')">ငွေသွင်း</button>
-      <button class="withdraw" onclick="openModal('withdraw')">ငွေထုတ်</button>
-    </div>
+function requestWithdraw() {
+  let amt = parseInt(document.getElementById("withdrawAmount").value);
+  let type = document.getElementById("withdrawType").value;
+  let number = document.getElementById("withdrawNumber").value.trim();
+  if(isNaN(amt) || amt <= 0) return alert("ပမာဏထည့်ပါ");
+  if(number==="") return alert("Account Number ထည့်ပါ");
+  if(amt > balance) return alert("Balance မလောက်ပါ");
 
-    <!-- ဂဏန်း icon -->
-    <div class="numbers" id="numberBtns">
-      <div class="num purple" onclick="placeBet('number',0)">0</div>
-      <div class="num green" onclick="placeBet('number',1)">1</div>
-      <div class="num red" onclick="placeBet('number',2)">2</div>
-      <div class="num green" onclick="placeBet('number',3)">3</div>
-      <div class="num red" onclick="placeBet('number',4)">4</div>
-      <div class="num green" onclick="placeBet('number',5)">5</div>
-      <div class="num red" onclick="placeBet('number',6)">6</div>
-      <div class="num green" onclick="placeBet('number',7)">7</div>
-      <div class="num red" onclick="placeBet('number',8)">8</div>
-      <div class="num green" onclick="placeBet('number',9)">9</div>
-    </div>
+  let now = new Date().toLocaleTimeString();
+  transactions.unshift({time:now, type:"Withdraw Request ("+type+" - "+number+")", amount:amt, balance:balance-amt});
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+  renderTransactions();
+  alert("Admin အတည်ပြုပြီးနောက် ငွေထုတ်ပေးမည်။");
+  document.getElementById("withdrawAmount").value="";
+  document.getElementById("withdrawNumber").value="";
+}
 
-    <!-- အကြီး/အသေး -->
-    <div class="bet-buttons">
-      <button class="small" onclick="placeBet('small')">အသေး (0–4)</button>
-      <button class="big" onclick="placeBet('big')">အကြီး (5–9)</button>
-    </div>
-
-    <!-- Bet Amount -->
-    <div style="margin:15px;">
-      <label>လောင်းမည့် Amount: </label>
-      <input type="number" id="betAmount" value="100" min="10" step="10">
-    </div>
-
-    <div id="result"></div>
-
-    <!-- History Table -->
-    <h3>📜 Bet History</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>အချိန်</th>
-          <th>လောင်းသည့်အမျိုးအစား</th>
-          <th>Amount</th>
-          <th>ထွက်လာသည့်ဂဏန်း</th>
-          <th>အနိုင်/အရှုံး</th>
-        </tr>
-      </thead>
-      <tbody id="history"></tbody>
-    </table>
-  </div>
-
-  <!-- Admin Panel -->
-  <div id="adminPanel">
-    <h2>🔐 Admin Panel</h2>
-    <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
-    <h3>💰 Player Balance</h3>
-    <div id="adminBalance"></div>
-
-    <h3>📜 Bet History</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>အချိန်</th>
-          <th>Bet Type</th>
-          <th>Amount</th>
-          <th>ဂဏန်း</th>
-          <th>Result</th>
-        </tr>
-      </thead>
-      <tbody id="adminHistory"></tbody>
-    </table>
-  </div>
-
-  <!-- Admin Login -->
-  <div id="adminLogin" class="admin-login">
-    <h3>Admin Login</h3>
-    <input type="password" id="adminPass" placeholder="Password">
-    <button onclick="checkAdmin()">Login</button>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal" id="walletModal">
-    <div class="modal-content">
-      <h3 id="modalTitle"></h3>
-      <input type="number" id="walletAmount" placeholder="ပမာဏထည့်ပါ">
-      <button onclick="confirmWallet()">အတည်ပြုမယ်</button>
-    </div>
-  </div>
-
-  <script>
-    let currentMode = 30;
-    let timeLeft = currentMode;
-    let bet = null;
-    let balance = parseInt(localStorage.getItem("balance")) || 1000;
-
-    // LocalStorage Load
-    let historyData = JSON.parse(localStorage.getItem("historyData")) || [];
-    renderHistory();
-    updateBalance();
-
-    function setMode(seconds) {
-      currentMode = seconds;
-      timeLeft = seconds;
-      document.getElementById("mode").innerText = 
-        seconds === 30 ? "30s" : 
-        seconds === 60 ? "1min" : 
-        seconds === 180 ? "3min" : "5min";
-      document.getElementById("timer").innerText = timeLeft;
-      document.getElementById("result").innerText = "";
-      bet = null;
-    }
-
-    function placeBet(type, number=null) {
-      let amount = parseInt(document.getElementById("betAmount").value);
-      if (amount > balance) {
-        document.getElementById("result").innerText = "❌ Balance မလောက်ပါ";
-        return;
-      }
-      bet = (type === 'number') ? { type:'number', value:number, amount:amount }
-                                : { type:type, amount:amount };
-      document.getElementById("result").innerText = 
-        "Bet placed: " + (type==='number' ? "ဂဏန်း " + number : (type==='small' ? "အသေး" : "အကြီး")) 
-        + " → " + amount + " ကျပ်";
-    }
-
-    function updateBalance() {
-      document.getElementById("balance").innerText = "💰 Balance: " + balance;
-      localStorage.setItem("balance", balance);
-    }
-
-    function addHistory(betType, amount, randomNum, resultText) {
-      let now = new Date().toLocaleTimeString();
-      let newRecord = { time: now, betType, amount, randomNum, resultText };
-      historyData.unshift(newRecord); 
-      if (historyData.length > 50) historyData.pop();
-      localStorage.setItem("historyData", JSON.stringify(historyData));
-      renderHistory();
-    }
-
-    function renderHistory() {
-      let tbody = document.getElementById("history");
-      tbody.innerHTML = "";
-      historyData.forEach(item => {
-        let row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.time}</td>
-          <td>${item.betType}</td>
-          <td>${item.amount}</td>
-          <td>${item.randomNum}</td>
-          <td>${item.resultText}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function countdown() {
-      document.getElementById("timer").innerText = timeLeft;
-      if (timeLeft <= 0) {
-        let randomNum = Math.floor(Math.random() * 10);
-        let outcome = randomNum <= 4 ? 'small' : 'big';
-        let msg = "ထွက်လာသည့်ဂဏန်း: " + randomNum + " → ";
-        let historyResult = "";
-
-        if(!bet){
-          msg += "❌ Bet မလုပ်ထားပါ";
-        } else {
-          balance -= bet.amount;
-          if(bet.type === 'number'){
-            if(bet.value === randomNum){
-              let win = bet.amount * 10;
-              balance += win;
-              msg += "✔️ Win (တိကျ) +" + win;
-              historyResult = "Win +" + win;
-            } else {
-              msg += "❌ Lose -" + bet.amount;
-              historyResult = "Lose -" + bet.amount;
-            }
-          } else if(bet.type === outcome){
-            let win = bet.amount * 2;
-            balance += win;
-            msg += "✔️ Win +" + win;
-            historyResult = "Win +" + win;
-          } else {
-            msg += "❌ Lose -" + bet.amount;
-            historyResult = "Lose -" + bet.amount;
-          }
-
-          addHistory(
-            bet.type==='number' ? "ဂဏန်း " + bet.value : (bet.type==='small' ? "အသေး" : "အကြီး"),
-            bet.amount, randomNum, historyResult
-          );
-        }
-
-        document.getElementById("result").innerText = msg;
-        updateBalance();
-        timeLeft = currentMode;
-        bet = null;
-      }
-      timeLeft--;
-    }
-
-    setInterval(countdown, 1000);
-
-    // ===== Wallet Functions =====
-    let currentWalletAction = "";
-
-    function openModal(action) {
-      currentWalletAction = action;
-      document.getElementById("modalTitle").innerText = action === "deposit" ? "ငွေသွင်း" : "ငွေထုတ်";
-      document.getElementById("walletModal").style.display = "flex";
-    }
-
-    function confirmWallet() {
-      let amount = parseInt(document.getElementById("walletAmount").value);
-      if (!amount || amount <= 0) { alert("မှန်ကန်တဲ့ ငွေပမာဏထည့်ပါ"); return; }
-
-      if (currentWalletAction === "deposit") {
-        balance += amount;
-      } else if (currentWalletAction === "withdraw") {
-        if (amount > balance) { alert("လက်ကျန်မလုံလောက်ပါ"); return; }
-        balance -= amount;
-      }
-      updateBalance();
-      document.getElementById("walletAmount").value = "";
-      document.getElementById("walletModal").style.display = "none";
-    }
-
-    // Modal click outside close
-    window.onclick = function(event) {
-      let modal = document.getElementById("walletModal");
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
-    }
-
-    // ===== Admin Functions =====
-    function checkAdmin() {
-      let pass = document.getElementById("adminPass").value;
-      if(pass === "admin123"){
-        document.getElementById("adminLogin").style.display="none";
-        document.getElementById("userPanel").style.display="none";
-        document.getElementById("adminPanel").style.display="block";
-        loadAdminData();
-      } else {
-        alert("❌ Password မှားသည်");
-      }
-    }
-
-    function logoutAdmin(){
-      document.getElementById("adminPanel").style.display="none";
-      document.getElementById("userPanel").style.display="block";
-      document.getElementById("adminLogin").style.display="block";
-    }
-
-    function loadAdminData(){
-      document.getElementById("adminBalance").innerText = "Balance: " + balance;
-      let tbody = document.getElementById("adminHistory");
-      tbody.innerHTML = "";
-      historyData.forEach(item => {
-        let row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${item.time}</td>
-          <td>${item.betType}</td>
-          <td>${item.amount}</td>
-          <td>${item.randomNum}</td>
-          <td>${item.resultText}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-  </script>
-</body>
-</html>
+function renderTransactions() {
+  let tbody = document.getElementById("transactionHistory");
+  tbody.innerHTML="";
+  transactions.forEach(t=>{
+    let row=document.createElement("tr");
+    row.innerHTML=`<td>${t.time}</td><td>${t.type}</td><td>${t.amount}</td><td>${t.balance}</td>`;
+    tbody.appendChild(row);
+  });
+}
+renderTransactions();
+</script>
