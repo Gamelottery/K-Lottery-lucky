@@ -1,48 +1,73 @@
-<!DOCTYPE html>
-<html lang="my">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BigWin Style Icons</title>
+  ...
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
+    /* မင်းရေးထားပြီးသား CSS ကိုထား */
+    .wallet-btn i, .bet-btn i, .tab i {
+      margin-right: 6px;
     }
-    .icon-box {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .icon-item {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 28px;
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    }
-    .red { background: #e74c3c; }
-    .green { background: #27ae60; }
-    .purple { background: #8e44ad; }
-    .blue { background: #3498db; }
-    .orange { background: #e67e22; }
   </style>
 </head>
 <body>
-  <h2>BigWin Game Style Icons</h2>
-  <div class="icon-box">
-    <div class="icon-item green"><i class="fa-solid fa-clock"></i></div>
-    <div class="icon-item red"><i class="fa-solid fa-bolt"></i></div>
-    <div class="icon-item purple"><i class="fa-solid fa-dice"></i></div>
-    <div class="icon-item blue"><i class="fa-solid fa-coins"></i></div>
-    <div class="icon-item orange"><i class="fa-solid fa-gamepad"></i></div>
+
+  <div class="header">
+    <i class="fa-solid fa-gamepad"></i> 777 BigWin Game
   </div>
-</body>
-</html>
+
+  <div class="wallet">
+    💰 Balance: <span id="balance">1000</span> Ks
+  </div>
+
+  <div class="wallet-actions">
+    <div class="wallet-btn" onclick="deposit()">
+      <i class="fa-solid fa-circle-arrow-down"></i> Deposit
+    </div>
+    <div class="wallet-btn" onclick="withdraw()">
+      <i class="fa-solid fa-circle-arrow-up"></i> Withdraw
+    </div>
+  </div>
+
+  <div class="tab-menu">
+    <div class="tab active"><i class="fa-regular fa-clock"></i> Win Go 30s</div>
+    <div class="tab"><i class="fa-regular fa-clock"></i> Win Go 1Min</div>
+    <div class="tab"><i class="fa-regular fa-clock"></i> Win Go 3Min</div>
+    <div class="tab"><i class="fa-regular fa-clock"></i> Win Go 5Min</div>
+  </div>
+
+  <div class="game-info">
+    <div><i class="fa-solid fa-dice"></i> Win Go 30s</div>
+    <div class="balls">
+      <div class="ball">9</div>
+      <div class="ball">2</div>
+      <div class="ball">0</div>
+      <div class="ball">8</div>
+      <div class="ball">5</div>
+    </div>
+    <div><i class="fa-solid fa-hourglass-half"></i> 00:25</div>
+    <div><i class="fa-solid fa-hashtag"></i> ID: 20250912100050385</div>
+  </div>
+
+  <div class="bet-options">
+    <div class="bet-btn green" onclick="selectBet(this)">
+      <i class="fa-solid fa-leaf"></i> Green
+    </div>
+    <div class="bet-btn purple" onclick="selectBet(this)">
+      <i class="fa-solid fa-gem"></i> Violet
+    </div>
+    <div class="bet-btn red" onclick="selectBet(this)">
+      <i class="fa-solid fa-fire"></i> Red
+    </div>
+  </div>
+
+  <div class="actions">
+    <div class="cancel-btn" onclick="resetBet()">
+      <i class="fa-solid fa-xmark"></i> ဖျက်မယ်
+    </div>
+    <div class="confirm-btn" onclick="confirmBet()">
+      <i class="fa-solid fa-check"></i> အတည်ပြုမယ်
+    </div>
+  </div>
+
+  <div class="history" id="history">
+    <h4><i class="fa-solid fa-clock-rotate-left"></i> 📜 Bet History</h4>
+  </div>
