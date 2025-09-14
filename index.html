@@ -1,186 +1,212 @@
-import React, { useState } from "react";
-
-export default function BigWinGame() {
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedNumber, setSelectedNumber] = useState(null);
-  const [betAmount, setBetAmount] = useState(1);
-
-  const handleConfirm = () => {
-    if (!selectedColor && selectedNumber === null) {
-      alert("⚠️ အရောင် သို့မဟုတ် နံပါတ် တစ်ခုရွေးပါ!");
-      return;
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Win UI</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f3f5f7;
+      margin: 0;
+      padding: 0;
     }
-    alert(
-      `✅ အတည်ပြုပြီး!\n\nအလောင်းထားမှု: ${
-        selectedColor || selectedNumber
-      }\nပမာဏ: ${betAmount}`
-    );
-  };
+    header {
+      background: linear-gradient(90deg, #0ecb81, #00a86b);
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+    .tab-container {
+      display: flex;
+      justify-content: space-around;
+      margin: 15px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px;
+      margin: 0 5px;
+      background: #f0f0f0;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: bold;
+      color: #666;
+    }
+    .tab.active {
+      background: #0ecb81;
+      color: #fff;
+    }
+    .game-box {
+      background: #fff;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .countdown {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .numbers {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .number {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      background: radial-gradient(circle, #fff 40%, #e0e0e0);
+      border: 2px solid #ccc;
+      transition: all 0.2s ease;
+    }
+    .number.red { border-color: #ff4d4d; color: #ff4d4d; }
+    .number.green { border-color: #00b87a; color: #00b87a; }
+    .number.purple { border-color: #8e44ad; color: #8e44ad; }
+    .number:hover {
+      transform: scale(1.1);
+    }
+    .bet-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .bet-btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .bet-btn.green { background: #0ecb81; color: #fff; }
+    .bet-btn.red { background: #ff4d4d; color: #fff; }
+    .bet-btn.purple { background: #8e44ad; color: #fff; }
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .action {
+      flex: 1;
+      margin: 0 5px;
+      padding: 12px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .action.orange { background: #ff9900; color: #fff; }
+    .action.blue { background: #3498db; color: #fff; }
+    .history {
+      margin: 20px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .history h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #333;
+    }
+    .history table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .history th, .history td {
+      padding: 8px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    .history td.green { color: #0ecb81; }
+    .history td.red { color: #ff4d4d; }
+    .history td.purple { color: #8e44ad; }
+  </style>
+</head>
+<body>
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-green-500 text-white p-4 flex items-center justify-between">
-        <button className="text-xl">←</button>
-        <h1 className="font-bold text-lg">777 BigWin Game</h1>
-        <div className="flex space-x-3">
-          <button>🎧</button>
-          <button>⚙️</button>
-        </div>
-      </header>
+<header>🎰 BIGWIN GAME</header>
 
-      {/* Tab Menu */}
-      <div className="flex bg-white shadow p-2 justify-around">
-        {["Win Go 30s", "Win Go 1Min", "Win Go 3Min", "Win Go 5Min"].map(
-          (item, i) => (
-            <button
-              key={i}
-              className={`px-3 py-2 rounded-lg text-sm font-bold ${
-                i === 0 ? "bg-green-500 text-white" : "bg-gray-100"
-              }`}
-            >
-              {item}
-            </button>
-          )
-        )}
-      </div>
+<div class="tab-container">
+  <div class="tab active">Win Go 30s</div>
+  <div class="tab">Win Go 1Min</div>
+  <div class="tab">Win Go 3Min</div>
+  <div class="tab">Win Go 5Min</div>
+</div>
 
-      {/* Game Info */}
-      <div className="bg-green-100 m-4 rounded-xl p-4 shadow">
-        <div className="flex justify-between items-center">
-          <p className="text-sm">Win Go 30s</p>
-          <div className="text-xl font-bold">⏱ 00:25</div>
-        </div>
-        <div className="mt-2 flex justify-center space-x-2 text-lg font-bold">
-          <span className="bg-red-500 text-white rounded-full px-3 py-1">9</span>
-          <span className="bg-green-500 text-white rounded-full px-3 py-1">2</span>
-          <span className="bg-purple-500 text-white rounded-full px-3 py-1">0</span>
-          <span className="bg-red-500 text-white rounded-full px-3 py-1">8</span>
-          <span className="bg-green-500 text-white rounded-full px-3 py-1">5</span>
-        </div>
-        <p className="text-center text-xs mt-2">20250912100050385</p>
-      </div>
+<div class="game-box">
+  <div class="countdown">
+    <span>လက်ကျန်အချိန်: 00:25</span>
+    <span>ID: 20250912100050385</span>
+  </div>
 
-      {/* Betting Options */}
-      <div className="grid grid-cols-3 gap-3 px-4 mb-4">
-        {[
-          { label: "အစိမ်း", value: "green", color: "bg-green-500" },
-          { label: "ခရမ်း", value: "purple", color: "bg-purple-500" },
-          { label: "အနီ", value: "red", color: "bg-red-500" },
-        ].map((opt) => (
-          <button
-            key={opt.value}
-            onClick={() => {
-              setSelectedColor(opt.label);
-              setSelectedNumber(null);
-            }}
-            className={`${opt.color} text-white py-3 rounded-lg shadow-lg font-bold ${
-              selectedColor === opt.label ? "ring-4 ring-yellow-300" : ""
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+  <div class="numbers">
+    <div class="number red">0</div>
+    <div class="number green">1</div>
+    <div class="number red">2</div>
+    <div class="number red">3</div>
+    <div class="number red">4</div>
+    <div class="number green">5</div>
+    <div class="number red">6</div>
+    <div class="number red">7</div>
+    <div class="number red">8</div>
+    <div class="number red">9</div>
+  </div>
 
-      {/* Number Buttons */}
-      <div className="grid grid-cols-5 gap-2 px-4 mb-4">
-        {Array.from({ length: 10 }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => {
-              setSelectedNumber(i);
-              setSelectedColor(null);
-            }}
-            className={`py-3 rounded-full border font-bold shadow ${
-              selectedNumber === i
-                ? "bg-yellow-400 text-black"
-                : "bg-white text-gray-800"
-            }`}
-          >
-            {i}
-          </button>
-        ))}
-      </div>
+  <div class="bet-controls">
+    <button class="bet-btn green">အမိန့်ရွှေ့</button>
+    <button class="bet-btn.purple">အညီရွှေ့</button>
+    <button class="bet-btn red">အနီရွှေ့</button>
+  </div>
 
-      {/* Bet Amount */}
-      <div className="flex flex-wrap gap-2 justify-center px-4 mb-4">
-        {[1, 5, 10, 20, 50, 100].map((amt) => (
-          <button
-            key={amt}
-            onClick={() => setBetAmount(amt)}
-            className={`px-4 py-2 rounded-lg shadow ${
-              betAmount === amt
-                ? "bg-green-500 text-white font-bold"
-                : "bg-gray-200"
-            }`}
-          >
-            X{amt}
-          </button>
-        ))}
-      </div>
+  <div class="action-buttons">
+    <button class="action orange">အတည်ပြု</button>
+    <button class="action blue">မဆော့တော့</button>
+  </div>
+</div>
 
-      {/* Current Bet Summary */}
-      <div className="bg-white rounded-xl p-4 mb-4 shadow text-center">
-        <p className="font-bold text-lg mb-2">📋 အလောင်းအသေးစိတ်</p>
-        <p>ရွေးချယ်မှု: {selectedColor || selectedNumber ?? "-"}</p>
-        <p>ပမာဏ: {betAmount}</p>
-      </div>
+<div class="history">
+  <h3>ဂိမ်းမှတ်တမ်း</h3>
+  <table>
+    <tr>
+      <th>Game ID</th>
+      <th>နံပါတ်</th>
+      <th>အကျိုး</th>
+    </tr>
+    <tr>
+      <td>20250912100050384</td>
+      <td class="green">9</td>
+      <td>အမိန့်</td>
+    </tr>
+    <tr>
+      <td>20250912100050383</td>
+      <td class="red">2</td>
+      <td>ဆော့</td>
+    </tr>
+    <tr>
+      <td>20250912100050382</td>
+      <td class="purple">0</td>
+      <td>ဆော့</td>
+    </tr>
+  </table>
+</div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-4 justify-center px-4 mb-6">
-        <button
-          onClick={handleConfirm}
-          className="bg-orange-500 text-white px-6 py-3 rounded-lg shadow font-bold"
-        >
-          အတည်ပြု
-        </button>
-        <button
-          onClick={() => {
-            setSelectedColor(null);
-            setSelectedNumber(null);
-            setBetAmount(1);
-          }}
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow font-bold"
-        >
-          ဖျက်
-        </button>
-      </div>
-
-      {/* History Table */}
-      <div className="m-4 bg-white p-4 rounded-xl shadow">
-        <h2 className="font-bold mb-2">ဂိမ်းမှတ်တမ်း</h2>
-        <table className="w-full text-sm text-center border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2 border">ပွဲ</th>
-              <th className="p-2 border">နံပါတ်</th>
-              <th className="p-2 border">အကျိုး</th>
-              <th className="p-2 border">အရောင်</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border p-2">20250912100050384</td>
-              <td className="border text-green-500 font-bold">9</td>
-              <td className="border">အတည်ပြု</td>
-              <td className="border">🟢</td>
-            </tr>
-            <tr>
-              <td className="border p-2">20250912100050383</td>
-              <td className="border text-red-500 font-bold">2</td>
-              <td className="border">ဆုံး</td>
-              <td className="border">🔴</td>
-            </tr>
-            <tr>
-              <td className="border p-2">20250912100050382</td>
-              <td className="border text-purple-500 font-bold">0</td>
-              <td className="border">ဆုံး</td>
-              <td className="border">🟣</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
+</body>
+</html>
