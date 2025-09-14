@@ -84,7 +84,90 @@
     <div class="num green" onclick="placeBet('number',7)">7</div>
     <div class="num red" onclick="placeBet('number',8)">8</div>
     <div class="num green" onclick="placeBet('number',9)">9</div>
-  </div>
+  </div><script>
+// ---------------------- User Balance ----------------------
+let balance = localStorage.getItem("balance") ? parseInt(localStorage.getItem("balance")) : 1000;
+document.getElementById("balanceDisplay").innerText = balance;
+
+// ---------------------- Random Number Generator ----------------------
+function startGame(interval) {
+  setInterval(() => {
+    let number = Math.floor(Math.random() * 10); // 0-9 random
+    localStorage.setItem("lastNumber", number);
+    document.getElementById("lastNumber").innerText = number;
+  }, interval);
+}
+
+// 30s / 1min / 3min / 5min
+startGame(30000);
+startGame(60000);
+startGame(180000);
+startGame(300000);
+
+// ---------------------- Betting ----------------------
+function placeBet(type, amount) {
+  let number = parseInt(localStorage.getItem("lastNumber"));
+  if(isNaN(number)) {
+    alert("Game not started yet!");
+    return;
+  }
+
+  if(balance < amount) {
+    alert("Not enough balance!");
+    return;
+  }
+
+  balance -= amount;
+
+  if(type === "small" && number <= 4) {
+    balance += amount * 2;
+  }
+  if(type === "big" && number >= 5) {
+    balance += amount * 2;
+  }
+
+  localStorage.setItem("balance", balance);
+  document.getElementById("balanceDisplay").innerText = balance;
+}
+
+// ---------------------- Deposit / Withdraw ----------------------
+function deposit(amount) {
+  balance += amount;
+  localStorage.setItem("balance", balance);
+  document.getElementById("balanceDisplay").innerText = balance;
+}
+
+function withdraw(amount) {
+  if(balance >= amount) {
+    balance -= amount;
+    localStorage.setItem("balance", balance);
+    document.getElementById("balanceDisplay").innerText = balance;
+  } else {
+    alert("Not enough balance");
+  }
+}
+
+// ---------------------- Admin Panel ----------------------
+let requests = JSON.parse(localStorage.getItem("requests")) || [];
+
+function addRequest(type, amount) {
+  requests.push({ type, amount, status: "pending" });
+  localStorage.setItem("requests", JSON.stringify(requests));
+}
+
+function adminApprove(index) {
+  let req = requests[index];
+  if(req.type === "deposit") deposit(req.amount);
+  if(req.type === "withdraw") withdraw(req.amount);
+  requests[index].status = "approved";
+  localStorage.setItem("requests", JSON.stringify(requests));
+}
+
+function adminReject(index) {
+  requests[index].status = "rejected";
+  localStorage.setItem("requests", JSON.stringify(requests));
+}
+  </script>
 
   <!-- အကြီး/အသေး -->
   <div class="bet-buttons">
