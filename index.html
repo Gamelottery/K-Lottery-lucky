@@ -6,9 +6,9 @@
   <style>
     body { font-family: sans-serif; text-align: center; background: #f4f4f4; }
     .hidden { display: none; }
-    .auth-box, .admin-box, .deposit-box, .withdraw-box { max-width: 350px; margin: 20px auto; padding: 20px; background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
-    .auth-box input, .admin-box input, .deposit-box input, .withdraw-box input, select { width: 100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
-    .auth-box button, .admin-box button, .deposit-box button, .withdraw-box button { width: 100%; padding:10px; margin:5px 0; border:none; border-radius:6px; background:#27ae60; color:#fff; font-size:16px; cursor:pointer; }
+    .auth-box, .admin-box { max-width: 350px; margin: 50px auto; padding: 20px; background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+    .auth-box input, .admin-box input { width: 100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
+    .auth-box button, .admin-box button { width: 100%; padding:10px; margin:5px 0; border:none; border-radius:6px; background:#27ae60; color:#fff; font-size:16px; cursor:pointer; }
     table { width: 95%; margin: 10px auto; border-collapse: collapse; }
     th, td { border: 1px solid #ccc; padding: 6px; font-size: 14px; }
     th { background: #333; color: #fff; }
@@ -21,6 +21,9 @@
     .small { background: #3498db; color: #fff; }
     .big { background: #f39c12; color: #fff; }
     .mode-buttons button { background: #27ae60; color: #fff; }
+    .deposit-box, .withdraw-box { max-width:300px; margin:20px auto; padding:15px; background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+    .deposit-box input, .withdraw-box input { width:100%; padding:8px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
+    .deposit-box button, .withdraw-box button { width:100%; padding:10px; margin-top:5px; border:none; border-radius:6px; background:#2980b9; color:#fff; cursor:pointer;}
   </style>
 </head>
 <body>
@@ -52,6 +55,28 @@
     <h2>Win Go Game</h2>
     <div>👤 User: <span id="currentUser"></span> | 🆔 <span id="userId"></span> | <button onclick="logout()">Logout</button></div>
 
+    <!-- 💰 Deposit / Withdraw Buttons -->
+    <div style="margin:10px;">
+      <button onclick="showDeposit()">💵 ငွေသွင်း</button>
+      <button onclick="showWithdraw()">💸 ငွေထုတ်</button>
+    </div>
+
+    <!-- Deposit Box -->
+    <div id="depositBox" class="deposit-box hidden">
+      <h3>💵 ငွေသွင်း</h3>
+      <input type="number" id="depositAmount" placeholder="Amount">
+      <button onclick="deposit()">Confirm Deposit</button>
+      <button onclick="hideDeposit()">Cancel</button>
+    </div>
+
+    <!-- Withdraw Box -->
+    <div id="withdrawBox" class="withdraw-box hidden">
+      <h3>💸 ငွေထုတ်</h3>
+      <input type="number" id="withdrawAmount" placeholder="Amount">
+      <button onclick="withdraw()">Confirm Withdraw</button>
+      <button onclick="hideWithdraw()">Cancel</button>
+    </div>
+
     <!-- Mode Selector -->
     <div class="mode-buttons">
       <button onclick="setMode(30)">30s</button>
@@ -63,26 +88,6 @@
     <h3>ရွေးထားသော Mode: <span id="mode">30s</span></h3>
     <div id="timer">30</div>
     <div id="balance">💰 Balance: 0</div>
-
-    <!-- ငွေသွင်း / ငွေထုတ် -->
-    <div class="deposit-box">
-      <h3>💵 ငွေသွင်း</h3>
-      <p>WavePay: 09766999230 (Daw Nwet Nwet Win)</p>
-      <p>KPay: 09766999230 (Daw Nwet Nwet Win)</p>
-      <input type="number" id="depositAmount" placeholder="ပမာဏ ထည့်ပါ">
-      <button onclick="deposit()">ငွေသွင်းမယ်</button>
-    </div>
-
-    <div class="withdraw-box">
-      <h3>💸 ငွေထုတ်</h3>
-      <input type="number" id="withdrawAmount" placeholder="ထုတ်မည့်ပမာဏ">
-      <select id="withdrawMethod">
-        <option value="WavePay">WavePay</option>
-        <option value="KPay">KPay</option>
-      </select>
-      <input type="text" id="withdrawAccount" placeholder="နံပါတ်ထည့်ပါ">
-      <button onclick="withdraw()">ငွေထုတ်မယ်</button>
-    </div>
 
     <!-- ဂဏန်း icon -->
     <div class="numbers" id="numberBtns">
@@ -135,6 +140,7 @@
     let historyData=[];
 
     function saveUsers(){ localStorage.setItem("users", JSON.stringify(users)); }
+
     function login(){
       let u=document.getElementById("username").value.trim();
       let p=document.getElementById("password").value;
@@ -147,6 +153,7 @@
       currentUser={username:u}; localStorage.setItem("currentUser",JSON.stringify(currentUser));
       loadUser(); 
     }
+
     function register(){
       let u=document.getElementById("username").value.trim();
       let p=document.getElementById("password").value;
@@ -157,6 +164,7 @@
       saveUsers();
       alert("✔️ Register Success, 2000 ကျပ်ရပါပြီ");
     }
+
     function loadUser(){
       let u=currentUser.username; let data=users[u];
       balance=data.balance; historyData=data.history;
@@ -167,12 +175,14 @@
       document.getElementById("gameSection").classList.remove("hidden");
       document.getElementById("adminSection").classList.add("hidden");
     }
+
     function loadAdmin(){
       document.getElementById("authSection").classList.add("hidden");
       document.getElementById("gameSection").classList.add("hidden");
       document.getElementById("adminSection").classList.remove("hidden");
       renderUserList();
     }
+
     function logout(){
       currentUser=null; localStorage.removeItem("currentUser");
       document.getElementById("gameSection").classList.add("hidden");
@@ -180,28 +190,6 @@
       document.getElementById("authSection").classList.remove("hidden");
     }
 
-    // Deposit
-    function deposit(){
-      let amount=parseInt(document.getElementById("depositAmount").value);
-      if(amount>0){
-        balance+=amount;
-        updateBalance();
-        alert("✔️ ငွေသွင်းပြီးပါပြီ: "+amount+" ကျပ်");
-      }
-    }
-    // Withdraw
-    function withdraw(){
-      let amount=parseInt(document.getElementById("withdrawAmount").value);
-      let method=document.getElementById("withdrawMethod").value;
-      let acc=document.getElementById("withdrawAccount").value.trim();
-      if(amount<=0||!acc){alert("❌ အချက်အလက်မပြည့်စုံ");return;}
-      if(amount>balance){alert("❌ Balance မလောက်ပါ");return;}
-      balance-=amount;
-      updateBalance();
-      alert("✔️ "+method+" မှ "+acc+" သို့ "+amount+" ကျပ် ထုတ်ပြီးပါပြီ");
-    }
-
-    // Admin Panel
     function renderUserList(){
       let tbody=document.getElementById("userList"); tbody.innerHTML="";
       Object.keys(users).forEach(u=>{
@@ -212,6 +200,7 @@
         tbody.appendChild(row);
       });
     }
+
     function editBalance(u){
       let newBal=prompt("Enter new balance for "+u, users[u].balance);
       if(newBal!==null){
@@ -224,6 +213,7 @@
       document.getElementById("balance").innerText="💰 Balance: "+balance;
       let u=currentUser.username; users[u].balance=balance; saveUsers();
     }
+
     function addHistory(betType, amount, randomNum, resultText){
       let now=new Date().toLocaleTimeString();
       let record={time:now,betType,amount,randomNum,resultText};
@@ -232,6 +222,7 @@
       let u=currentUser.username; users[u].history=historyData; saveUsers();
       renderHistory();
     }
+
     function renderHistory(){
       let tbody=document.getElementById("history"); tbody.innerHTML="";
       historyData.forEach(item=>{
@@ -271,6 +262,27 @@
       timeLeft--;
     }
     setInterval(countdown,1000);
+
+    // Deposit & Withdraw functions
+    function showDeposit(){ document.getElementById("depositBox").classList.remove("hidden"); }
+    function hideDeposit(){ document.getElementById("depositBox").classList.add("hidden"); }
+    function showWithdraw(){ document.getElementById("withdrawBox").classList.remove("hidden"); }
+    function hideWithdraw(){ document.getElementById("withdrawBox").classList.add("hidden"); }
+
+    function deposit(){
+      let amount=parseInt(document.getElementById("depositAmount").value);
+      if(isNaN(amount)||amount<=0){alert("Amount မှန်မှန်ထည့်ပါ");return;}
+      balance+=amount; updateBalance(); hideDeposit();
+      alert("✔️ "+amount+" ကျပ် ငွေသွင်းပြီးပါပြီ");
+    }
+
+    function withdraw(){
+      let amount=parseInt(document.getElementById("withdrawAmount").value);
+      if(isNaN(amount)||amount<=0){alert("Amount မှန်မှန်ထည့်ပါ");return;}
+      if(amount>balance){alert("❌ Balance မလောက်ပါ");return;}
+      balance-=amount; updateBalance(); hideWithdraw();
+      alert("✔️ "+amount+" ကျပ် ငွေထုတ်ပြီးပါပြီ");
+    }
 
     if(currentUser){ if(currentUser.isAdmin)loadAdmin(); else loadUser(); }
   </script>
