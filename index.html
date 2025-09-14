@@ -2,7 +2,7 @@
 <html lang="my">
 <head>
   <meta charset="UTF-8">
-  <title>Multi Timer Game</title>
+  <title>Win Go Game</title>
   <style>
     body { font-family: sans-serif; text-align: center; background: #f4f4f4; }
     .numbers { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; margin: 20px 0; }
@@ -16,6 +16,10 @@
     .mode-buttons button { background: #27ae60; color: #fff; }
     #result { margin-top: 20px; font-size: 18px; }
     #timer { font-size: 22px; margin-top: 10px; }
+    #balance { font-size: 20px; font-weight: bold; margin-top: 15px; }
+    table { width: 90%; margin: 20px auto; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 8px; font-size: 14px; }
+    th { background: #333; color: #fff; }
   </style>
 </head>
 <body>
@@ -32,6 +36,7 @@
 
   <h3>ရွေးထားသော Mode: <span id="mode">30s</span></h3>
   <div id="timer">30</div>
+  <div id="balance">💰 Balance: 1000</div>
 
   <!-- ဂဏန်း icon -->
   <div class="numbers" id="numberBtns">
@@ -53,12 +58,38 @@
     <button class="big" onclick="placeBet('big')">အကြီး (5–9)</button>
   </div>
 
+  <!-- Bet Amount -->
+  <div style="margin:15px;">
+    <label>လောင်းမည့် Amount: </label>
+    <input type="number" id="betAmount" value="100" min="10" step="10">
+  </div>
+
   <div id="result"></div>
 
+  <!-- History Table -->
+  <h3>📜 Bet History</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>အချိန်</th>
+        <th>လောင်းသည့်အမျိုးအစား</th>
+        <th>Amount</th>
+        <th>ထွက်လာသည့်ဂဏန်း</th>
+        <th>အနိုင်/အရှုံး</th>
+      </tr>
+    </thead>
+    <tbody id="history"></tbody>
+  </table>
+
   <script>
-    let currentMode = 30; // default 30s
+    let currentMode = 30;
     let timeLeft = currentMode;
     let bet = null;
+    let balance = 1000;
+
+    // LocalStorage Load
+    let historyData = JSON.parse(localStorage.getItem("historyData")) || [];
+    renderHistory();
 
     function setMode(seconds) {
       currentMode = seconds;
@@ -73,34 +104,88 @@
     }
 
     function placeBet(type, number=null) {
-      if(type === 'number'){
-        bet = { type:'number', value:number };
-        document.getElementById("result").innerText = "Bet placed: ဂဏန်း " + number;
-      } else {
-        bet = { type:type };
-        document.getElementById("result").innerText = "Bet placed: " + (type==='small' ? "အသေး" : "အကြီး");
+      let amount = parseInt(document.getElementById("betAmount").value);
+      if (amount > balance) {
+        document.getElementById("result").innerText = "❌ Balance မလောက်ပါ";
+        return;
       }
+      bet = (type === 'number') ? { type:'number', value:number, amount:amount }
+                                : { type:type, amount:amount };
+      document.getElementById("result").innerText = 
+        "Bet placed: " + (type==='number' ? "ဂဏန်း " + number : (type==='small' ? "အသေး" : "အကြီး")) 
+        + " → " + amount + " ကျပ်";
+    }
+
+    function updateBalance() {
+      document.getElementById("balance").innerText = "💰 Balance: " + balance;
+    }
+
+    function addHistory(betType, amount, randomNum, resultText) {
+      let now = new Date().toLocaleTimeString();
+      let newRecord = { time: now, betType, amount, randomNum, resultText };
+      historyData.unshift(newRecord); // add to beginning
+      if (historyData.length > 50) historyData.pop(); // keep max 50 records
+      localStorage.setItem("historyData", JSON.stringify(historyData));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      let tbody = document.getElementById("history");
+      tbody.innerHTML = "";
+      historyData.forEach(item => {
+        let row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.time}</td>
+          <td>${item.betType}</td>
+          <td>${item.amount}</td>
+          <td>${item.randomNum}</td>
+          <td>${item.resultText}</td>
+        `;
+        tbody.appendChild(row);
+      });
     }
 
     function countdown() {
       document.getElementById("timer").innerText = timeLeft;
       if (timeLeft <= 0) {
-        let randomNum = Math.floor(Math.random() * 10); // 0-9
+        let randomNum = Math.floor(Math.random() * 10);
         let outcome = randomNum <= 4 ? 'small' : 'big';
         let msg = "ထွက်လာသည့်ဂဏန်း: " + randomNum + " → ";
+        let historyResult = "";
 
         if(!bet){
           msg += "❌ Bet မလုပ်ထားပါ";
-        } else if(bet.type === 'number'){
-          msg += (bet.value === randomNum ? "✔️ Win (တိကျ)" : "❌ Lose (တိကျ)");
-        } else if(bet.type === outcome){
-          msg += "✔️ Win";
         } else {
-          msg += "❌ Lose";
+          balance -= bet.amount;
+          if(bet.type === 'number'){
+            if(bet.value === randomNum){
+              let win = bet.amount * 10;
+              balance += win;
+              msg += "✔️ Win (တိကျ) +" + win;
+              historyResult = "Win +" + win;
+            } else {
+              msg += "❌ Lose -" + bet.amount;
+              historyResult = "Lose -" + bet.amount;
+            }
+          } else if(bet.type === outcome){
+            let win = bet.amount * 2;
+            balance += win;
+            msg += "✔️ Win +" + win;
+            historyResult = "Win +" + win;
+          } else {
+            msg += "❌ Lose -" + bet.amount;
+            historyResult = "Lose -" + bet.amount;
+          }
+
+          addHistory(
+            bet.type==='number' ? "ဂဏန်း " + bet.value : (bet.type==='small' ? "အသေး" : "အကြီး"),
+            bet.amount, randomNum, historyResult
+          );
         }
 
         document.getElementById("result").innerText = msg;
-        timeLeft = currentMode; // reset timer
+        updateBalance();
+        timeLeft = currentMode;
         bet = null;
       }
       timeLeft--;
