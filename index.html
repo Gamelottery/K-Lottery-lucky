@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0, minimum-scale=0.5">
@@ -185,6 +185,24 @@
         .dragon-icon {
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
         }
+        
+        .payment-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .payment-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .upload-area {
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
     </style>
 </head>
 <body class="overflow-x-hidden min-h-screen">
@@ -198,7 +216,6 @@
                     <p class="text-xs text-gray-500">Lottery Platform</p>
                 </div>
             </div>
-
         </div>
         
         <!-- Money Display Section -->
@@ -217,9 +234,6 @@
                     📤 ငွေထုတ်
                 </button>
             </div>
-
-            
-
         </div>
         
         <!-- Game Title -->
@@ -312,10 +326,13 @@
                     </button>
                 </div>
                 
-                <button onclick="hideBetAmountSection()" class="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-xl transition-all">
-                    ❌ ပယ်ဖျက်မည်
+                <button onclick="hideBetAmountSection()" class="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-xl transition-all flex items-center justify-center space-x-2">
+                    <span class="text-xl">❌</span>
+                    <span>ပယ်ဖျက်မည်</span>
                 </button>
             </div>
+            
+
             
             <div class="flex justify-center space-x-4 mb-4">
                 <button id="big-btn" class="big-small-btn bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg transition-all transform hover:scale-105 flex-1 max-w-xs" onclick="selectBigSmall('big')">
@@ -466,15 +483,21 @@
                 <div class="text-center mb-4">
                     <div class="text-sm text-gray-600">စုစုပေါင်းလောင်းငွေ:</div>
                     <div class="text-2xl font-bold text-green-600" id="bet-amount">0 ကျပ်</div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        ပွဲစဥ်လောင်းငွေ: <span id="round-total-bet">0</span> ကျပ် | 
+                        လောင်းကြိမ်: <span id="round-bet-count">0</span>/<span id="max-bets">10</span>
+                    </div>
                 </div>
                 
                 <!-- Action Buttons -->
                 <div class="flex space-x-3">
-                    <button onclick="confirmBet()" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105">
-                        ✅ လောင်းမည်
+                    <button onclick="confirmBet()" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+                        <span class="text-2xl">✅</span>
+                        <span>အတည်ပြုပါသည်</span>
                     </button>
-                    <button onclick="cancelBet()" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105">
-                        ❌ ပယ်ဖျက်
+                    <button onclick="cancelBet()" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+                        <span class="text-2xl">❌</span>
+                        <span>ပယ်ဖျက်ပါသည်</span>
                     </button>
                 </div>
             </div>
@@ -497,6 +520,44 @@
             </div>
             <div class="text-center text-sm text-gray-600">
                 💰 စုစုပေါင်းဆုကြေး: <span class="font-bold text-green-600">၁၂၅,၄၃၀,၀၀၀ ကျပ်</span>
+            </div>
+        </div>
+
+        <!-- Betting History Section -->
+        <div class="game-card rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                📋 လောင်းကစားမှတ်တမ်း
+                <button onclick="toggleHistoryView()" class="ml-auto text-sm bg-purple-500 text-white px-3 py-1 rounded-full hover:bg-purple-600 transition-all">
+                    <span id="history-toggle-text">📊 ကြည့်ရှုမည်</span>
+                </button>
+            </h3>
+            
+            <div id="betting-history-content" class="hidden">
+                <!-- Current Round Bets -->
+                <div id="current-round-section" class="mb-6">
+                    <h4 class="font-bold text-gray-700 mb-3 flex items-center">
+                        🎯 လက်ရှိပွဲစဥ် #<span id="current-round-display">856</span>
+                        <span class="ml-auto text-sm text-blue-600" id="current-bets-count">0 လောင်း</span>
+                    </h4>
+                    <div id="current-round-bets" class="space-y-2">
+                        <div class="text-center text-gray-500 text-sm py-4" id="no-current-bets">
+                            မည်သည့်လောင်းကစားမှ မရှိသေးပါ
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Past Results -->
+                <div id="past-results-section">
+                    <h4 class="font-bold text-gray-700 mb-3 flex items-center">
+                        🏆 ယခင်ရလဒ်များ
+                        <span class="ml-auto text-sm text-green-600" id="total-profit">စုစုပေါင်း: +0 Ks</span>
+                    </h4>
+                    <div id="past-results" class="space-y-2 max-h-64 overflow-y-auto">
+                        <div class="text-center text-gray-500 text-sm py-4">
+                            မည်သည့်ရလဒ်မှ မရှိသေးပါ
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -654,8 +715,6 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 
     <script>
@@ -669,6 +728,19 @@
         // Game results and sequence for 1min game
         let gameResults = [];
         let gameNumberSequence = [3, 6, 0, 4, 5, 1, 7, 9, 2, 8];
+
+        // Deposit System Variables
+        let selectedPaymentMethod = null;
+        let selectedDepositAmountValue = 0;
+        let uploadedReceiptFile = null;
+
+        // Withdrawal System Variables
+        let selectedWithdrawMethod = null;
+        let selectedWithdrawAmountValue = 0;
+
+        // Betting History System
+        let bettingHistory = [];
+        let currentRoundBets = [];
 
         // Initialize timer
         function startTimer() {
@@ -710,21 +782,33 @@
             event.target.classList.add('bg-red-600');
         }
 
-        // Track if user has already placed a big/small bet this round
-        let hasBigSmallBet = false;
-        let currentBigSmallChoice = null;
+        // Enhanced betting system tracking
+        let activeBets = new Map(); // Track all active bets by type
+        let betLimits = {
+            maxBetsPerRound: 10,
+            maxTotalBetAmount: 1000000,
+            minBetAmount: 100
+        };
+        let currentRoundTotalBet = 0;
 
         function selectBigSmall(choice) {
-            // Check if already placed a bet on the opposite choice
-            if (hasBigSmallBet && currentBigSmallChoice !== choice) {
-                const oppositeChoice = currentBigSmallChoice === 'big' ? 'အကြီး' : 'အသေး';
-                const newChoice = choice === 'big' ? 'အကြီး' : 'အသေး';
-                alert(`❌ ${oppositeChoice}လောင်းထားပြီးဖြစ်သောကြောင့် ${newChoice}လောင်းလို့မရပါ! ပယ်ဖျက်ပြီး အသစ်လောင်းပါ။`);
+            // Check betting limits
+            if (currentRoundBets.length >= betLimits.maxBetsPerRound) {
+                alert(`❌ တစ်ပွဲလျှင် အများဆုံး ${betLimits.maxBetsPerRound} ကြိမ်သာ လောင်းနိုင်ပါသည်!`);
+                return;
+            }
+            
+            // Check if timer is too low (less than 10 seconds)
+            if (countdownTimer <= 10) {
+                alert('❌ အချိန်နည်းနေပါသည်! နောက်ပွဲစဥ်တွင် လောင်းပါ။');
                 return;
             }
             
             // Remove previous selection
             document.querySelectorAll('.big-small-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelectorAll('.number-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
             
@@ -753,23 +837,44 @@
         }
 
         function selectColor(color) {
+            // Check betting limits
+            if (currentRoundBets.length >= betLimits.maxBetsPerRound) {
+                alert(`❌ တစ်ပွဲလျှင် အများဆုံး ${betLimits.maxBetsPerRound} ကြိမ်သာ လောင်းနိုင်ပါသည်!`);
+                return;
+            }
+            
+            // Check if timer is too low (less than 10 seconds)
+            if (countdownTimer <= 10) {
+                alert('❌ အချိန်နည်းနေပါသည်! နောက်ပွဲစဥ်တွင် လောင်းပါ။');
+                return;
+            }
+            
             // Remove previous selection
             document.querySelectorAll('.big-small-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelectorAll('.number-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
             
             // Add selection to clicked button
             if (color === 'red') {
                 document.getElementById('red-btn').classList.add('selected');
-                document.getElementById('red-btn-timer').classList.add('selected');
+                if (document.getElementById('red-btn-timer')) {
+                    document.getElementById('red-btn-timer').classList.add('selected');
+                }
                 selectedChoice = 'red';
             } else if (color === 'green') {
                 document.getElementById('green-btn').classList.add('selected');
-                document.getElementById('green-btn-timer').classList.add('selected');
+                if (document.getElementById('green-btn-timer')) {
+                    document.getElementById('green-btn-timer').classList.add('selected');
+                }
                 selectedChoice = 'green';
             } else if (color === 'purple') {
                 document.getElementById('purple-btn').classList.add('selected');
-                document.getElementById('purple-btn-timer').classList.add('selected');
+                if (document.getElementById('purple-btn-timer')) {
+                    document.getElementById('purple-btn-timer').classList.add('selected');
+                }
                 selectedChoice = 'purple';
             }
             
@@ -778,6 +883,18 @@
         }
 
         function selectNumber(number) {
+            // Check betting limits
+            if (currentRoundBets.length >= betLimits.maxBetsPerRound) {
+                alert(`❌ တစ်ပွဲလျှင် အများဆုံး ${betLimits.maxBetsPerRound} ကြိမ်သာ လောင်းနိုင်ပါသည်!`);
+                return;
+            }
+            
+            // Check if timer is too low (less than 10 seconds)
+            if (countdownTimer <= 10) {
+                alert('❌ အချိန်နည်းနေပါသည်! နောက်ပွဲစဥ်တွင် လောင်းပါ။');
+                return;
+            }
+            
             // Remove previous number selection
             document.querySelectorAll('.number-btn').forEach(btn => {
                 btn.classList.remove('selected');
@@ -849,12 +966,37 @@
         }
 
         function confirmBet() {
+            // Comprehensive validation
             if (!selectedChoice) {
-                alert('အကြီး၊ အသေး၊ အနီရောင်၊ အစိမ်းရောင် သို့မဟုတ် ခရမ်းရောင် ရွေးချယ်ပါ!');
+                alert('❌ အကြီး၊ အသေး၊ အရောင် သို့မဟုတ် နံပါတ် ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            // Check if timer is too low (less than 5 seconds)
+            if (countdownTimer <= 5) {
+                alert('❌ အချိန်ကုန်နေပါပြီ! နောက်ပွဲစဥ်တွင် လောင်းပါ။');
                 return;
             }
             
             const totalBet = baseBet * selectedMultiplier;
+            
+            // Validate bet amount
+            if (totalBet < betLimits.minBetAmount) {
+                alert(`❌ အနည်းဆုံး ${betLimits.minBetAmount.toLocaleString()} ကျပ် လောင်းရပါမည်!`);
+                return;
+            }
+            
+            // Check total bet limit for this round
+            if (currentRoundTotalBet + totalBet > betLimits.maxTotalBetAmount) {
+                alert(`❌ တစ်ပွဲလျှင် အများဆုံး ${betLimits.maxTotalBetAmount.toLocaleString()} ကျပ်သာ လောင်းနိုင်ပါသည်!`);
+                return;
+            }
+            
+            // Check betting limits
+            if (currentRoundBets.length >= betLimits.maxBetsPerRound) {
+                alert(`❌ တစ်ပွဲလျှင် အများဆုံး ${betLimits.maxBetsPerRound} ကြိမ်သာ လောင်းနိုင်ပါသည်!`);
+                return;
+            }
             
             // Check if user has enough balance
             const currentBalance = getCurrentBalance();
@@ -864,13 +1006,24 @@
             }
             
             if (totalBet > currentBalance) {
-                alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ! ငွေသွင်းပါ။');
+                alert(`❌ လက်ကျန်ငွေ မလုံလောက်ပါ! လိုအပ်သည်: ${totalBet.toLocaleString()} ကျပ်, ရှိသည်: ${currentBalance.toLocaleString()} ကျပ်`);
                 return;
+            }
+            
+            // Double confirmation for large bets
+            if (totalBet >= 100000) {
+                const confirmLargeBet = confirm(`⚠️ ${totalBet.toLocaleString()} ကျပ် လောင်းမည်ဖြစ်ပါသည်။ သေချာပါသလား?`);
+                if (!confirmLargeBet) {
+                    return;
+                }
             }
             
             // Deduct bet amount from balance
             const newBalance = currentBalance - totalBet;
             updateBalance(newBalance);
+            
+            // Update round totals
+            currentRoundTotalBet += totalBet;
             
             let choiceText;
             if (selectedChoice === 'big') choiceText = 'အကြီး';
@@ -883,6 +1036,9 @@
                 choiceText = `နံပါတ် ${number}`;
             }
             
+            // Add bet to current round tracking
+            addBetToCurrentRound(selectedChoice, totalBet, choiceText);
+            
             // Show success message and clear selections for next bet
             showSuccessMessage(totalBet, choiceText);
             
@@ -890,150 +1046,6 @@
             setTimeout(() => {
                 clearSelections();
             }, 1000);
-        }
-
-        function showBetAmountModal(choice) {
-            // Create overlay
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 99999;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            `;
-            
-            // Create modal container
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                background: white;
-                border-radius: 20px;
-                padding: 24px;
-                text-align: center;
-                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-                transform: scale(0.5);
-                transition: transform 0.5s ease;
-                max-width: 380px;
-                margin: 16px;
-                width: 90%;
-            `;
-            
-            const choiceText = choice === 'big' ? 'အကြီး' : 'အသေး';
-            const choiceIcon = choice === 'big' ? '🔴' : '🔵';
-            
-            modal.innerHTML = `
-                <div style="font-size: 60px; margin-bottom: 16px;">${choiceIcon}</div>
-                <div style="font-size: 24px; font-weight: bold; color: #374151; margin-bottom: 16px;">
-                    ${choiceText} ရွေးချယ်ပြီး
-                </div>
-                <div style="font-size: 16px; color: #6b7280; margin-bottom: 24px;">
-                    လောင်းငွေပမာဏ ရွေးချယ်ပါ
-                </div>
-                
-                <!-- Bet Amount Grid -->
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
-                    <button onclick="placeBetWithAmount('${choice}', 100)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        💎 100
-                    </button>
-                    <button onclick="placeBetWithAmount('${choice}', 500)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        💎 500
-                    </button>
-                    <button onclick="placeBetWithAmount('${choice}', 1000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        💎 1K
-                    </button>
-                    <button onclick="placeBetWithAmount('${choice}', 5000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        🔥 5K
-                    </button>
-                    <button onclick="placeBetWithAmount('${choice}', 10000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        🔥 10K
-                    </button>
-                    <button onclick="placeBetWithAmount('${choice}', 50000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        🔥 50K
-                    </button>
-                    <button onclick="placeBetWithAmount('${choice}', 100000)" style="background: linear-gradient(145deg, #ef4444, #dc2626); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        👑 100K
-                    </button>
-                    <button onclick="placeBetWithAmount('${choice}', 500000)" style="background: linear-gradient(145deg, #ef4444, #dc2626); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        👑 500K
-                    </button>
-                    <button onclick="placeBetWithAmount('${choice}', 1000000)" style="background: linear-gradient(145deg, #f59e0b, #d97706); color: white; font-weight: bold; padding: 12px 8px; border-radius: 12px; border: none; font-size: 14px; cursor: pointer; transition: all 0.2s;">
-                        👑 1M
-                    </button>
-                </div>
-                
-                <button onclick="closeBetModal()" style="background: linear-gradient(145deg, #6b7280, #4b5563); color: white; font-weight: bold; padding: 12px 24px; border-radius: 12px; border: none; font-size: 16px; cursor: pointer; width: 100%;">
-                    ❌ ပယ်ဖျက်မည်
-                </button>
-            `;
-            
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
-            
-            // Store reference for closing
-            window.currentBetModal = overlay;
-            
-            // Force reflow and animate in
-            overlay.offsetHeight;
-            overlay.style.opacity = '1';
-            
-            setTimeout(() => {
-                modal.style.transform = 'scale(1)';
-            }, 50);
-        }
-
-        function placeBetWithAmount(choice, amount) {
-            // Check if user has enough balance
-            const currentBalance = getCurrentBalance();
-            if (currentBalance === 0) {
-                alert('❌ လက်ကျန်ငွေ ၀ ကျပ်ဖြစ်နေပါသည်! ငွေသွင်းပါ။');
-                closeBetModal();
-                return;
-            }
-            
-            if (amount > currentBalance) {
-                alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ! ငွေသွင်းပါ။');
-                closeBetModal();
-                return;
-            }
-            
-            // Deduct bet amount from balance
-            const newBalance = currentBalance - amount;
-            updateBalance(newBalance);
-            
-            // Close the modal first
-            closeBetModal();
-            
-            // Set the bet amount
-            baseBet = amount;
-            selectedMultiplier = 1;
-            
-            // Show success message
-            const choiceText = choice === 'big' ? 'အကြီး' : 'အသေး';
-            showSuccessMessage(amount, choiceText);
-            
-            // Clear selections after betting to allow new bets
-            setTimeout(() => {
-                clearSelections();
-            }, 1000);
-        }
-
-        function closeBetModal() {
-            if (window.currentBetModal) {
-                window.currentBetModal.style.opacity = '0';
-                setTimeout(() => {
-                    if (document.body.contains(window.currentBetModal)) {
-                        document.body.removeChild(window.currentBetModal);
-                    }
-                    window.currentBetModal = null;
-                }, 300);
-            }
         }
 
         function showSuccessMessage(betAmount, choice) {
@@ -1137,9 +1149,12 @@
         }
 
         function simulateNewDraw() {
-            // Reset big/small bet tracking for new round
-            hasBigSmallBet = false;
-            currentBigSmallChoice = null;
+            // Process current round bets and calculate results
+            processCurrentRoundResults();
+            
+            // Reset all betting tracking for new round
+            currentRoundTotalBet = 0;
+            activeBets.clear();
             
             // Get next number from the predefined sequence
             const sequenceIndex = gameResults.length % gameNumberSequence.length;
@@ -1182,52 +1197,16 @@
             // Update statistics
             updateNumberFrequency(winningNumber);
             
-            // Check win/lose
-            if (selectedChoice) {
-                let isWin = false;
-                let winMultiplier = 1.95; // Default payout
-                
-                if (selectedChoice === 'big' && isBig) isWin = true;
-                else if (selectedChoice === 'small' && !isBig) isWin = true;
-                else if (selectedChoice === 'red' && isRed) {
-                    isWin = true;
-                    winMultiplier = 3.5;
-                }
-                else if (selectedChoice === 'green' && isGreen) {
-                    isWin = true;
-                    winMultiplier = 3.5;
-                }
-                else if (selectedChoice === 'purple' && isPurple) {
-                    isWin = true;
-                    winMultiplier = 6.0;
-                }
-                else if (selectedChoice.startsWith('number-')) {
-                    const selectedNumber = parseInt(selectedChoice.split('-')[1]);
-                    if (selectedNumber === winningNumber) {
-                        isWin = true;
-                        winMultiplier = 9.0;
-                    }
-                }
-                
-                if (isWin) {
-                    const winAmount = baseBet * selectedMultiplier * winMultiplier;
-                    
-                    // Add winnings to balance
-                    const currentBalance = getCurrentBalance();
-                    const newBalance = currentBalance + winAmount;
-                    updateBalance(newBalance);
-                    
-                    showWinLoseIcon('win', winAmount, winningNumber, resultText);
-                } else {
-                    const lostAmount = baseBet * selectedMultiplier;
-                    showWinLoseIcon('lose', lostAmount, winningNumber, resultText);
-                }
-            } else {
-                // Just show the result without win/lose
-                setTimeout(() => {
-                    alert(`🎊 Win Go 1min အသစ်ထွက်ပြီး! နံပါတ်: ${winningNumber} (${resultText})`);
-                }, 500);
-            }
+            // Process betting results and update history
+            processBettingResults(winningNumber, isBig, isRed, isGreen, isPurple, resultText, ballColor);
+            
+            // Clear current round bets for next round
+            currentRoundBets = [];
+            updateCurrentRoundDisplay();
+            updateBetTrackingDisplay();
+            
+            // Update round number display
+            document.getElementById('current-round-display').textContent = roundNumber;
         }
 
         function updateRecentNumbers(newNumber, ballColor) {
@@ -1371,13 +1350,19 @@
                         ငွေပေးချေမှုနည်းလမ်း ရွေးချယ်ပါ
                     </div>
                     <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;">
-                        <button id="wave-pay-btn" onclick="selectPaymentMethod('wave')" style="flex: 1; background: linear-gradient(145deg, #ff6b35, #f7931e); color: white; font-weight: bold; padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <button id="wave-pay-btn" onclick="selectPaymentMethod('wave')" style="flex: 1; background: linear-gradient(145deg, #ff6b35, #f7931e); color: white; font-weight: bold; padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.7;">
                             <span style="font-size: 20px;">📱</span>
-                            <span>Wave Pay</span>
+                            <div style="text-align: center;">
+                                <div>Wave Pay</div>
+                                <div style="font-size: 12px; opacity: 0.9;">09-123-456-789</div>
+                            </div>
                         </button>
-                        <button id="kbz-pay-btn" onclick="selectPaymentMethod('kbz')" style="flex: 1; background: linear-gradient(145deg, #1e40af, #1e3a8a); color: white; font-weight: bold; padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <button id="kbz-pay-btn" onclick="selectPaymentMethod('kbz')" style="flex: 1; background: linear-gradient(145deg, #1e40af, #1e3a8a); color: white; font-weight: bold; padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.7;">
                             <span style="font-size: 20px;">💳</span>
-                            <span>KBZ Pay</span>
+                            <div style="text-align: center;">
+                                <div>KBZ Pay</div>
+                                <div style="font-size: 12px; opacity: 0.9;">09-987-654-321</div>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -1442,7 +1427,7 @@
                         <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; text-align: left;">
                             ငွေလွှဲပြေစာ ပုံ *
                         </label>
-                        <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('receipt-upload').click()">
+                        <div id="upload-area-container" style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('receipt-upload').click()">
                             <input type="file" id="receipt-upload" accept="image/*" style="display: none;" onchange="handleReceiptUpload(this)">
                             <div id="upload-area">
                                 <div style="font-size: 32px; margin-bottom: 8px;">📷</div>
@@ -1478,43 +1463,51 @@
             }, 50);
         }
 
-        let selectedPaymentMethod = null;
-        let selectedDepositAmountValue = 0;
-
         function selectPaymentMethod(method) {
             selectedPaymentMethod = method;
             
             // Reset button styles
-            document.getElementById('wave-pay-btn').style.opacity = '0.6';
-            document.getElementById('kbz-pay-btn').style.opacity = '0.6';
+            document.getElementById('wave-pay-btn').style.opacity = '0.7';
+            document.getElementById('kbz-pay-btn').style.opacity = '0.7';
+            document.getElementById('wave-pay-btn').style.transform = 'scale(1)';
+            document.getElementById('kbz-pay-btn').style.transform = 'scale(1)';
+            document.getElementById('wave-pay-btn').style.boxShadow = 'none';
+            document.getElementById('kbz-pay-btn').style.boxShadow = 'none';
             
             // Highlight selected method
             if (method === 'wave') {
                 document.getElementById('wave-pay-btn').style.opacity = '1';
                 document.getElementById('wave-pay-btn').style.transform = 'scale(1.05)';
-                document.getElementById('kbz-pay-btn').style.transform = 'scale(1)';
+                document.getElementById('wave-pay-btn').style.boxShadow = '0 0 0 3px rgba(255, 107, 53, 0.3)';
                 
                 // Show Wave Pay account info
                 document.getElementById('payment-account-info').innerHTML = `
-                    <div style="color: #ff6b35;">📱 Wave Pay</div>
-                    <div style="font-size: 18px; margin: 8px 0;">09-123-456-789</div>
+                    <div style="color: #ff6b35; font-size: 18px; margin-bottom: 8px;">📱 Wave Pay</div>
+                    <div style="font-size: 20px; font-weight: bold; margin: 8px 0; color: #1f2937;">09-123-456-789</div>
                     <div style="font-size: 14px; color: #6b7280;">အမည်: BigWin Game</div>
+                    <div style="font-size: 12px; color: #ef4444; margin-top: 8px;">⚠️ ဤအကောင့်သို့သာ ငွေလွှဲပါ</div>
                 `;
             } else if (method === 'kbz') {
                 document.getElementById('kbz-pay-btn').style.opacity = '1';
                 document.getElementById('kbz-pay-btn').style.transform = 'scale(1.05)';
-                document.getElementById('wave-pay-btn').style.transform = 'scale(1)';
+                document.getElementById('kbz-pay-btn').style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.3)';
                 
                 // Show KBZ Pay account info
                 document.getElementById('payment-account-info').innerHTML = `
-                    <div style="color: #1e40af;">💳 KBZ Pay</div>
-                    <div style="font-size: 18px; margin: 8px 0;">09-987-654-321</div>
+                    <div style="color: #1e40af; font-size: 18px; margin-bottom: 8px;">💳 KBZ Pay</div>
+                    <div style="font-size: 20px; font-weight: bold; margin: 8px 0; color: #1f2937;">09-987-654-321</div>
                     <div style="font-size: 14px; color: #6b7280;">အမည်: BigWin Game</div>
+                    <div style="font-size: 12px; color: #ef4444; margin-top: 8px;">⚠️ ဤအကောင့်သို့သာ ငွေလွှဲပါ</div>
                 `;
             }
             
-            // Show payment details form
-            document.getElementById('payment-details').style.display = 'block';
+            // Show payment details form if amount is selected
+            if (selectedDepositAmountValue > 0) {
+                document.getElementById('payment-details').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('payment-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
         }
 
         function selectDepositAmount(amount) {
@@ -1523,34 +1516,47 @@
             document.getElementById('custom-amount').value = amount;
             
             // Visual feedback for amount selection
-            document.querySelectorAll('#payment-details button').forEach(btn => {
-                if (btn.textContent.includes(amount.toLocaleString())) {
-                    btn.style.transform = 'scale(0.95)';
-                    btn.style.opacity = '0.8';
-                    setTimeout(() => {
-                        btn.style.transform = 'scale(1)';
-                        btn.style.opacity = '1';
-                    }, 200);
-                }
-            });
+            event.target.style.transform = 'scale(0.95)';
+            event.target.style.opacity = '0.8';
+            setTimeout(() => {
+                event.target.style.transform = 'scale(1)';
+                event.target.style.opacity = '1';
+            }, 200);
+            
+            // Show payment details if payment method is selected
+            if (selectedPaymentMethod && selectedDepositAmountValue > 0) {
+                document.getElementById('payment-details').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('payment-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
         }
 
         function updateDepositAmount(value) {
             selectedDepositAmountValue = parseInt(value) || 0;
             document.getElementById('selected-deposit-amount').textContent = selectedDepositAmountValue.toLocaleString();
+            
+            // Show payment details if payment method is selected
+            if (selectedPaymentMethod && selectedDepositAmountValue > 0) {
+                document.getElementById('payment-details').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('payment-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
         }
 
         function handleReceiptUpload(input) {
             const file = input.files[0];
             if (file) {
+                uploadedReceiptFile = file;
                 const uploadArea = document.getElementById('upload-area');
                 uploadArea.innerHTML = `
-                    <div style="font-size: 24px; margin-bottom: 8px;">✅</div>
+                    <div style="font-size: 32px; margin-bottom: 8px;">✅</div>
                     <div style="font-size: 14px; color: #10b981; font-weight: 600;">${file.name}</div>
                     <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">ပုံရွေးချယ်ပြီး</div>
                 `;
-                uploadArea.parentElement.style.borderColor = '#10b981';
-                uploadArea.parentElement.style.backgroundColor = '#f0fdf4';
+                document.getElementById('upload-area-container').style.borderColor = '#10b981';
+                document.getElementById('upload-area-container').style.backgroundColor = '#f0fdf4';
             }
         }
 
@@ -1572,8 +1578,7 @@
                 return;
             }
             
-            const receiptFile = document.getElementById('receipt-upload').files[0];
-            if (!receiptFile) {
+            if (!uploadedReceiptFile) {
                 alert('❌ ငွေလွှဲပြေစာ ပုံ ရွေးချယ်ပါ!');
                 return;
             }
@@ -1687,22 +1692,440 @@
                         document.body.removeChild(window.currentDepositModal);
                     }
                     window.currentDepositModal = null;
+                    
+                    // Reset deposit form variables
+                    selectedPaymentMethod = null;
+                    selectedDepositAmountValue = 0;
+                    uploadedReceiptFile = null;
+                }, 300);
+            }
+        }
+
+        function selectWithdrawMethod(method) {
+            selectedWithdrawMethod = method;
+            
+            // Reset button styles
+            document.getElementById('withdraw-wave-btn').style.opacity = '0.7';
+            document.getElementById('withdraw-kbz-btn').style.opacity = '0.7';
+            document.getElementById('withdraw-wave-btn').style.transform = 'scale(1)';
+            document.getElementById('withdraw-kbz-btn').style.transform = 'scale(1)';
+            document.getElementById('withdraw-wave-btn').style.boxShadow = 'none';
+            document.getElementById('withdraw-kbz-btn').style.boxShadow = 'none';
+            
+            // Highlight selected method
+            if (method === 'wave') {
+                document.getElementById('withdraw-wave-btn').style.opacity = '1';
+                document.getElementById('withdraw-wave-btn').style.transform = 'scale(1.05)';
+                document.getElementById('withdraw-wave-btn').style.boxShadow = '0 0 0 3px rgba(255, 107, 53, 0.3)';
+            } else if (method === 'kbz') {
+                document.getElementById('withdraw-kbz-btn').style.opacity = '1';
+                document.getElementById('withdraw-kbz-btn').style.transform = 'scale(1.05)';
+                document.getElementById('withdraw-kbz-btn').style.boxShadow = '0 0 0 3px rgba(30, 64, 175, 0.3)';
+            }
+            
+            // Show withdrawal details form if amount is selected
+            if (selectedWithdrawAmountValue > 0) {
+                document.getElementById('withdraw-details').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('withdraw-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        }
+
+        function selectWithdrawAmount(amount) {
+            const currentBalance = getCurrentBalance();
+            
+            // Check if amount exceeds balance
+            if (amount > currentBalance) {
+                alert(`❌ လက်ကျန်ငွေ မလုံလောက်ပါ! အများဆုံး: ${currentBalance.toLocaleString()} ကျပ်`);
+                return;
+            }
+            
+            selectedWithdrawAmountValue = amount;
+            document.getElementById('selected-withdraw-amount').textContent = amount.toLocaleString();
+            document.getElementById('withdraw-custom-amount').value = amount;
+            
+            // Visual feedback for amount selection
+            event.target.style.transform = 'scale(0.95)';
+            event.target.style.opacity = '0.8';
+            setTimeout(() => {
+                event.target.style.transform = 'scale(1)';
+                event.target.style.opacity = '1';
+            }, 200);
+            
+            // Show withdrawal details if method is selected
+            if (selectedWithdrawMethod && selectedWithdrawAmountValue > 0) {
+                document.getElementById('withdraw-details').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('withdraw-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        }
+
+        function updateWithdrawAmount(value) {
+            const currentBalance = getCurrentBalance();
+            const amount = parseInt(value) || 0;
+            
+            // Check if amount exceeds balance
+            if (amount > currentBalance) {
+                document.getElementById('withdraw-custom-amount').value = currentBalance;
+                selectedWithdrawAmountValue = currentBalance;
+                alert(`❌ လက်ကျန်ငွေထက် မပိုနိုင်ပါ! အများဆုံး: ${currentBalance.toLocaleString()} ကျပ်`);
+            } else {
+                selectedWithdrawAmountValue = amount;
+            }
+            
+            document.getElementById('selected-withdraw-amount').textContent = selectedWithdrawAmountValue.toLocaleString();
+            
+            // Show withdrawal details if method is selected
+            if (selectedWithdrawMethod && selectedWithdrawAmountValue > 0) {
+                document.getElementById('withdraw-details').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('withdraw-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        }
+
+        function submitWithdrawRequest() {
+            // Validate form
+            if (!selectedWithdrawMethod) {
+                alert('❌ ငွေလက်ခံမည့်နည်းလမ်း ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            if (selectedWithdrawAmountValue <= 0) {
+                alert('❌ ငွေပမာဏ ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            if (selectedWithdrawAmountValue < 5000) {
+                alert('❌ အနည်းဆုံး ၅,၀၀၀ ကျပ် ထုတ်ရပါမည်!');
+                return;
+            }
+            
+            const currentBalance = getCurrentBalance();
+            if (selectedWithdrawAmountValue > currentBalance) {
+                alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ!');
+                return;
+            }
+            
+            const accountName = document.getElementById('withdraw-account-name').value;
+            if (!accountName || accountName.length < 2) {
+                alert('❌ အကောင့်အမည် မှန်ကန်စွာ ရိုက်ထည့်ပါ!');
+                return;
+            }
+            
+            const withdrawPhone = document.getElementById('withdraw-phone').value;
+            if (!withdrawPhone || withdrawPhone.length < 10) {
+                alert('❌ ဖုန်းနံပါတ် မှန်ကန်စွာ ရိုက်ထည့်ပါ!');
+                return;
+            }
+            
+            const password = document.getElementById('withdraw-password').value;
+            if (!password || password.length < 4) {
+                alert('❌ လုံခြုံရေးကုဒ် ရိုက်ထည့်ပါ!');
+                return;
+            }
+            
+            // Simulate password verification (in real app, this would be server-side)
+            if (password !== '1234') {
+                alert('❌ လုံခြုံရေးကုဒ် မှားနေပါသည်!');
+                return;
+            }
+            
+            // Deduct amount from balance
+            const newBalance = currentBalance - selectedWithdrawAmountValue;
+            updateBalance(newBalance);
+            
+            // Close modal
+            closeWithdrawModal();
+            
+            // Show success message
+            showWithdrawSuccessMessage(selectedWithdrawAmountValue, selectedWithdrawMethod, accountName, withdrawPhone);
+        }
+
+        function showWithdrawSuccessMessage(amount, method, accountName, phone) {
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // Create success container
+            const successContainer = document.createElement('div');
+            successContainer.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 32px;
+                text-align: center;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+                transform: scale(0.5);
+                transition: transform 0.5s ease;
+                max-width: 380px;
+                margin: 16px;
+            `;
+            
+            const methodText = method === 'wave' ? 'Wave Pay' : 'KBZ Pay';
+            const methodIcon = method === 'wave' ? '📱' : '💳';
+            
+            successContainer.innerHTML = `
+                <div style="font-size: 64px; margin-bottom: 16px;">
+                    <div style="position: relative; display: inline-block;">
+                        <div style="color: #ef4444;">💸</div>
+                        <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 20px; animation: pulse 2s infinite;">✨</div>
+                    </div>
+                </div>
+                <div style="font-size: 24px; font-weight: bold; color: #ef4444; margin-bottom: 16px;">
+                    🎉 ငွေထုတ်တောင်းဆိုမှု အောင်မြင်ပါသည် 🎉
+                </div>
+                <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: left;">
+                    <div style="font-size: 14px; color: #b91c1c; margin-bottom: 8px;">တောင်းဆိုမှု အသေးစိတ်:</div>
+                    <div style="font-size: 16px; color: #374151; margin-bottom: 4px;">💰 ငွေပမာဏ: <strong>${amount.toLocaleString()} ကျပ်</strong></div>
+                    <div style="font-size: 16px; color: #374151; margin-bottom: 4px;">${methodIcon} နည်းလမ်း: <strong>${methodText}</strong></div>
+                    <div style="font-size: 16px; color: #374151; margin-bottom: 4px;">👤 အမည်: <strong>${accountName}</strong></div>
+                    <div style="font-size: 16px; color: #374151;">📱 ဖုန်း: <strong>${phone}</strong></div>
+                </div>
+                <div style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">
+                    ⏰ ငွေရောက်ချိန်: ၅-၃၀ မိနစ်အတွင်း<br>
+                    📞 ပြဿနာရှိပါက: 09-111-222-333
+                </div>
+                <div style="font-size: 16px; color: #ef4444; font-weight: 600;">
+                    🙏 ကျေးဇူးတင်ပါသည်!
+                </div>
+            `;
+            
+            overlay.appendChild(successContainer);
+            document.body.appendChild(overlay);
+            
+            // Force reflow and animate in
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            setTimeout(() => {
+                successContainer.style.transform = 'scale(1)';
+            }, 50);
+            
+            // Click to close
+            overlay.addEventListener('click', () => {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(overlay)) {
+                        document.body.removeChild(overlay);
+                    }
+                }, 300);
+            });
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (document.body.contains(overlay)) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.body.contains(overlay)) {
+                            document.body.removeChild(overlay);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+
+        function closeWithdrawModal() {
+            if (window.currentWithdrawModal) {
+                window.currentWithdrawModal.style.opacity = '0';
+                setTimeout(() => {
+                    if (document.body.contains(window.currentWithdrawModal)) {
+                        document.body.removeChild(window.currentWithdrawModal);
+                    }
+                    window.currentWithdrawModal = null;
+                    
+                    // Reset withdrawal form variables
+                    selectedWithdrawMethod = null;
+                    selectedWithdrawAmountValue = 0;
                 }, 300);
             }
         }
 
         function showWithdrawModal() {
             const currentBalance = getCurrentBalance();
-            const amount = prompt(`ငွေထုတ်မည့်ပမာဏ (Ks):\nလက်ကျန်ငွေ: ${currentBalance.toLocaleString()} Ks`);
-            if (amount && !isNaN(amount) && parseInt(amount) > 0) {
-                if (parseInt(amount) <= currentBalance) {
-                    const newBalance = currentBalance - parseInt(amount);
-                    updateBalance(newBalance);
-                    alert(`✅ ${parseInt(amount).toLocaleString()} Ks ငွေထုတ်ပြီးပါပြီ!`);
-                } else {
-                    alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ!');
-                }
-            }
+            
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 99999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                overflow-y: auto;
+                padding: 20px;
+            `;
+            
+            // Create modal container
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 24px;
+                text-align: center;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+                transform: scale(0.5);
+                transition: transform 0.5s ease;
+                max-width: 420px;
+                width: 90%;
+                max-height: 90vh;
+                overflow-y: auto;
+            `;
+            
+            modal.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 16px;">💸</div>
+                <div style="font-size: 24px; font-weight: bold; color: #374151; margin-bottom: 12px;">
+                    ငွေထုတ်ရန်
+                </div>
+                <div style="background: #f0fdf4; border: 2px solid #10b981; border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #059669; margin-bottom: 4px;">လက်ကျန်ငွေ</div>
+                    <div style="font-size: 20px; font-weight: bold; color: #10b981;">${currentBalance.toLocaleString()} ကျပ်</div>
+                </div>
+                
+                <!-- Payment Method Selection -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 12px;">
+                        ငွေလက်ခံမည့် နည်းလမ်း ရွေးချယ်ပါ
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;">
+                        <button id="withdraw-wave-btn" onclick="selectWithdrawMethod('wave')" style="flex: 1; background: linear-gradient(145deg, #ff6b35, #f7931e); color: white; font-weight: bold; padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.7;">
+                            <span style="font-size: 20px;">📱</span>
+                            <div style="text-align: center;">
+                                <div>Wave Pay</div>
+                                <div style="font-size: 12px; opacity: 0.9;">သင့်အကောင့်</div>
+                            </div>
+                        </button>
+                        <button id="withdraw-kbz-btn" onclick="selectWithdrawMethod('kbz')" style="flex: 1; background: linear-gradient(145deg, #1e40af, #1e3a8a); color: white; font-weight: bold; padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.7;">
+                            <span style="font-size: 20px;">💳</span>
+                            <div style="text-align: center;">
+                                <div>KBZ Pay</div>
+                                <div style="font-size: 12px; opacity: 0.9;">သင့်အကောင့်</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Amount Selection -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 12px;">
+                        ငွေပမာဏ ရွေးချယ်ပါ
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
+                        <button onclick="selectWithdrawAmount(5000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            5,000
+                        </button>
+                        <button onclick="selectWithdrawAmount(10000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            10,000
+                        </button>
+                        <button onclick="selectWithdrawAmount(20000)" style="background: linear-gradient(145deg, #3b82f6, #2563eb); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            20,000
+                        </button>
+                        <button onclick="selectWithdrawAmount(50000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            50,000
+                        </button>
+                        <button onclick="selectWithdrawAmount(100000)" style="background: linear-gradient(145deg, #8b5cf6, #7c3aed); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            100,000
+                        </button>
+                        <button onclick="selectWithdrawAmount(500000)" style="background: linear-gradient(145deg, #ef4444, #dc2626); color: white; font-weight: bold; padding: 8px 4px; border-radius: 8px; border: none; font-size: 12px; cursor: pointer; transition: all 0.2s;">
+                            500,000
+                        </button>
+                    </div>
+                    
+                    <!-- Custom Amount Input -->
+                    <div style="margin-bottom: 16px;">
+                        <input type="number" id="withdraw-custom-amount" placeholder="သို့မဟုတ် ကိုယ်တိုင်ရိုက်ထည့်ပါ" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; text-align: center;" oninput="updateWithdrawAmount(this.value)" max="${currentBalance}">
+                    </div>
+                    
+                    <div style="font-size: 18px; font-weight: bold; color: #ef4444; margin-bottom: 16px;">
+                        ငွေပမာဏ: <span id="selected-withdraw-amount">0</span> ကျပ်
+                    </div>
+                </div>
+                
+                <!-- Account Details Form -->
+                <div id="withdraw-details" style="display: none; margin-bottom: 20px;">
+                    <div style="background: #fef3c7; border: 2px solid #f59e0b; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                        <div style="font-size: 14px; font-weight: 600; color: #92400e; margin-bottom: 8px;">
+                            ⚠️ အရေးကြီးသောသတိပေးချက်
+                        </div>
+                        <div style="font-size: 12px; color: #92400e; text-align: left;">
+                            • အကောင့်အမည်နှင့် ဖုန်းနံပါတ် မှန်ကန်ရပါမည်<br>
+                            • ငွေထုတ်ချိန်: ၅-၃၀ မိနစ်အတွင်း<br>
+                            • အနည်းဆုံး: ၅,၀၀၀ ကျပ်
+                        </div>
+                    </div>
+                    
+                    <!-- Account Name Input -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; text-align: left;">
+                            အကောင့်အမည် *
+                        </label>
+                        <input type="text" id="withdraw-account-name" placeholder="သင့်အကောင့်အမည် ရိုက်ထည့်ပါ" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;" required>
+                    </div>
+                    
+                    <!-- Phone Number Input -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; text-align: left;">
+                            ဖုန်းနံပါတ် *
+                        </label>
+                        <input type="tel" id="withdraw-phone" placeholder="09xxxxxxxxx" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;" required>
+                    </div>
+                    
+                    <!-- Password Confirmation -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; text-align: left;">
+                            လုံခြုံရေးကုဒ် *
+                        </label>
+                        <input type="password" id="withdraw-password" placeholder="သင့်လုံခြုံရေးကုဒ်" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px;" required>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px; text-align: left;">
+                            လုံခြုံရေးအတွက် လိုအပ်ပါသည်
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button onclick="submitWithdrawRequest()" style="width: 100%; background: linear-gradient(145deg, #ef4444, #dc2626); color: white; font-weight: bold; padding: 14px; border-radius: 12px; border: none; font-size: 16px; cursor: pointer; margin-bottom: 12px;">
+                        💸 ငွေထုတ်တောင်းဆိုမည်
+                    </button>
+                </div>
+                
+                <button onclick="closeWithdrawModal()" style="width: 100%; background: linear-gradient(145deg, #6b7280, #4b5563); color: white; font-weight: bold; padding: 12px; border-radius: 12px; border: none; font-size: 16px; cursor: pointer;">
+                    ❌ ပိတ်မည်
+                </button>
+            `;
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Store reference for closing
+            window.currentWithdrawModal = overlay;
+            
+            // Force reflow and animate in
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            setTimeout(() => {
+                modal.style.transform = 'scale(1)';
+            }, 50);
         }
 
         function getCurrentBalance() {
@@ -1714,8 +2137,6 @@
         function updateBalance(newBalance) {
             document.getElementById('balance-display').textContent = `💰 ${newBalance.toLocaleString()} Ks`;
         }
-
-
 
         function placeBigSmallBet(amount) {
             // Check if user has enough balance
@@ -1747,6 +2168,10 @@
             
             // Show success message
             const choiceText = selectedChoice === 'big' ? 'အကြီး' : 'အသေး';
+            
+            // Add bet to current round tracking
+            addBetToCurrentRound(selectedChoice, amount, choiceText);
+            
             showSuccessMessage(amount, choiceText);
             
             // Clear selections after betting to allow new bets
@@ -1754,6 +2179,8 @@
                 clearSelections();
             }, 1000);
         }
+
+
 
         function hideBetAmountSection() {
             document.getElementById('bet-amount-section').classList.add('hidden');
@@ -1784,8 +2211,33 @@
         }
 
         function quickBet(amount) {
+            // Comprehensive validation for quick bets
             if (!selectedChoice) {
-                alert('ပထမဦးစွာ အကြီး၊ အသေး၊ အရောင် သို့မဟုတ် နံပါတ် ရွေးချယ်ပါ!');
+                alert('❌ ပထမဦးစွာ အကြီး၊ အသေး၊ အရောင် သို့မဟုတ် နံပါတ် ရွေးချယ်ပါ!');
+                return;
+            }
+            
+            // Check if timer is too low (less than 5 seconds)
+            if (countdownTimer <= 5) {
+                alert('❌ အချိန်ကုန်နေပါပြီ! နောက်ပွဲစဥ်တွင် လောင်းပါ။');
+                return;
+            }
+            
+            // Validate bet amount
+            if (amount < betLimits.minBetAmount) {
+                alert(`❌ အနည်းဆုံး ${betLimits.minBetAmount.toLocaleString()} ကျပ် လောင်းရပါမည်!`);
+                return;
+            }
+            
+            // Check total bet limit for this round
+            if (currentRoundTotalBet + amount > betLimits.maxTotalBetAmount) {
+                alert(`❌ တစ်ပွဲလျှင် အများဆုံး ${betLimits.maxTotalBetAmount.toLocaleString()} ကျပ်သာ လောင်းနိုင်ပါသည်!`);
+                return;
+            }
+            
+            // Check betting limits
+            if (currentRoundBets.length >= betLimits.maxBetsPerRound) {
+                alert(`❌ တစ်ပွဲလျှင် အများဆုံး ${betLimits.maxBetsPerRound} ကြိမ်သာ လောင်းနိုင်ပါသည်!`);
                 return;
             }
             
@@ -1797,13 +2249,24 @@
             }
             
             if (amount > currentBalance) {
-                alert('❌ လက်ကျန်ငွေ မလုံလောက်ပါ! ငွေသွင်းပါ။');
+                alert(`❌ လက်ကျန်ငွေ မလုံလောက်ပါ! လိုအပ်သည်: ${amount.toLocaleString()} ကျပ်, ရှိသည်: ${currentBalance.toLocaleString()} ကျပ်`);
                 return;
+            }
+            
+            // Double confirmation for large quick bets
+            if (amount >= 100000) {
+                const confirmLargeBet = confirm(`⚠️ ${amount.toLocaleString()} ကျပ် မြန်ဆန်လောင်းမည်ဖြစ်ပါသည်။ သေချာပါသလား?`);
+                if (!confirmLargeBet) {
+                    return;
+                }
             }
             
             // Deduct bet amount from balance
             const newBalance = currentBalance - amount;
             updateBalance(newBalance);
+            
+            // Update round totals
+            currentRoundTotalBet += amount;
             
             // Set the bet amount directly
             baseBet = amount;
@@ -1828,6 +2291,9 @@
                 const number = selectedChoice.split('-')[1];
                 choiceText = `နံပါတ် ${number}`;
             }
+            
+            // Add bet to current round tracking
+            addBetToCurrentRound(selectedChoice, amount, choiceText);
             
             // Auto-confirm the bet and clear selections for next bet
             showSuccessMessage(amount, choiceText);
@@ -1927,9 +2393,324 @@
             document.querySelector('#small-count').parentElement.querySelector('.text-xs').textContent = `${smallPercent}%`;
         }
 
+        // Betting History Functions
+        function addBetToCurrentRound(choice, amount, choiceText) {
+            const bet = {
+                id: Date.now() + Math.random(),
+                choice: choice,
+                amount: amount,
+                choiceText: choiceText,
+                timestamp: new Date().toLocaleTimeString('my-MM', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            currentRoundBets.push(bet);
+            updateCurrentRoundDisplay();
+            updateBetTrackingDisplay();
+        }
+        
+        function updateBetTrackingDisplay() {
+            // Update round totals display
+            document.getElementById('round-total-bet').textContent = currentRoundTotalBet.toLocaleString();
+            document.getElementById('round-bet-count').textContent = currentRoundBets.length;
+            document.getElementById('max-bets').textContent = betLimits.maxBetsPerRound;
+            
+            // Update color coding based on limits
+            const betCountElement = document.getElementById('round-bet-count');
+            const totalBetElement = document.getElementById('round-total-bet');
+            
+            if (currentRoundBets.length >= betLimits.maxBetsPerRound * 0.8) {
+                betCountElement.style.color = '#ef4444'; // Red warning
+            } else if (currentRoundBets.length >= betLimits.maxBetsPerRound * 0.6) {
+                betCountElement.style.color = '#f59e0b'; // Yellow warning
+            } else {
+                betCountElement.style.color = '#6b7280'; // Normal gray
+            }
+            
+            if (currentRoundTotalBet >= betLimits.maxTotalBetAmount * 0.8) {
+                totalBetElement.style.color = '#ef4444'; // Red warning
+            } else if (currentRoundTotalBet >= betLimits.maxTotalBetAmount * 0.6) {
+                totalBetElement.style.color = '#f59e0b'; // Yellow warning
+            } else {
+                totalBetElement.style.color = '#6b7280'; // Normal gray
+            }
+        }
+
+        function updateCurrentRoundDisplay() {
+            const container = document.getElementById('current-round-bets');
+            const countDisplay = document.getElementById('current-bets-count');
+            const noBetsMessage = document.getElementById('no-current-bets');
+            
+            if (currentRoundBets.length === 0) {
+                noBetsMessage.style.display = 'block';
+                countDisplay.textContent = '0 လောင်း';
+                return;
+            }
+            
+            noBetsMessage.style.display = 'none';
+            countDisplay.textContent = `${currentRoundBets.length} လောင်း`;
+            
+            const betsHTML = currentRoundBets.map(bet => {
+                let choiceIcon = '';
+                let choiceColor = '';
+                
+                if (bet.choice === 'big') {
+                    choiceIcon = '🔴';
+                    choiceColor = 'text-red-600';
+                } else if (bet.choice === 'small') {
+                    choiceIcon = '🔵';
+                    choiceColor = 'text-blue-600';
+                } else if (bet.choice === 'red') {
+                    choiceIcon = '💎';
+                    choiceColor = 'text-red-600';
+                } else if (bet.choice === 'green') {
+                    choiceIcon = '🍀';
+                    choiceColor = 'text-green-600';
+                } else if (bet.choice === 'purple') {
+                    choiceIcon = '👑';
+                    choiceColor = 'text-purple-600';
+                } else if (bet.choice.startsWith('number-')) {
+                    const number = bet.choice.split('-')[1];
+                    if ([2, 4, 6, 8].includes(parseInt(number))) {
+                        choiceIcon = '💎';
+                        choiceColor = 'text-red-600';
+                    } else if ([1, 3, 7, 9].includes(parseInt(number))) {
+                        choiceIcon = '🍀';
+                        choiceColor = 'text-green-600';
+                    } else {
+                        choiceIcon = '👑';
+                        choiceColor = 'text-purple-600';
+                    }
+                }
+                
+                return `
+                    <div class="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-lg">${choiceIcon}</div>
+                            <div>
+                                <div class="font-semibold ${choiceColor}">${bet.choiceText}</div>
+                                <div class="text-xs text-gray-500">${bet.timestamp}</div>
+                            </div>
+                        </div>
+                        <div class="font-bold text-gray-800">${bet.amount.toLocaleString()} Ks</div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = betsHTML;
+        }
+
+        function processCurrentRoundResults() {
+            // This function is called before the draw to prepare for result processing
+            // The actual result processing happens in processBettingResults
+        }
+
+        function processBettingResults(winningNumber, isBig, isRed, isGreen, isPurple, resultText, ballColor) {
+            let totalWinnings = 0;
+            let totalLosses = 0;
+            let hasAnyWin = false;
+            let hasAnyLoss = false;
+            
+            // Process each bet from current round
+            currentRoundBets.forEach(bet => {
+                let isWin = false;
+                let winMultiplier = 1.95; // Default payout
+                let winAmount = 0;
+                
+                // Check if bet won
+                if (bet.choice === 'big' && isBig) {
+                    isWin = true;
+                    winMultiplier = 1.95;
+                } else if (bet.choice === 'small' && !isBig) {
+                    isWin = true;
+                    winMultiplier = 1.95;
+                } else if (bet.choice === 'red' && isRed) {
+                    isWin = true;
+                    winMultiplier = 3.5;
+                } else if (bet.choice === 'green' && isGreen) {
+                    isWin = true;
+                    winMultiplier = 3.5;
+                } else if (bet.choice === 'purple' && isPurple) {
+                    isWin = true;
+                    winMultiplier = 6.0;
+                } else if (bet.choice.startsWith('number-')) {
+                    const selectedNumber = parseInt(bet.choice.split('-')[1]);
+                    if (selectedNumber === winningNumber) {
+                        isWin = true;
+                        winMultiplier = 9.0;
+                    }
+                }
+                
+                if (isWin) {
+                    winAmount = bet.amount * winMultiplier;
+                    totalWinnings += winAmount;
+                    hasAnyWin = true;
+                    
+                    // Add winnings to balance
+                    const currentBalance = getCurrentBalance();
+                    const newBalance = currentBalance + winAmount;
+                    updateBalance(newBalance);
+                } else {
+                    totalLosses += bet.amount;
+                    hasAnyLoss = true;
+                }
+                
+                // Add to betting history
+                const historyEntry = {
+                    roundNumber: roundNumber,
+                    winningNumber: winningNumber,
+                    resultText: resultText,
+                    ballColor: ballColor,
+                    bet: bet,
+                    isWin: isWin,
+                    winAmount: winAmount,
+                    winMultiplier: winMultiplier,
+                    timestamp: new Date().toLocaleString('my-MM')
+                };
+                
+                bettingHistory.unshift(historyEntry);
+            });
+            
+            // Keep only last 50 history entries
+            if (bettingHistory.length > 50) {
+                bettingHistory = bettingHistory.slice(0, 50);
+            }
+            
+            // Update history display
+            updatePastResultsDisplay();
+            
+            // Show win/lose notification if there were bets
+            if (currentRoundBets.length > 0) {
+                if (hasAnyWin && hasAnyLoss) {
+                    // Mixed results
+                    const netResult = totalWinnings - totalLosses;
+                    if (netResult > 0) {
+                        showWinLoseIcon('win', netResult, winningNumber, resultText);
+                    } else {
+                        showWinLoseIcon('lose', Math.abs(netResult), winningNumber, resultText);
+                    }
+                } else if (hasAnyWin) {
+                    showWinLoseIcon('win', totalWinnings, winningNumber, resultText);
+                } else if (hasAnyLoss) {
+                    showWinLoseIcon('lose', totalLosses, winningNumber, resultText);
+                }
+            } else {
+                // No bets placed, just show result
+                setTimeout(() => {
+                    alert(`🎊 Win Go 1min အသစ်ထွက်ပြီး! နံပါတ်: ${winningNumber} (${resultText})`);
+                }, 500);
+            }
+        }
+
+        function updatePastResultsDisplay() {
+            const container = document.getElementById('past-results');
+            
+            if (bettingHistory.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">မည်သည့်ရလဒ်မှ မရှိသေးပါ</div>';
+                document.getElementById('total-profit').textContent = 'စုစုပေါင်း: +0 Ks';
+                return;
+            }
+            
+            // Calculate total profit/loss
+            let totalProfit = 0;
+            bettingHistory.forEach(entry => {
+                if (entry.isWin) {
+                    totalProfit += (entry.winAmount - entry.bet.amount);
+                } else {
+                    totalProfit -= entry.bet.amount;
+                }
+            });
+            
+            const profitColor = totalProfit >= 0 ? 'text-green-600' : 'text-red-600';
+            const profitSign = totalProfit >= 0 ? '+' : '';
+            document.getElementById('total-profit').textContent = `စုစုပေါင်း: ${profitSign}${totalProfit.toLocaleString()} Ks`;
+            document.getElementById('total-profit').className = `ml-auto text-sm font-bold ${profitColor}`;
+            
+            const historyHTML = bettingHistory.map(entry => {
+                let choiceIcon = '';
+                let choiceColor = '';
+                
+                if (entry.bet.choice === 'big') {
+                    choiceIcon = '🔴';
+                    choiceColor = 'text-red-600';
+                } else if (entry.bet.choice === 'small') {
+                    choiceIcon = '🔵';
+                    choiceColor = 'text-blue-600';
+                } else if (entry.bet.choice === 'red') {
+                    choiceIcon = '💎';
+                    choiceColor = 'text-red-600';
+                } else if (entry.bet.choice === 'green') {
+                    choiceIcon = '🍀';
+                    choiceColor = 'text-green-600';
+                } else if (entry.bet.choice === 'purple') {
+                    choiceIcon = '👑';
+                    choiceColor = 'text-purple-600';
+                } else if (entry.bet.choice.startsWith('number-')) {
+                    const number = entry.bet.choice.split('-')[1];
+                    if ([2, 4, 6, 8].includes(parseInt(number))) {
+                        choiceIcon = '💎';
+                        choiceColor = 'text-red-600';
+                    } else if ([1, 3, 7, 9].includes(parseInt(number))) {
+                        choiceIcon = '🍀';
+                        choiceColor = 'text-green-600';
+                    } else {
+                        choiceIcon = '👑';
+                        choiceColor = 'text-purple-600';
+                    }
+                }
+                
+                const resultIcon = entry.isWin ? '✅' : '❌';
+                const resultColor = entry.isWin ? 'text-green-600' : 'text-red-600';
+                const resultAmount = entry.isWin ? `+${entry.winAmount.toLocaleString()}` : `-${entry.bet.amount.toLocaleString()}`;
+                
+                return `
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="text-sm font-bold text-gray-600">#${entry.roundNumber}</div>
+                                <div class="lottery-ball ${entry.ballColor} w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">${entry.winningNumber}</div>
+                                <div class="text-xs text-gray-500">${entry.resultText}</div>
+                            </div>
+                            <div class="text-xs text-gray-500">${entry.timestamp}</div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="text-sm">${choiceIcon}</div>
+                                <div class="text-sm ${choiceColor} font-semibold">${entry.bet.choiceText}</div>
+                                <div class="text-xs text-gray-500">${entry.bet.amount.toLocaleString()} Ks</div>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <div class="text-sm">${resultIcon}</div>
+                                <div class="text-sm font-bold ${resultColor}">${resultAmount} Ks</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = historyHTML;
+        }
+
+        function toggleHistoryView() {
+            const content = document.getElementById('betting-history-content');
+            const toggleText = document.getElementById('history-toggle-text');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                toggleText.textContent = '📋 ဖျောက်မည်';
+                updateCurrentRoundDisplay();
+                updatePastResultsDisplay();
+            } else {
+                content.classList.add('hidden');
+                toggleText.textContent = '📊 ကြည့်ရှုမည်';
+            }
+        }
+
         // Initialize the game
         startTimer();
         updateBetAmount();
         
         // Auto-select first multiplier
-        document.<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef809f82798954',t:'MTc1Nzg0ODkwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+        document.querySelector('.multiplier-btn').click();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97efc7d9d5f18941',t:'MTc1Nzg1MTgyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
