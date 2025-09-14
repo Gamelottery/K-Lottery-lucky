@@ -1,838 +1,228 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Win Go Game — Demo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BigWin Game</title>
   <style>
-    /* ---------- Base / Theme ---------- */
-    :root{
-      --bg:#0f172a;
-      --card:#0b1220;
-      --accent:#10b981;
-      --muted:#9ca3af;
-      --glass: rgba(255,255,255,0.04);
-      --glass-2: rgba(255,255,255,0.02);
-      --white: #ffffff;
-      --danger:#ef4444;
-      --blue:#2563eb;
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background: #f5f5f5;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-      background: linear-gradient(180deg,var(--bg), #071023 120%);
-      color:var(--white);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:18px;
+    header {
+      background: linear-gradient(90deg, #0ac75a, #0da848);
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
     }
-
-    /* Container */
-    .app {
-      max-width:1000px;
-      margin:0 auto;
+    .tabs {
+      display: flex;
+      background: #e8f6ee;
+      overflow-x: auto;
     }
-
-    header{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom:14px;
+    .tabs button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      font-weight: bold;
+      color: #555;
+      cursor: pointer;
     }
-    .brand {
-      display:flex;
-      gap:12px;
-      align-items:center;
+    .tabs button.active {
+      background: #0ac75a;
+      color: #fff;
+      border-radius: 10px 10px 0 0;
     }
-    .logo {
-      width:44px;height:44px;border-radius:10px;
-      background:linear-gradient(135deg,var(--accent),#059669);
-      display:flex;align-items:center;justify-content:center;font-weight:700;
-      box-shadow: 0 6px 18px rgba(16,185,129,0.14);
+    .game-box {
+      background: #fff;
+      margin: 10px;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    h1{margin:0;font-size:18px}
-    p.lead{margin:0;color:var(--muted);font-size:13px}
-
-    /* layout */
-    .grid{
-      display:grid;
-      grid-template-columns: 360px 1fr;
-      gap:18px;
-      align-items:start;
+    .countdown {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
     }
-
-    /* Card */
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:12px;
-      padding:14px;
-      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
-      border:1px solid rgba(255,255,255,0.04);
+    .balls {
+      display: flex;
+      gap: 8px;
+      margin: 10px 0;
     }
-
-    .auth-box input, .input, .select, .btn { font-size:14px }
-
-    /* Auth box */
-    .auth-box{ max-width:360px; margin:0 auto 18px auto; padding:12px; }
-    .auth-row{ display:flex; gap:8px }
-    .auth-box input{
-      width:100%;
-      padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);
-      background:transparent;color:var(--white);
-      outline:none;
+    .ball {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #f44336, #e57373);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
     }
-    .btn{
-      display:inline-block;
-      padding:10px 12px;border-radius:10px;
-      border:none;cursor:pointer;font-weight:600;
-      background:linear-gradient(90deg,var(--accent),#059669);
-      color:var(--white);
-      box-shadow: 0 6px 18px rgba(16,185,129,0.12);
+    .numbers {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 15px 0;
     }
-    .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); box-shadow:none; color:var(--white) }
-
-    /* Left column (account + actions) */
-    .left-col .card + .card{ margin-top:12px }
-    .profile {
-      display:flex; align-items:center; gap:12px;
+    .numbers button {
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      background: #eee;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .avatar{
-      width:56px;height:56px;border-radius:10px;
-      background:linear-gradient(180deg,#111827,#0b1220);
-      display:flex;align-items:center;justify-content:center;font-weight:700;
-      border:1px solid rgba(255,255,255,0.03);
+    .numbers button:hover {
+      background: #0ac75a;
+      color: #fff;
     }
-    .small { font-size:12px;color:var(--muted) }
-
-    /* deposit/withdraw tiles */
-    .twocol{
-      display:flex;gap:10px;
+    .bet-options {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+      justify-content: center;
     }
-    .action-tile{ flex:1; padding:10px; border-radius:8px; background:var(--glass); text-align:center; cursor:pointer; border:1px solid rgba(255,255,255,0.02) }
-    .action-tile:hover{ transform:translateY(-4px); transition:all .18s ease }
-
-    /* Right column (game) */
-    .topbar { display:flex; justify-content:space-between; gap:12px; margin-bottom:12px; align-items:center }
-    .modes { display:flex; gap:8px }
-    .mode-btn { padding:8px 10px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.03); cursor:pointer; color:var(--white); font-weight:600 }
-    .mode-btn.active { background: linear-gradient(90deg,var(--accent), #059669); box-shadow: 0 6px 18px rgba(16,185,129,0.12) }
-
-    .timer {
-      font-size:34px;font-weight:800;color:var(--white);
-      background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      padding:10px 18px;border-radius:10px;
-      display:inline-block;
+    .bet-options button {
+      padding: 8px 15px;
+      border-radius: 20px;
+      border: none;
+      background: #eee;
+      cursor: pointer;
+      font-size: 14px;
     }
-
-    /* numbers grid */
-    .numbers { display:grid; grid-template-columns: repeat(5,72px); gap:10px; justify-content:center; margin:14px 0; }
-    .num {
-      width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;
-      color:#fff; cursor:pointer; border:4px solid rgba(255,255,255,0.04);
-      box-shadow: 0 8px 22px rgba(2,6,23,0.6);
-      font-size:20px;
+    .bet-options button:hover {
+      background: #0ac75a;
+      color: #fff;
     }
-    .num.purple{ background: linear-gradient(135deg,#8b5cf6,#6d28d9) }
-    .num.green{ background: linear-gradient(135deg,#34d399,#10b981) }
-    .num.red{ background: linear-gradient(135deg,#fb7185,#ef4444) }
-    .num.sel{ outline: 4px solid rgba(255,255,255,0.08); transform: translateY(-6px) }
-
-    /* bet buttons */
-    .bet-row { display:flex; gap:10px; justify-content:center; margin:12px 0; }
-    .bet-big, .bet-small { padding:12px 18px; border-radius:12px; font-weight:800; cursor:pointer }
-    .bet-big{ background:linear-gradient(90deg,#ef4444,#dc2626); color:white }
-    .bet-small{ background:linear-gradient(90deg,#60a5fa,#2563eb); color:white }
-
-    /* amounts */
-    .amounts { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:12px }
-    .amount-btn{ padding:8px 12px;border-radius:10px;background:var(--glass); border:1px solid rgba(255,255,255,0.03); cursor:pointer; font-weight:700 }
-
-    /* result / history */
-    .result-box{ padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); margin-top:12px}
-    table{ width:100%; border-collapse:collapse; color:var(--white); font-size:13px }
-    th,td{ padding:8px; border-bottom:1px dashed rgba(255,255,255,0.03); text-align:left }
-    th{ color:var(--muted); font-weight:700; font-size:12px; background:transparent }
-
-    /* admin list */
-    .badge { display:inline-block; padding:6px 8px; border-radius:8px; background:var(--glass-2); color:var(--muted); font-weight:700; font-size:12px }
-
-    /* file preview */
-    .thumb { width:96px; height:64px; object-fit:cover; border-radius:8px; border:1px solid rgba(255,255,255,0.04); }
-
-    /* responsive */
-    @media (max-width:900px){
-      .grid{ grid-template-columns: 1fr; }
-      .numbers{ grid-template-columns: repeat(5,56px) }
-      .num{ width:56px;height:56px;font-size:16px }
-      .card{ padding:12px }
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 15px 0;
     }
-
+    .actions button {
+      flex: 1;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .actions .join {
+      background: #ff9800;
+      color: #fff;
+    }
+    .actions .cancel {
+      background: #2196f3;
+      color: #fff;
+    }
+    .history {
+      margin: 10px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .history table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .history th, .history td {
+      text-align: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .history th {
+      background: #e8f6ee;
+    }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo">♣︎</div>
-        <div>
-          <h1>Win Go Game</h1>
-          <p class="lead">လုံခြုံမှု - Demo (client-side)</p>
-        </div>
-      </div>
-      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-        <div id="balanceTop" class="badge">💰 0 Ks</div>
-        <div id="topUser" class="small">Not logged</div>
-      </div>
-    </header>
+  <header>777 BigWin Game</header>
 
-    <div class="grid">
-      <!-- LEFT -->
-      <div class="left-col">
-        <div class="card auth-box" id="authBox">
-          <h3 style="margin:0 0 8px 0">Login / Register</h3>
-          <input id="username" placeholder="Username" />
-          <input id="password" placeholder="Password" type="password" style="margin-top:8px" />
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button class="btn" onclick="login()">Login</button>
-            <button class="btn ghost" onclick="register()">Register</button>
-          </div>
-          <div style="margin-top:10px;color:var(--muted);font-size:13px">
-            Admin demo: <strong>admin/admin</strong>
-          </div>
-        </div>
+  <div class="tabs">
+    <button class="active">Win Go 30s</button>
+    <button>Win Go 1Min</button>
+    <button>Win Go 3Min</button>
+    <button>Win Go 5Min</button>
+  </div>
 
-        <div class="card" id="accountCard" style="display:none">
-          <div class="profile" style="margin-bottom:10px">
-            <div class="avatar" id="avatarTxt">U</div>
-            <div>
-              <div id="userDisplay" style="font-weight:800">user</div>
-              <div class="small" id="userIdDisplay">ID: -</div>
-            </div>
-          </div>
-
-          <div class="twocol">
-            <div class="action-tile" onclick="showDeposit();scrollToTop()">
-              <div style="font-size:18px">💵 ငွေသွင်း</div>
-              <div class="small" style="margin-top:6px">WavePay / KPay (Upload receipt)</div>
-            </div>
-            <div class="action-tile" onclick="showWithdraw();scrollToTop()">
-              <div style="font-size:18px">💸 ငွေထုတ်</div>
-              <div class="small" style="margin-top:6px">Request withdraw (admin approval)</div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <button class="btn ghost" onclick="logout()">Logout</button>
-          </div>
-        </div>
-
-        <!-- Admin panel (left) quick -->
-        <div class="card" id="adminQuick" style="display:none;margin-top:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div style="font-weight:800">Admin</div>
-            <div><button class="btn ghost" onclick="gotoAdmin()">Open Panel</button></div>
-          </div>
-          <div style="margin-top:8px;color:var(--muted);font-size:13px">Approve deposits & withdraws here</div>
-        </div>
-
-        <!-- Admin full panel -->
-        <div class="card" id="adminPanel" style="display:none;margin-top:12px">
-          <h3 style="margin:0 0 8px 0">Admin Panel</h3>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <input id="adminAddUser" placeholder="username to add credit" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--white)" />
-            <input id="adminAddAmount" placeholder="amount" style="width:110px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--white)" />
-            <button class="btn" onclick="adminCredit()">Add</button>
-          </div>
-
-          <h4 style="margin:8px 0 6px 0">Pending Deposits</h4>
-          <table id="adminDepositsTable">
-            <thead><tr><th>User</th><th>Amount</th><th>Receipt</th><th>Action</th></tr></thead>
-            <tbody></tbody>
-          </table>
-
-          <h4 style="margin:8px 0 6px 0">Pending Withdraws</h4>
-          <table id="adminWithdrawTable">
-            <thead><tr><th>User</th><th>Amount</th><th>Method</th><th>Account</th><th>Action</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-      </div>
-
-      <!-- RIGHT -->
-      <div>
-        <div class="card">
-          <div class="topbar">
-            <div>
-              <div style="font-weight:800">Game: Win Go</div>
-              <div class="small">ဝင်ပြီးလျှင် လောင်းနိုင်ပါသည်</div>
-            </div>
-            <div style="text-align:right">
-              <div class="small">Mode</div>
-              <div class="modes" id="modes">
-                <button class="mode-btn active" onclick="setMode(30,this)">30s</button>
-                <button class="mode-btn" onclick="setMode(60,this)">1min</button>
-                <button class="mode-btn" onclick="setMode(180,this)">3min</button>
-                <button class="mode-btn" onclick="setMode(300,this)">5min</button>
-              </div>
-            </div>
-          </div>
-
-          <div style="text-align:center;margin-top:8px">
-            <div id="timerDisplay" class="timer">00:30</div>
-            <div style="margin-top:6px;color:var(--muted)">လက်ကျန်ချိန်</div>
-          </div>
-
-          <!-- recent balls -->
-          <div style="display:flex;justify-content:center;gap:8px;margin-top:12px">
-            <div class="num green" style="width:44px;height:44px;font-size:14px">3</div>
-            <div class="num red" style="width:44px;height:44px;font-size:14px">6</div>
-            <div class="num purple" style="width:44px;height:44px;font-size:14px">0</div>
-            <div class="num red" style="width:44px;height:44px;font-size:14px">4</div>
-            <div class="num purple" style="width:44px;height:44px;font-size:14px">5</div>
-          </div>
-
-          <!-- betting area -->
-          <div style="margin-top:12px">
-            <div class="numbers" id="numbersGrid">
-              <div class="num purple" onclick="selectNumber(0)" id="n0">0</div>
-              <div class="num green" onclick="selectNumber(1)" id="n1">1</div>
-              <div class="num red" onclick="selectNumber(2)" id="n2">2</div>
-              <div class="num green" onclick="selectNumber(3)" id="n3">3</div>
-              <div class="num red" onclick="selectNumber(4)" id="n4">4</div>
-              <div class="num green" onclick="selectNumber(5)" id="n5">5</div>
-              <div class="num red" onclick="selectNumber(6)" id="n6">6</div>
-              <div class="num green" onclick="selectNumber(7)" id="n7">7</div>
-              <div class="num red" onclick="selectNumber(8)" id="n8">8</div>
-              <div class="num green" onclick="selectNumber(9)" id="n9">9</div>
-            </div>
-
-            <div class="bet-row">
-              <div class="bet-small" onclick="selectBigSmall('small')">အသေး (0–4)</div>
-              <div class="bet-big" onclick="selectBigSmall('big')">အကြီး (5–9)</div>
-            </div>
-
-            <div class="amounts" id="amounts">
-              <div class="amount-btn" onclick="setAmount(100)">100</div>
-              <div class="amount-btn" onclick="setAmount(500)">500</div>
-              <div class="amount-btn" onclick="setAmount(1000)">1,000</div>
-              <div class="amount-btn" onclick="setAmount(5000)">5,000</div>
-              <div class="amount-btn" onclick="setAmount(10000)">10,000</div>
-            </div>
-
-            <div style="display:flex;gap:8px;justify-content:center">
-              <input id="betInput" type="number" value="100" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);width:180px;background:transparent;color:var(--white)" />
-              <button class="btn" onclick="confirmBet()">လောင်းမည်</button>
-              <button class="btn ghost" onclick="cancelBet()">ဖျက်မည်</button>
-            </div>
-
-            <div class="result-box" id="resultBox" style="margin-top:12px;display:none"></div>
-          </div>
-        </div>
-
-        <!-- Transaction + history -->
-        <div class="card" style="margin-top:12px">
-          <h3 style="margin-top:0">📜 Bet History</h3>
-          <div style="max-height:220px; overflow:auto">
-            <table id="historyTable">
-              <thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Number</th><th>Result</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
+  <div class="game-box">
+    <div class="countdown">
+      <span>ပွဲအမှတ်စဉ်: 20250912100050385</span>
+      <span>လက်ကျန်: <b id="timer">25s</b></span>
+    </div>
+    <div class="balls">
+      <div class="ball">9</div>
+      <div class="ball">2</div>
+      <div class="ball">0</div>
+      <div class="ball">8</div>
+      <div class="ball">5</div>
+    </div>
+    <div class="numbers">
+      <button>0</button><button>1</button><button>2</button><button>3</button><button>4</button>
+      <button>5</button><button>6</button><button>7</button><button>8</button><button>9</button>
+    </div>
+    <div class="bet-options">
+      <button>X1</button><button>X5</button><button>X10</button><button>X20</button><button>X50</button><button>X100</button>
+    </div>
+    <div class="actions">
+      <button class="join">အင်မတန်</button>
+      <button class="cancel">ပယ်ဖျက်</button>
     </div>
   </div>
 
-<script>
-/* ========================
-   Storage & State
-   ======================== */
-let users = JSON.parse(localStorage.getItem('wg_users') || '{}');
-let currentUser = JSON.parse(localStorage.getItem('wg_currentUser') || 'null');
-let pendingDeposits = JSON.parse(localStorage.getItem('wg_deposits') || '[]'); // {id,user,amount,receiptDataURL,time,status}
-let pendingWithdraws = JSON.parse(localStorage.getItem('wg_withdraws') || '[]'); // {id,user,amount,method,account,time,status}
-let gameHistory = JSON.parse(localStorage.getItem('wg_gameHistory') || '[]'); // records shown in history table
+  <div class="history">
+    <h3>ဂိမ်းမှတ်တမ်း</h3>
+    <table>
+      <tr>
+        <th>ပွဲအမှတ်စဉ်</th>
+        <th>နံပါတ်</th>
+        <th>အကြိုက်</th>
+      </tr>
+      <tr>
+        <td>20250912100050384</td>
+        <td>9</td>
+        <td>အကြိုက်</td>
+      </tr>
+      <tr>
+        <td>20250912100050383</td>
+        <td>2</td>
+        <td>ဆံ့</td>
+      </tr>
+      <tr>
+        <td>20250912100050382</td>
+        <td>0</td>
+        <td>ဆံ့</td>
+      </tr>
+    </table>
+  </div>
 
-// helper
-function persistAll(){
-  localStorage.setItem('wg_users', JSON.stringify(users));
-  localStorage.setItem('wg_currentUser', JSON.stringify(currentUser));
-  localStorage.setItem('wg_deposits', JSON.stringify(pendingDeposits));
-  localStorage.setItem('wg_withdraws', JSON.stringify(pendingWithdraws));
-  localStorage.setItem('wg_gameHistory', JSON.stringify(gameHistory));
-}
-
-/* ========================
-   Auth
-   ======================== */
-function register(){
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
-  if(!u || !p){ alert('ရှေ့မူ့ အချက်အလက်မြေ့.'); return; }
-  if(users[u]){ alert('Account ရှိပြီးသား'); return; }
-  const id = 'U' + Date.now().toString().slice(-8);
-  users[u] = { password: p, id:id, balance:2000, history: [] };
-  persistAll();
-  alert('Register success — 2000 Ks bonus added.');
-}
-
-function login(){
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
-  if(u === 'admin' && p === 'admin'){
-    currentUser = { username:'admin', isAdmin:true };
-    localStorage.setItem('wg_currentUser', JSON.stringify(currentUser));
-    renderState();
-    return;
-  }
-  if(!users[u] || users[u].password !== p){ alert('Username / password မှား'); return; }
-  currentUser = { username: u, isAdmin:false };
-  localStorage.setItem('wg_currentUser', JSON.stringify(currentUser));
-  renderState();
-}
-
-/* ========================
-   UI Render / Helpers
-   ======================== */
-function $(id){ return document.getElementById(id) }
-
-function renderState(){
-  // top
-  if(currentUser){
-    $('topUser').innerText = currentUser.isAdmin ? 'Admin' : currentUser.username;
-    $('authBox').style.display = 'none';
-    $('accountCard').style.display = currentUser.isAdmin ? 'none' : 'block';
-    $('adminQuick').style.display = currentUser.isAdmin ? 'block' : 'none';
-    $('adminPanel').style.display = currentUser.isAdmin ? 'block' : 'none';
-    // show admin panel if admin
-    if(currentUser.isAdmin) {
-      $('adminPanel').style.display = 'block';
-      loadAdminTables();
-    }
-    if(!currentUser.isAdmin) {
-      const data = users[currentUser.username];
-      $('avatarTxt').innerText = (currentUser.username[0]||'U').toUpperCase();
-      $('userDisplay').innerText = currentUser.username;
-      $('userIdDisplay').innerText = 'ID: ' + data.id;
-      updateBalanceDisplay(data.balance);
-    } else {
-      updateBalanceDisplay('--');
-    }
-  } else {
-    $('authBox').style.display = 'block';
-    $('accountCard').style.display = 'none';
-    $('adminQuick').style.display = 'none';
-    $('adminPanel').style.display = 'none';
-    $('topUser').innerText = 'Not logged';
-    updateBalanceDisplay(0);
-  }
-  renderHistoryTable();
-}
-
-/* ========================
-   Balance display
-   ======================== */
-function updateBalanceDisplay(val){
-  if(currentUser && !currentUser.isAdmin){
-    $('balanceTop').innerText = '💰 ' + (val).toLocaleString() + ' Ks';
-  } else {
-    $('balanceTop').innerText = '💰 ' + (val===undefined?0:val) + (typeof val==='number' ? ' Ks':'');
-  }
-}
-
-/* ========================
-   Admin functions
-   ======================== */
-function gotoAdmin(){
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  $('adminPanel').style.display = 'block';
-}
-
-function renderUserList(){
-  // used inside admin table rendering (separate)
-}
-function loadAdminTables(){
-  // deposits
-  const tbodyD = document.querySelector('#adminDepositsTable tbody');
-  tbodyD.innerHTML = '';
-  pendingDeposits.forEach(d=>{
-    if(d.status !== 'pending') return;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${d.user}</td>
-      <td>${d.amount}</td>
-      <td><img src="${d.receipt}" class="thumb" /></td>
-      <td>
-        <button class="btn" onclick="adminApproveDeposit('${d.id}')">Approve</button>
-        <button class="btn ghost" onclick="adminRejectDeposit('${d.id}')">Reject</button>
-      </td>`;
-    tbodyD.appendChild(tr);
-  });
-
-  // withdraws
-  const tbodyW = document.querySelector('#adminWithdrawTable tbody');
-  tbodyW.innerHTML = '';
-  pendingWithdraws.forEach(w=>{
-    if(w.status !== 'pending') return;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${w.user}</td>
-      <td>${w.amount}</td>
-      <td>${w.method}</td>
-      <td>${w.account}</td>
-      <td>
-        <button class="btn" onclick="adminApproveWithdraw('${w.id}')">Approve</button>
-        <button class="btn ghost" onclick="adminRejectWithdraw('${w.id}')">Reject</button>
-      </td>`;
-    tbodyW.appendChild(tr);
-  });
-}
-
-function adminCredit(){
-  const user = $('adminAddUser').value.trim();
-  const amt = parseInt($('adminAddAmount').value);
-  if(!user || !amt || !users[user]){ alert('User မမှန်ပါ/Amount မမှန်ပါ'); return; }
-  users[user].balance = (users[user].balance || 0) + amt;
-  saveAndRerender();
-  alert('Credited ' + amt + ' to ' + user);
-}
-
-/* Admin approve deposit */
-function adminApproveDeposit(id){
-  const idx = pendingDeposits.findIndex(x=>x.id===id);
-  if(idx===-1) return;
-  const rec = pendingDeposits[idx];
-  if(!users[rec.user]){ alert('User not found'); return; }
-  users[rec.user].balance = (users[rec.user].balance||0) + rec.amount;
-  pendingDeposits[idx].status = 'approved';
-  pendingDeposits[idx].processedAt = new Date().toLocaleString();
-  saveAndRerender();
-  alert('Deposit approved and credited.');
-}
-
-/* Admin reject deposit */
-function adminRejectDeposit(id){
-  const idx = pendingDeposits.findIndex(x=>x.id===id);
-  if(idx===-1) return;
-  pendingDeposits[idx].status = 'rejected';
-  pendingDeposits[idx].processedAt = new Date().toLocaleString();
-  saveAndRerender();
-  alert('Deposit rejected.');
-}
-
-/* Admin approve withdraw */
-function adminApproveWithdraw(id){
-  const idx = pendingWithdraws.findIndex(x=>x.id===id);
-  if(idx===-1) return;
-  const req = pendingWithdraws[idx];
-  if(!users[req.user]) { alert('User not found'); return; }
-  if(users[req.user].balance < req.amount){ alert('Insufficient user balance'); return; }
-  users[req.user].balance -= req.amount;
-  pendingWithdraws[idx].status = 'approved';
-  pendingWithdraws[idx].processedAt = new Date().toLocaleString();
-  saveAndRerender();
-  alert('Withdraw approved and amount debited from user.');
-}
-
-/* Admin reject withdraw */
-function adminRejectWithdraw(id){
-  const idx = pendingWithdraws.findIndex(x=>x.id===id);
-  if(idx===-1) return;
-  pendingWithdraws[idx].status = 'rejected';
-  pendingWithdraws[idx].processedAt = new Date().toLocaleString();
-  saveAndRerender();
-  alert('Withdraw rejected.');
-}
-
-/* ========================
-   Deposit / Withdraw (User)
-   ======================== */
-function showDeposit(){
-  if(!currentUser || currentUser.isAdmin){ alert('Please login as user'); return; }
-  document.getElementById('depositBox').classList.remove('hidden');
-  document.getElementById('withdrawBox').classList.add('hidden');
-  // replace deposit box with an upload flow
-  renderDepositBox();
-}
-
-function renderDepositBox(){
-  const box = document.getElementById('depositBox');
-  box.innerHTML = `
-    <h3>💵 ငွေသွင်း</h3>
-    <p style="color:var(--muted)">WavePay / KPay: <strong>09766999230</strong><br/>Name: <strong>Daw Nwet Nwet Win</strong></p>
-    <label style="display:block;text-align:left;margin-top:8px;color:var(--muted)">Amount</label>
-    <input id="depositAmountInput" type="number" placeholder="သွင်းမည့် ပမာဏ" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--white)" />
-    <label style="display:block;text-align:left;margin-top:8px;color:var(--muted)">Upload Receipt (photo)</label>
-    <input id="depositFile" type="file" accept="image/*" style="color:var(--white)" />
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn" onclick="submitDeposit()">Submit</button>
-      <button class="btn ghost" onclick="hideDeposit()">Cancel</button>
-    </div>
-    <div id="depositPreview" style="margin-top:8px"></div>
-  `;
-  // attach change listener
-  document.getElementById('depositFile').addEventListener('change', (e)=>{
-    const f = e.target.files[0];
-    if(!f) return;
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      document.getElementById('depositPreview').innerHTML = `<img src="${ev.target.result}" class="thumb" />`;
-      document.getElementById('depositPreview').dataset.img = ev.target.result;
-    };
-    reader.readAsDataURL(f);
-  });
-}
-
-function submitDeposit(){
-  const amt = parseInt(document.getElementById('depositAmountInput').value);
-  if(!amt || amt<=0){ alert('Valid amount 주세요'); return; }
-  const img = document.getElementById('depositPreview').dataset.img;
-  if(!img){ alert('Please upload receipt image'); return; }
-  const id = 'D' + Date.now();
-  pendingDeposits.unshift({ id, user: currentUser.username, amount: amt, receipt: img, time: new Date().toLocaleString(), status:'pending' });
-  persistAll();
-  hideDeposit();
-  alert('Deposit request submitted. Admin will verify & credit.');
-  // notify admin UI update (if admin logged in)
-  if(currentUser && currentUser.isAdmin) loadAdminTables();
-}
-
-function hideDeposit(){
-  document.getElementById('depositBox').classList.add('hidden');
-}
-
-function showWithdraw(){
-  if(!currentUser || currentUser.isAdmin){ alert('Please login as user'); return; }
-  document.getElementById('withdrawBox').classList.remove('hidden');
-  document.getElementById('depositBox').classList.add('hidden');
-  renderWithdrawBox();
-}
-
-function renderWithdrawBox(){
-  const box = document.getElementById('withdrawBox');
-  box.innerHTML = `
-    <h3>💸 ငွေထုတ်</h3>
-    <label style="display:block;text-align:left;margin-top:8px;color:var(--muted)">Amount</label>
-    <input id="withdrawAmountInput" type="number" placeholder="ထုတ်မည့် ပမာဏ" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--white)" />
-    <label style="display:block;text-align:left;margin-top:8px;color:var(--muted)">Method</label>
-    <select id="withdrawMethodInput" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--white)">
-      <option value="WavePay">WavePay</option>
-      <option value="KPay">KPay</option>
-    </select>
-    <label style="display:block;text-align:left;margin-top:8px;color:var(--muted)">Account number</label>
-    <input id="withdrawAccountInput" type="text" placeholder="ဖုန်းနံပါတ် / Account" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--white)" />
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn" onclick="submitWithdraw()">Submit Withdraw</button>
-      <button class="btn ghost" onclick="hideWithdraw()">Cancel</button>
-    </div>
-  `;
-}
-
-function submitWithdraw(){
-  const amt = parseInt(document.getElementById('withdrawAmountInput').value);
-  const method = document.getElementById('withdrawMethodInput').value;
-  const acct = document.getElementById('withdrawAccountInput').value.trim();
-  if(!amt || amt<=0 || !acct){ alert('Please fill required fields'); return; }
-  if(users[currentUser.username].balance < amt){ alert('Balance မလုံလောက်'); return; }
-  const id = 'W' + Date.now();
-  pendingWithdraws.unshift({ id, user: currentUser.username, amount: amt, method, account: acct, time: new Date().toLocaleString(), status:'pending' });
-  persistAll();
-  hideWithdraw();
-  alert('Withdraw request submitted. Admin will process it.');
-}
-
-/* ========================
-   Game / Betting
-   (Kept logic similar to original)
-   ======================== */
-let currentMode = 30;
-let timeLeft = currentMode;
-let selected = null; // {type:'number'|'big'|'small', value?, amount}
-let autoTimer = null;
-
-function setMode(sec, el){
-  currentMode = sec; timeLeft = sec;
-  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
-  if(el) el.classList.add('active');
-  updateTimerDisplay();
-}
-
-function updateTimerDisplay(){
-  const mm = Math.floor(timeLeft / 60);
-  const ss = timeLeft % 60;
-  $('timerDisplay').innerText = `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
-}
-
-function selectNumber(n){
-  // visually highlight
-  document.querySelectorAll('.num').forEach(el=>el.classList.remove('sel'));
-  document.getElementById('n'+n).classList.add('sel');
-  selected = { type:'number', value:n, amount: parseInt($('betInput').value) || 0 };
-}
-
-function selectBigSmall(type){
-  document.querySelectorAll('.num').forEach(el=>el.classList.remove('sel'));
-  // highlight buttons a bit
-  selected = { type: type, amount: parseInt($('betInput').value) || 0 };
-  // no visual highlight for big/small besides selection text
-}
-
-function setAmount(val){
-  $('betInput').value = val;
-}
-
-function confirmBet(){
-  if(!currentUser || currentUser.isAdmin){ alert('Please login as user to bet'); return; }
-  const amt = parseInt($('betInput').value);
-  if(!selected){ alert('Please select number or big/small'); return; }
-  if(isNaN(amt) || amt<=0){ alert('Enter valid amount'); return; }
-  if(users[currentUser.username].balance < amt){ alert('Balance not enough'); return; }
-  // put into selected structure
-  selected.amount = amt;
-  // show short success
-  $('resultBox').style.display = 'block';
-  $('resultBox').innerText = `Bet placed: ${selected.type==='number' ? 'Number ' + selected.value : (selected.type==='small'?'Small':'Big')} → ${amt} Ks`;
-}
-
-function cancelBet(){
-  selected = null;
-  $('resultBox').style.display = 'none';
-  document.querySelectorAll('.num').forEach(el=>el.classList.remove('sel'));
-  $('betInput').value = 100;
-}
-
-/* Game countdown & drawing */
-function startCountdown(){
-  if(autoTimer) clearInterval(autoTimer);
-  autoTimer = setInterval(()=>{
-    updateTimerDisplay();
-    if(!currentUser || currentUser.isAdmin){ // show but don't process bets
-      timeLeft = Math.max(0, timeLeft-1);
-      if(timeLeft<=0) timeLeft = currentMode;
-      return;
-    }
-    if(timeLeft <= 0){
-      drawResult();
-      timeLeft = currentMode;
-    } else {
-      timeLeft--;
-    }
-  }, 1000);
-}
-startCountdown();
-
-function drawResult(){
-  const randomNum = Math.floor(Math.random()*10);
-  const outcome = randomNum <= 4 ? 'small' : 'big';
-  let msg = `Result: ${randomNum} (${outcome})`;
-  if(!selected){
-    msg += ' — No bet placed';
-    appendGameHistory({time: new Date().toLocaleTimeString(), type:'No Bet', amount:0, randomNum, result:'-'});
-    $('resultBox').innerText = msg;
-    return;
-  }
-  // Deduct bet amount from user first
-  users[currentUser.username].balance -= selected.amount;
-  let historyResult = '';
-  if(selected.type === 'number'){
-    if(selected.value === randomNum){
-      const win = Math.floor(selected.amount * 9.5); // use original multipliers
-      users[currentUser.username].balance += win;
-      historyResult = 'Win +' + win;
-      msg += ` — You WIN ${win}`;
-    } else {
-      historyResult = 'Lose -' + selected.amount;
-      msg += ` — You Lose -${selected.amount}`;
-    }
-  } else {
-    if(selected.type === outcome){
-      const win = Math.floor(selected.amount * 1.95);
-      users[currentUser.username].balance += win;
-      historyResult = 'Win +' + win;
-      msg += ` — You WIN ${win}`;
-    } else {
-      historyResult = 'Lose -' + selected.amount;
-      msg += ` — You Lose -${selected.amount}`;
-    }
-  }
-  // save history record
-  appendGameHistory({ time: new Date().toLocaleTimeString(), type: selected.type==='number'?('Number ' + selected.value):(selected.type==='small'?'Small':'Big'), amount: selected.amount, randomNum, result: historyResult });
-  persistAll();
-  updateBalanceDisplay(users[currentUser.username].balance);
-  $('resultBox').innerText = msg;
-  selected = null;
-  document.querySelectorAll('.num').forEach(el=>el.classList.remove('sel'));
-}
-
-/* history operations */
-function appendGameHistory(rec){
-  gameHistory.unshift(rec);
-  if(gameHistory.length > 200) gameHistory.length = 200;
-  persistAll();
-  renderHistoryTable();
-}
-function renderHistoryTable(){
-  const tbody = document.querySelector('#historyTable tbody');
-  tbody.innerHTML = '';
-  for(const r of gameHistory.slice(0,50)){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="width:110px">${r.time}</td><td>${r.type}</td><td>${r.amount}</td><td>${r.randomNum}</td><td>${r.result}</td>`;
-    tbody.appendChild(tr);
-  }
-}
-
-/* ========================
-   Save & render helpers
-   ======================== */
-function saveAndRerender(){
-  persistAll();
-  loadAdminTables();
-  renderState();
-  renderHistoryTable();
-}
-
-/* ========================
-   Withdraw / Deposit admin helpers on load
-   ======================== */
-function saveAndReturn(){
-  persistAll();
-}
-
-/* ========================
-   Logout
-   ======================== */
-function logout(){
-  currentUser = null;
-  localStorage.removeItem('wg_currentUser');
-  renderState();
-}
-
-/* ========================
-   Init on load
-   ======================== */
-function init(){
-  // load existing data
-  users = JSON.parse(localStorage.getItem('wg_users') || '{}');
-  pendingDeposits = JSON.parse(localStorage.getItem('wg_deposits') || '[]');
-  pendingWithdraws = JSON.parse(localStorage.getItem('wg_withdraws') || '[]');
-  gameHistory = JSON.parse(localStorage.getItem('wg_gameHistory') || '[]');
-  currentUser = JSON.parse(localStorage.getItem('wg_currentUser') || 'null');
-
-  // display balances top
-  if(currentUser && !currentUser.isAdmin){
-    updateBalanceDisplay(users[currentUser.username].balance);
-  } else updateBalanceDisplay(0);
-
-  renderState();
-  loadAdminTables();
-}
-
-function scrollToTop(){ window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-init();
-
-</script>
+  <script>
+    // Countdown sample
+    let time = 25;
+    const timerEl = document.getElementById("timer");
+    setInterval(() => {
+      if (time > 0) {
+        time--;
+        timerEl.textContent = time + "s";
+      }
+    }, 1000);
+  </script>
 </body>
 </html>
