@@ -22,7 +22,7 @@
     .big { background: #f39c12; color: #fff; }
     .mode-buttons button { background: #27ae60; color: #fff; }
     .deposit-box, .withdraw-box { max-width:300px; margin:20px auto; padding:15px; background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
-    .deposit-box input, .withdraw-box input { width:100%; padding:8px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
+    .deposit-box input, .withdraw-box input, .withdraw-box select { width:100%; padding:8px; margin:5px 0; border:1px solid #ccc; border-radius:6px; }
     .deposit-box button, .withdraw-box button { width:100%; padding:10px; margin-top:5px; border:none; border-radius:6px; background:#2980b9; color:#fff; cursor:pointer;}
   </style>
 </head>
@@ -64,7 +64,9 @@
     <!-- Deposit Box -->
     <div id="depositBox" class="deposit-box hidden">
       <h3>💵 ငွေသွင်း</h3>
-      <input type="number" id="depositAmount" placeholder="Amount">
+      <p>Wave Pay ➡️ 09766999230<br>👩 Name: Daw Nwet Nwet Win</p>
+      <p>K Pay ➡️ 09766999230<br>👩 Name: Daw Nwet Nwet Win</p>
+      <input type="number" id="depositAmount" placeholder="သွင်းမည့် ပမာဏ">
       <button onclick="deposit()">Confirm Deposit</button>
       <button onclick="hideDeposit()">Cancel</button>
     </div>
@@ -72,7 +74,12 @@
     <!-- Withdraw Box -->
     <div id="withdrawBox" class="withdraw-box hidden">
       <h3>💸 ငွေထုတ်</h3>
-      <input type="number" id="withdrawAmount" placeholder="Amount">
+      <input type="number" id="withdrawAmount" placeholder="ထုတ်မည့် Amount">
+      <select id="withdrawMethod">
+        <option value="WavePay">Wave Pay</option>
+        <option value="KPay">K Pay</option>
+      </select>
+      <input type="text" id="withdrawNumber" placeholder="ထုတ်မည့် Account နံပါတ်">
       <button onclick="withdraw()">Confirm Withdraw</button>
       <button onclick="hideWithdraw()">Cancel</button>
     </div>
@@ -272,16 +279,19 @@
     function deposit(){
       let amount=parseInt(document.getElementById("depositAmount").value);
       if(isNaN(amount)||amount<=0){alert("Amount မှန်မှန်ထည့်ပါ");return;}
-      balance+=amount; updateBalance(); hideDeposit();
-      alert("✔️ "+amount+" ကျပ် ငွေသွင်းပြီးပါပြီ");
+      alert("✔️ "+amount+" ကျပ် ငွေသွင်းရန် Wave Pay/KPay နံပါတ်သို့ ပေးပို့ပါ\n\nWave Pay / KPay: 09766999230\nName: Daw Nwet Nwet Win");
+      hideDeposit();
     }
 
     function withdraw(){
       let amount=parseInt(document.getElementById("withdrawAmount").value);
+      let method=document.getElementById("withdrawMethod").value;
+      let number=document.getElementById("withdrawNumber").value.trim();
       if(isNaN(amount)||amount<=0){alert("Amount မှန်မှန်ထည့်ပါ");return;}
       if(amount>balance){alert("❌ Balance မလောက်ပါ");return;}
+      if(!number){alert("Account နံပါတ် ထည့်ပါ");return;}
       balance-=amount; updateBalance(); hideWithdraw();
-      alert("✔️ "+amount+" ကျပ် ငွေထုတ်ပြီးပါပြီ");
+      alert("✔️ "+amount+" ကျပ် "+method+" ("+number+") သို့ ထုတ်ပေးမည်။ Admin အတည်ပြုပေးပါမယ်။");
     }
 
     if(currentUser){ if(currentUser.isAdmin)loadAdmin(); else loadUser(); }
