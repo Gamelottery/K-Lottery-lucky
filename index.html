@@ -3,621 +3,122 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Win Go Game (Full)</title>
+  <title>Bet Game</title>
   <style>
-    :root{--primary:#27ae60;--accent:#2980b9;--bg:#f4f4f4}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",sans-serif;margin:0;background:var(--bg);color:#111}
-    .container{max-width:980px;margin:12px auto;padding:12px}
-    .card{background:#fff;border-radius:10px;padding:12px;margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
-    h1,h2,h3{margin:6px 0}
-    input,select,button,textarea{font-size:15px;padding:10px;border-radius:8px;border:1px solid #d1d5db;box-sizing:border-box}
-    button{cursor:pointer}
-    .flex{display:flex;gap:8px;align-items:center}
-    .right{margin-left:auto}
-    /* layout specifics */
-    .auth-box{max-width:360px;margin:20px auto}
-    .numbers{display:grid;grid-template-columns:repeat(5,60px);gap:10px;justify-content:center;margin:14px 0}
-    .num{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;cursor:pointer}
-    .red{background:#e74c3c}.green{background:#2ecc71}.purple{background:#9b59b6}
-    .mode-buttons button{background:var(--primary);color:#fff;border:none;border-radius:8px}
-    .bet-buttons button{border:none;border-radius:8px;padding:10px 14px}
-    .small{background:#3498db;color:#fff}.big{background:#f39c12;color:#fff}
-    table{width:100%;border-collapse:collapse}
-    th,td{border:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
-    th{background:#111;color:#fff}
-    .hidden{display:none}
-    .controls-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-    .btn-ghost{background:transparent;border:1px solid #cbd5e1;padding:8px;border-radius:8px}
-    /* mobile tweaks */
-    @media (max-width:600px){
-      .numbers{grid-template-columns:repeat(5,48px)}
-      .num{width:48px;height:48px;font-size:16px}
-      input,select,button{font-size:14px;padding:8px}
-    }
-    .small-note{font-size:13px;color:#555}
-    .img-thumb{max-width:140px;max-height:120px;border-radius:6px;border:1px solid #e5e7eb}
-    .status-pending{color:#f39c12;font-weight:700}
-    .status-approved{color:#16a34a;font-weight:700}
-    .status-rejected{color:#ef4444;font-weight:700}
+    body { font-family:sans-serif; }
+    .hidden{ display:none; }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div id="app"></div>
 
-    <!-- AUTH -->
-    <div id="authSection" class="card auth-box">
-      <h2>Login / Register</h2>
-      <input id="username" placeholder="Username" /><br /><br />
-      <input id="password" type="password" placeholder="Password" /><br /><br />
-      <div class="flex">
-        <button onclick="login()" style="flex:1;background:var(--primary);color:#fff;border:none">Login</button>
-        <button onclick="register()" style="flex:1;background:var(--accent);color:#fff;border:none">Register</button>
+  <!-- RESULT POPUP -->
+  <div id="resultPopup" class="hidden" 
+       style="position:fixed;top:0;left:0;width:100%;height:100%;
+              background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999">
+    <div id="popupBox" 
+         style="background:#ff6f3c;border-radius:14px;padding:20px 16px;text-align:center;width:300px;position:relative;color:#fff;">
+      <div style="background:#fff;border-radius:50%;width:70px;height:70px;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+        <img id="popupIcon" src="" style="width:40px;height:40px"/>
       </div>
-      <p class="small-note">Register လုပ်ရင် auto ဂျင်နရိတ် ID တစ်ခုရပြီး bonus 2000 Ks ပေးပါမယ်</p>
+      <h3 id="popupTitle" style="margin:10px 0;font-size:18px;font-weight:700"></h3>
+      <div id="popupNumber" style="font-size:28px;font-weight:700">0</div>
+      <div id="popupBet" style="font-size:16px;margin:6px 0;color:#ffe600"></div>
+      <div id="popupAmount" style="font-size:20px;margin:10px 0 20px 0">Ks 0</div>
+      <button onclick="closeResultPopup()" 
+              style="background:#fff;color:#ff6f3c;border:none;padding:8px 20px;border-radius:8px;font-weight:600">OK</button>
     </div>
-
-    <!-- ADMIN -->
-    <div id="adminSection" class="card hidden">
-      <div class="flex">
-        <h2>👑 Admin Panel</h2>
-        <button class="right btn-ghost" onclick="logout()">Logout</button>
-      </div>
-
-      <h3>User List</h3>
-      <table>
-        <thead><tr><th>Username</th><th>ID</th><th>Balance</th><th>History</th><th>Action</th></tr></thead>
-        <tbody id="userList"></tbody>
-      </table>
-
-      <h3 style="margin-top:12px">Pending Deposits</h3>
-      <table>
-        <thead><tr><th>User</th><th>Amount</th><th>Proof</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody id="adminDepositList"></tbody>
-      </table>
-
-      <h3 style="margin-top:12px">Pending Withdrawals</h3>
-      <table>
-        <thead><tr><th>User</th><th>Amount</th><th>Method / Account</th><th>Time</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody id="adminWithdrawList"></tbody>
-      </table>
-    </div>
-
-    <!-- GAME -->
-    <div id="gameSection" class="card hidden">
-      <div class="flex">
-        <h2>Win Go Game</h2>
-        <div class="right">
-          <span id="currentUserDisplay"></span> |
-          ID: <span id="currentUserId"></span>
-        </div>
-        <button class="btn-ghost" style="margin-left:8px" onclick="logout()">Logout</button>
-      </div>
-
-      <div style="margin-top:8px" class="controls-row">
-        <div class="flex" style="gap:10px;align-items:center">
-          <div>
-            <button class="mode-buttons" onclick="setMode(30)">30s</button>
-          </div>
-          <div>
-            <button class="mode-buttons" onclick="setMode(60)">1min</button>
-          </div>
-          <div>
-            <button class="mode-buttons" onclick="setMode(180)">3min</button>
-          </div>
-          <div>
-            <button class="mode-buttons" onclick="setMode(300)">5min</button>
-          </div>
-        </div>
-
-        <div style="margin-left:auto;text-align:right">
-          <div>Mode: <b id="modeLabel">30s</b></div>
-          <div style="font-size:20px">Time: <span id="timerDisplay">30</span>s</div>
-        </div>
-      </div>
-
-      <div style="margin-top:8px" class="flex">
-        <div>
-          <div id="balanceDisplay">💰 Balance: 0</div>
-        </div>
-        <div class="right">
-          <button class="btn-ghost" onclick="toggleDepositBox()">💵 ငွေသွင်း</button>
-          <button class="btn-ghost" onclick="toggleWithdrawBox()">💸 ငွေထုတ်</button>
-        </div>
-      </div>
-
-      <!-- deposit box inline small -->
-      <div id="depositInline" class="card hidden" style="max-width:420px;margin-top:12px;">
-        <h3>Deposit (Upload proof)</h3>
-        <p class="small-note">WavePay / KPay: <b>09766999230</b> (Daw Nwet Nwet Win)</p>
-        <input id="depositAmt" type="number" placeholder="Amount" /><br/><br/>
-        <input id="depositFile" type="file" accept="image/*" /><br/><br/>
-        <button style="background:var(--accent);color:#fff;border:none" onclick="submitDeposit()">Send Deposit Request</button>
-        <button class="btn-ghost" onclick="toggleDepositBox()">Cancel</button>
-      </div>
-
-      <!-- withdraw inline -->
-      <div id="withdrawInline" class="card hidden" style="max-width:420px;margin-top:12px">
-        <h3>Withdraw</h3>
-        <input id="withdrawAmt" type="number" placeholder="Amount" /><br/><br/>
-        <select id="withdrawMethod">
-          <option value="WavePay">WavePay</option>
-          <option value="KPay">KPay</option>
-        </select><br/><br/>
-        <input id="withdrawAcct" placeholder="Account / Phone number to receive" /><br/><br/>
-        <button style="background:#f59e0b;color:#fff;border:none" onclick="submitWithdraw()">Send Withdraw Request</button>
-        <button class="btn-ghost" onclick="toggleWithdrawBox()">Cancel</button>
-      </div>
-
-      <!-- numbers & bets -->
-      <div style="margin-top:12px">
-        <div class="numbers" id="numbersGrid">
-          <div class="num purple" onclick="chooseNumber(0)">0</div>
-          <div class="num green" onclick="chooseNumber(1)">1</div>
-          <div class="num red" onclick="chooseNumber(2)">2</div>
-          <div class="num green" onclick="chooseNumber(3)">3</div>
-          <div class="num red" onclick="chooseNumber(4)">4</div>
-          <div class="num green" onclick="chooseNumber(5)">5</div>
-          <div class="num red" onclick="chooseNumber(6)">6</div>
-          <div class="num green" onclick="chooseNumber(7)">7</div>
-          <div class="num red" onclick="chooseNumber(8)">8</div>
-          <div class="num green" onclick="chooseNumber(9)">9</div>
-        </div>
-
-        <div class="flex" style="justify-content:center;margin:8px">
-          <button class="bet-buttons small" onclick="placeBet('small')">အသေး (0–4)</button>
-          <button class="bet-buttons big" onclick="placeBet('big')">အကြီး (5–9)</button>
-        </div>
-
-        <div style="text-align:center;margin:8px">
-          <label>Amount</label>
-          <input id="betAmount" type="number" value="100" min="10" step="10" style="width:140px;margin-left:8px"/>
-          <div style="margin-top:8px"><button onclick="confirmBet()" style="background:var(--primary);color:#fff;border:none;padding:8px 14px">Confirm Bet</button></div>
-        </div>
-      </div>
-
-      <div id="betResult" class="card hidden"></div>
-
-      <h3 style="margin-top:12px">📜 Bet History</h3>
-      <table>
-        <thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Result</th></tr></thead>
-        <tbody id="betHistory"></tbody>
-      </table>
-
-      <h3 style="margin-top:12px">💵 My Transactions / Requests</h3>
-      <table>
-        <thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Info</th><th>Status</th></tr></thead>
-        <tbody id="myRequests"></tbody>
-      </table>
-
-    </div>
-
   </div>
 
+  <div id="betResult" class="hidden"></div>
+
 <script>
-/*
-  Single-file client-side app.
-  Storage keys:
-    - users: object keyed by username { password, id, balance, history:[], requests:[] }
-    - currentUser: { username, isAdmin? }
-    - deposits: array of deposit requests {id,user,amount,ts, status, proofBase64}
-    - withdraws: array of withdraw requests {id,user,amount,method,account,ts,status}
-*/
-const LS_USERS = 'wg_users_v1';
-const LS_CURRENT = 'wg_current_v1';
-const LS_DEPOSITS = 'wg_deposits_v1';
-const LS_WITHDRAWS = 'wg_withdraws_v1';
+let users = {};
+let currentUser = null;
 
-// load storage
-let users = JSON.parse(localStorage.getItem(LS_USERS)) || {};
-let currentUser = JSON.parse(localStorage.getItem(LS_CURRENT)) || null;
-let deposits = JSON.parse(localStorage.getItem(LS_DEPOSITS)) || [];
-let withdraws = JSON.parse(localStorage.getItem(LS_WITHDRAWS)) || [];
-
-let selectedNumber = null;
-let pendingBet = null;
-let mode = 30;
-let timer = mode;
-let intervalId = null;
-
-// helper saves
-function saveAll(){ localStorage.setItem(LS_USERS, JSON.stringify(users)); localStorage.setItem(LS_DEPOSITS, JSON.stringify(deposits)); localStorage.setItem(LS_WITHDRAWS, JSON.stringify(withdraws)); }
-function saveCurrent(){ localStorage.setItem(LS_CURRENT, JSON.stringify(currentUser)); }
-
-// UI refs
-const authSection = document.getElementById('authSection');
-const adminSection = document.getElementById('adminSection');
-const gameSection = document.getElementById('gameSection');
-const currentUserDisplay = document.getElementById('currentUserDisplay');
-const currentUserIdEl = document.getElementById('currentUserId');
-const balanceDisplay = document.getElementById('balanceDisplay');
-const timerDisplay = document.getElementById('timerDisplay');
-const modeLabel = document.getElementById('modeLabel');
-
-function login(){
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
-  if(u === '' || p === ''){ alert('Username / Password ထည့်ပါ'); return; }
-  // admin login
-  if(u === 'admin' && p === 'admin'){
-    currentUser = {username:'admin', isAdmin:true};
-    saveCurrent();
-    showAdmin();
-    return;
-  }
-  if(!users[u] || users[u].password !== p){ alert('Username/Password မှားပါသည်'); return; }
-  currentUser = { username: u };
-  saveCurrent();
-  showGame();
-}
-
-function register(){
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value;
-  if(!u || !p){ alert('Username / Password ထည့်ပါ'); return; }
-  if(users[u]){ alert('အကောင့်ရှိပြီးပြီ'); return; }
-  const id = 'U' + Date.now();
-  users[u] = { password: p, id: id, balance: 2000, history: [], requests: [] };
-  saveAll();
-  alert('Register success — balance 2000 Ks credited. Please login.');
-}
-
-// show admin
-function showAdmin(){
-  authSection.classList.add('hidden');
-  gameSection.classList.add('hidden');
-  adminSection.classList.remove('hidden');
-  renderAdminLists();
-}
-
-// show game (user)
-function showGame(){
-  authSection.classList.add('hidden');
-  adminSection.classList.add('hidden');
-  gameSection.classList.remove('hidden');
-  selectedNumber = null;
-  pendingBet = null;
-  updateUserInfo();
-  renderUserRequests();
-  renderBetHistory();
-  renderAdminLists(); // admin lists also updated so admin can view if logged in later
-  startTimer();
-}
-
-// logout
-function logout(){
-  currentUser = null;
-  localStorage.removeItem(LS_CURRENT);
-  stopTimer();
-  authSection.classList.remove('hidden');
-  adminSection.classList.add('hidden');
-  gameSection.classList.add('hidden');
-  document.getElementById('username').value=''; document.getElementById('password').value='';
-}
-
-/* Admin side rendering */
-function renderAdminLists(){
-  // user list
-  const userList = document.getElementById('userList');
-  userList.innerHTML = '';
-  Object.keys(users).forEach(u=>{
-    const usr = users[u];
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${u}</td><td>${usr.id}</td><td>${usr.balance}</td><td>${(usr.history||[]).length}</td>
-      <td><button onclick="adminEditBalance('${u}')">Edit</button></td>`;
-    userList.appendChild(tr);
-  });
-
-  // deposits list
-  const adminDepositList = document.getElementById('adminDepositList');
-  adminDepositList.innerHTML = '';
-  deposits.forEach(d=>{
-    const tr = document.createElement('tr');
-    const imgHtml = d.proofBase64 ? `<img src="${d.proofBase64}" class="img-thumb" />` : '';
-    tr.innerHTML = `<td>${d.user}</td><td>${d.amount}</td><td>${imgHtml}</td><td>${new Date(d.ts).toLocaleString()}</td>
-      <td class="${d.status==='pending'?'status-pending':d.status==='approved'?'status-approved':'status-rejected'}">${d.status}</td>
-      <td>
-        ${d.status==='pending'?`<button onclick="adminApproveDeposit('${d.id}')">Approve</button>
-        <button onclick="adminRejectDeposit('${d.id}')">Reject</button>`: ''}
-      </td>`;
-    adminDepositList.appendChild(tr);
-  });
-
-  // withdraws
-  const adminWithdrawList = document.getElementById('adminWithdrawList');
-  adminWithdrawList.innerHTML = '';
-  withdraws.forEach(w=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${w.user}</td><td>${w.amount}</td><td>${w.method}<br/>${w.account}</td><td>${new Date(w.ts).toLocaleString()}</td>
-      <td class="${w.status==='pending'?'status-pending':w.status==='approved'?'status-approved':'status-rejected'}">${w.status}</td>
-      <td>
-        ${w.status==='pending'?`<button onclick="adminApproveWithdraw('${w.id}')">Approve</button>
-        <button onclick="adminRejectWithdraw('${w.id}')">Reject</button>`: ''}
-      </td>`;
-    adminWithdrawList.appendChild(tr);
-  });
-}
-
-/* Admin actions */
-function adminEditBalance(username){
-  const newBal = prompt('Enter new balance for ' + username, users[username].balance);
-  if(newBal === null) return;
-  const nb = parseInt(newBal);
-  if(isNaN(nb)){ alert('Invalid'); return; }
-  users[username].balance = nb;
-  saveAll();
-  renderAdminLists();
-  alert('Balance updated');
-}
-
-function adminApproveDeposit(id){
-  const idx = deposits.findIndex(d=>d.id===id);
-  if(idx===-1) return;
-  const d = deposits[idx];
-  if(d.status !== 'pending') return alert('Already processed');
-  // credit user
-  if(!users[d.user]) return alert('User not found');
-  users[d.user].balance += d.amount;
-  d.status = 'approved';
-  saveAll();
-  renderAdminLists();
-  if(currentUser && currentUser.username === d.user){ updateUserInfo(); renderUserRequests(); }
-  alert('Deposit approved and balance updated');
-}
-
-function adminRejectDeposit(id){
-  const idx = deposits.findIndex(d=>d.id===id);
-  if(idx===-1) return;
-  deposits[idx].status = 'rejected';
-  saveAll();
-  renderAdminLists();
-  alert('Deposit rejected');
-}
-
-function adminApproveWithdraw(id){
-  const idx = withdraws.findIndex(w=>w.id===id);
-  if(idx===-1) return;
-  const w = withdraws[idx];
-  if(w.status !== 'pending') return alert('Already processed');
-  // deduct user (if enough)
-  if(!users[w.user]) return alert('User not found');
-  if(users[w.user].balance < w.amount) return alert('User has insufficient balance');
-  users[w.user].balance -= w.amount;
-  w.status = 'approved';
-  saveAll();
-  renderAdminLists();
-  if(currentUser && currentUser.username === w.user){ updateUserInfo(); renderUserRequests(); }
-  alert('Withdraw approved and user balance deducted');
-}
-
-function adminRejectWithdraw(id){
-  const idx = withdraws.findIndex(w=>w.id===id);
-  if(idx===-1) return;
-  withdraws[idx].status = 'rejected';
-  saveAll();
-  renderAdminLists();
-  alert('Withdraw rejected');
-}
-
-/* User deposit/withdraw request flows (with upload) */
-function toggleDepositBox(){
-  document.getElementById('depositInline').classList.toggle('hidden');
-}
-function toggleWithdrawBox(){
-  document.getElementById('withdrawInline').classList.toggle('hidden');
-}
-
-function submitDeposit(){
-  if(!currentUser){ alert('Please login'); return; }
-  const amt = parseInt(document.getElementById('depositAmt').value);
-  const file = document.getElementById('depositFile').files[0];
-  if(!amt || isNaN(amt) || amt <= 0){ alert('Enter valid amount'); return; }
-  if(!file){ alert('Please upload proof image'); return; }
-
-  // read file as base64
-  const reader = new FileReader();
-  reader.onload = function(ev){
-    const b64 = ev.target.result;
-    const req = { id: 'D' + Date.now(), user: currentUser.username, amount: amt, ts: Date.now(), status: 'pending', proofBase64: b64 };
-    deposits.unshift(req);
-    saveAll();
-    toggleDepositBox();
-    renderUserRequests();
-    renderAdminLists();
-    alert('Deposit request submitted. Admin will verify and approve.');
-    document.getElementById('depositAmt').value = '';
-    document.getElementById('depositFile').value = '';
-  };
-  reader.readAsDataURL(file);
-}
-
-function submitWithdraw(){
-  if(!currentUser){ alert('Please login'); return; }
-  const amt = parseInt(document.getElementById('withdrawAmt').value);
-  const method = document.getElementById('withdrawMethod').value;
-  const acct = document.getElementById('withdrawAcct').value.trim();
-  if(!amt || isNaN(amt) || amt <= 0){ alert('Enter valid amount'); return; }
-  if(amt > users[currentUser.username].balance){ alert('Insufficient balance'); return; }
-  if(!acct){ alert('Enter account/phone number'); return; }
-  const req = { id: 'W' + Date.now(), user: currentUser.username, amount: amt, method: method, account: acct, ts: Date.now(), status: 'pending' };
-  withdraws.unshift(req);
-  saveAll();
-  toggleWithdrawBox();
-  renderUserRequests();
-  renderAdminLists();
-  alert('Withdraw request submitted. Admin will process it.');
-  document.getElementById('withdrawAmt').value = '';
-  document.getElementById('withdrawAcct').value = '';
-}
-
-/* Render user's own requests */
-function renderUserRequests(){
-  if(!currentUser || currentUser.isAdmin) return;
-  const me = currentUser.username;
-  // my deposits + withdraws combined
-  const tbody = document.getElementById('myRequests'); tbody.innerHTML = '';
-  const myDeposits = deposits.filter(d => d.user === me);
-  const myWithdraws = withdraws.filter(w => w.user === me);
-  const merged = [];
-  myDeposits.forEach(d => merged.push({time:d.ts, type:'Deposit', amount:d.amount, info: d.proofBase64 ? '<img src="'+d.proofBase64+'" class="img-thumb"/>' : '', status: d.status}));
-  myWithdraws.forEach(w => merged.push({time:w.ts, type:'Withdraw', amount:w.amount, info: w.method + ' / ' + w.account, status: w.status}));
-  merged.sort((a,b)=>b.time-a.time);
-  merged.forEach(item=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${new Date(item.time).toLocaleString()}</td><td>${item.type}</td><td>${item.amount}</td><td>${item.info}</td>
-      <td class="${item.status==='pending'?'status-pending':item.status==='approved'?'status-approved':'status-rejected'}">${item.status}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-/* Game & betting logic */
-function updateUserInfo(){
-  if(!currentUser || currentUser.isAdmin) return;
-  currentUserDisplay.innerText = currentUser.username;
-  currentUserIdEl.innerText = users[currentUser.username].id;
-  balanceDisplay.innerText = '💰 Balance: ' + users[currentUser.username].balance;
-  modeLabel.innerText = mode===30?'30s':mode===60?'1min':mode===180?'3min':'5min';
-  renderUserRequests();
-  renderBetHistory();
-}
-
-function chooseNumber(n){
-  // highlight visually minimal by setting selectedNumber
-  selectedNumber = n;
-  pendingBet = { type: 'number', value: n };
-  document.getElementById('betResult').classList.remove('hidden');
-  document.getElementById('betResult').innerText = 'Selected number: ' + n;
-}
-
-function placeBet(type){
-  pendingBet = { type: type };
-  selectedNumber = null;
-  document.getElementById('betResult').classList.remove('hidden');
-  document.getElementById('betResult').innerText = type === 'small' ? 'Selected: အသေး (0-4)' : 'Selected: အကြီး (5-9)';
-}
-
-function confirmBet(){
-  if(!currentUser || currentUser.isAdmin){ alert('Please login as a user'); return; }
-  if(!pendingBet){ alert('Please select number or big/small'); return; }
-  const amt = parseInt(document.getElementById('betAmount').value);
-  if(!amt || isNaN(amt) || amt <= 0){ alert('Enter valid bet amount'); return; }
-  const uname = currentUser.username;
-  if(amt > users[uname].balance){ alert('Insufficient balance'); return; }
-  // store pending bet as current bet object; it will be resolved on next timer expiration
-  users[uname].currentPendingBet = { ...pendingBet, amount: amt, placedAt: Date.now() };
-  saveAll();
-  document.getElementById('betResult').innerText = 'Bet placed: ' + (pendingBet.type==='number' ? 'Number '+pendingBet.value : (pendingBet.type==='small' ? 'Small' : 'Big')) + ' → ' + amt + ' Ks';
-  renderUserRequests();
-  renderBetHistory();
-}
-
-/* Countdown timer + resolution */
-function setMode(s){
-  mode = s; timer = s;
-  modeLabel.innerText = mode===30?'30s':mode===60?'1min':mode===180?'3min':'5min';
-  timerDisplay.innerText = timer;
-}
-function startTimer(){
-  stopTimer();
-  timer = mode;
-  intervalId = setInterval(()=>{
-    if(!currentUser || currentUser.isAdmin){
-      // still update display even when admin logged in (but don't auto-resolve for admin)
-      timerDisplay.innerText = timer;
-      timer--;
-      if(timer < 0) timer = mode;
-      return;
-    }
-    timerDisplay.innerText = timer;
-    if(timer <= 0){
-      // produce a random digit result and resolve bets for currently logged-in user(s)
-      resolveRound();
-      timer = mode;
-    } else {
-      timer--;
-    }
-  }, 1000);
-}
-function stopTimer(){
-  if(intervalId) clearInterval(intervalId);
-  intervalId = null;
-}
+function saveAll(){ localStorage.setItem("users",JSON.stringify(users)); }
+function updateUserInfo(){} // placeholder
+function renderAdminLists(){} // placeholder
 
 function resolveRound(){
   const rnd = Math.floor(Math.random()*10);
   const resultType = rnd <= 4 ? 'small' : 'big';
-  // process each user's pending bet stored in users[*].currentPendingBet
+
   Object.keys(users).forEach(u=>{
     const userObj = users[u];
     const betObj = userObj.currentPendingBet;
     if(!betObj) return;
-    // subtract stake first
+
     userObj.balance -= betObj.amount;
     let resultText = '';
+    let winAmount = 0;
+
     if(betObj.type === 'number'){
       if(betObj.value === rnd){
-        const win = Math.floor(betObj.amount * 9.5); // approximate payout
-        userObj.balance += win;
-        resultText = `Win +${win}`;
+        winAmount = Math.floor(betObj.amount * 9.5);
+        userObj.balance += winAmount;
+        resultText = `Win +${winAmount}`;
       } else {
         resultText = `Lose -${betObj.amount}`;
       }
     } else if(betObj.type === resultType){
-      const win = Math.floor(betObj.amount * 1.95);
-      userObj.balance += win;
-      resultText = `Win +${win}`;
+      winAmount = Math.floor(betObj.amount * 1.95);
+      userObj.balance += winAmount;
+      resultText = `Win +${winAmount}`;
     } else {
       resultText = `Lose -${betObj.amount}`;
     }
-    // push into user's history
+
     if(!userObj.history) userObj.history = [];
-    userObj.history.unshift({ time: new Date().toLocaleTimeString(), bet: betObj.type + (betObj.type==='number'?' '+betObj.value:''), amount: betObj.amount, resultNum: rnd, resultText });
+    userObj.history.unshift({ 
+      time: new Date().toLocaleTimeString(), 
+      bet: betObj.type + (betObj.type==='number'?' '+betObj.value:''), 
+      amount: betObj.amount, 
+      resultNum: rnd, 
+      resultText 
+    });
     if(userObj.history.length > 200) userObj.history.length = 200;
     delete userObj.currentPendingBet;
+
+    // show popup only for current login user
+    if(currentUser && currentUser.username === u){
+      const popup = document.getElementById("resultPopup");
+      const popupBox = document.getElementById("popupBox");
+      const popupIcon = document.getElementById("popupIcon");
+      const popupTitle = document.getElementById("popupTitle");
+      const popupNumber = document.getElementById("popupNumber");
+      const popupBet = document.getElementById("popupBet");
+      const popupAmount = document.getElementById("popupAmount");
+
+      popupNumber.innerText = "ထွက်သောဂဏန်း ➜ " + rnd;
+      popupBet.innerText = "မင်းဘက်တင်ထားသည် ➜ " + (betObj.type==='number'? betObj.value : betObj.type);
+
+      popup.classList.remove("hidden");
+
+      if(winAmount > 0){
+        popupBox.style.background = "#ff6f3c"; // အနိုင် → လိမ္မော်
+        popupIcon.src = "https://cdn-icons-png.flaticon.com/512/190/190411.png";
+        popupTitle.innerText = "🎉 သင့်အနိုင်ရပါသည်";
+        popupAmount.innerText = "Win: Ks " + winAmount.toLocaleString();
+      } else {
+        popupBox.style.background = "#555"; // အရှုံး → မီးခိုး
+        popupIcon.src = "https://cdn-icons-png.flaticon.com/512/1828/1828843.png";
+        popupTitle.innerText = "❌ သင့်အရှုံးဖြစ်ပါသည်";
+        popupAmount.innerText = "Lose: Ks " + betObj.amount.toLocaleString();
+      }
+    }
   });
+
   saveAll();
-  // show result for the logged in user
   document.getElementById('betResult').classList.remove('hidden');
   document.getElementById('betResult').innerText = `Result: ${rnd} → ${resultType}`;
   updateUserInfo();
   renderAdminLists();
 }
 
-/* Bet history render for current user */
-function renderBetHistory(){
-  const tbody = document.getElementById('betHistory'); tbody.innerHTML = '';
-  if(!currentUser || currentUser.isAdmin) return;
-  const his = users[currentUser.username].history || [];
-  his.slice(0,50).forEach(h=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${h.time}</td><td>${h.bet}</td><td>${h.amount}</td><td>${h.resultText} (num:${h.resultNum})</td>`;
-    tbody.appendChild(tr);
-  });
+function closeResultPopup(){
+  document.getElementById("resultPopup").classList.add("hidden");
 }
-
-/* Utility */
-function renderAllUserParts(){
-  if(currentUser && !currentUser.isAdmin) updateUserInfo();
-  renderAdminLists();
-  renderUserRequests();
-  renderBetHistory();
-}
-
-/* show/hide inline deposit/withdraw */
-function toggleDepositBox(){ toggleElement('depositInline'); }
-function toggleWithdrawBox(){ toggleElement('withdrawInline'); }
-function toggleElement(id){ document.getElementById(id).classList.toggle('hidden'); }
-
-// initial restore
-saveAll();
-if(currentUser){
-  if(currentUser.isAdmin) showAdmin(); else showGame();
-} else {
-  authSection.classList.remove('hidden');
-}
-
-// ensure admin lists show latest when storage changes in other tab
-window.addEventListener('storage', ()=>{ users = JSON.parse(localStorage.getItem(LS_USERS)) || {}; deposits = JSON.parse(localStorage.getItem(LS_DEPOSITS)) || []; withdraws = JSON.parse(localStorage.getItem(LS_WITHDRAWS)) || []; renderAdminLists(); renderUserRequests(); renderBetHistory(); if(currentUser && !currentUser.isAdmin) updateUserInfo(); });
-
 </script>
 </body>
 </html>
