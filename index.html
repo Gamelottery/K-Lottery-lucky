@@ -41,7 +41,8 @@
   <div class="flex">
     <h2>Win Go Game</h2>
     <div class="right">
-      <span id="currentUserDisplay"></span> | ID: <span id="currentUserId"></span>
+      <span id="currentUserDisplay"></span> |
+      ID: <span id="currentUserId"></span>
     </div>
     <button class="btn-ghost" style="margin-left:8px" onclick="logout()">Logout</button>
   </div>
@@ -53,6 +54,7 @@
       <div><button class="mode-buttons" onclick="setMode(180)">3min</button></div>
       <div><button class="mode-buttons" onclick="setMode(300)">5min</button></div>
     </div>
+
     <div style="margin-left:auto;text-align:right">
       <div>Mode: <b id="modeLabel">30s</b></div>
       <div style="font-size:20px">Time: <span id="timerDisplay">30</span>s</div>
@@ -60,7 +62,9 @@
   </div>
 
   <div style="margin-top:8px" class="flex">
-    <div><div id="balanceDisplay">💰 Balance: 0</div></div>
+    <div>
+      <div id="balanceDisplay">💰 Balance: 0</div>
+    </div>
     <div class="right">
       <button class="btn-ghost" onclick="toggleDepositBox()">💵 ငွေသွင်း</button>
       <button class="btn-ghost" onclick="toggleWithdrawBox()">💸 ငွေထုတ်</button>
@@ -135,19 +139,46 @@
 </div>
 
 <!-- RESULT POPUP -->
-<div id="resultPopup" class="hidden" 
+<div id="resultPopup" class="hidden"
      style="position:fixed;top:0;left:0;width:100%;height:100%;
             background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999">
-  <div id="popupBox" 
-       style="background:#ff6f3c;border-radius:14px;padding:20px 16px;text-align:center;width:300px;position:relative;color:#fff;">
-    <div style="background:#fff;border-radius:50%;width:70px;height:70px;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+  <div id="popupBox" style="border-radius:14px;padding:20px 16px;text-align:center;width:300px;position:relative;color:#fff;">
+    <div style="border-radius:50%;width:70px;height:70px;margin:0 auto;display:flex;align-items:center;justify-content:center;background:#fff;">
       <img id="popupIcon" src="" style="width:40px;height:40px"/>
     </div>
     <h3 id="popupTitle" style="margin:10px 0;font-size:18px;font-weight:700"></h3>
-    <div id="popupNumber" style="font-size:28px;font-weight:700">0</div>
-    <div id="popupBet" style="font-size:16px;margin:6px 0;color:#ffe600"></div>
+    <div id="popupNumber" style="font-size:32px;font-weight:700;color:#ffe600">0</div>
     <div id="popupAmount" style="font-size:20px;margin:10px 0 20px 0">Ks 0</div>
-    <button onclick="closeResultPopup()" 
-            style="background:#fff;color:#ff6f3c;border:none;padding:8px 20px;border-radius:8px;font-weight:600">OK</button>
+    <button onclick="closeResultPopup()" style="background:#fff;color:#000;border:none;padding:8px 20px;border-radius:8px;font-weight:600">OK</button>
   </div>
 </div>
+
+<script>
+function showResultPopup(type, rnd, amount){
+  const popup = document.getElementById("resultPopup");
+  const box = document.getElementById("popupBox");
+  const icon = document.getElementById("popupIcon");
+  const title = document.getElementById("popupTitle");
+  const num = document.getElementById("popupNumber");
+  const amt = document.getElementById("popupAmount");
+
+  if(type === "win"){
+    box.style.background = "#16a34a"; // green
+    icon.src = "https://cdn-icons-png.flaticon.com/512/845/845646.png";
+    title.innerText = "You Win!";
+    amt.innerText = "Ks " + amount.toLocaleString();
+  } else {
+    box.style.background = "#dc2626"; // red
+    icon.src = "https://cdn-icons-png.flaticon.com/512/753/753345.png";
+    title.innerText = "You Lose!";
+    amt.innerText = "- Ks " + amount.toLocaleString();
+  }
+
+  num.innerText = rnd;
+  popup.classList.remove("hidden");
+}
+
+function closeResultPopup(){
+  document.getElementById("resultPopup").classList.add("hidden");
+}
+</script>
